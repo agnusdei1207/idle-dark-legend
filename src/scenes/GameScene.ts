@@ -513,10 +513,22 @@ export class GameScene extends Phaser.Scene {
         }
         this.closePauseMenu();
 
+        // 몬스터 모두 제거
+        for (const monster of this.monsters) {
+            monster.destroy();
+        }
+        this.monsters = [];
+
         // NPC 다시 표시
         for (const npc of this.npcs) {
             npc.setVisible(true);
         }
+
+        // 사냥터 관련 상태 초기화
+        this.currentHuntingZone = null;
+        this.killCount = 0;
+        this.sessionExp = 0;
+        this.sessionGold = 0;
 
         // 마을 색상으로 복원
         this.tileColors = { 0: 0x2d4a4b, 1: 0x4a7c6f, 2: 0x5a8c7f, 3: 0x6b8e7d, 4: 0x3d5a5b };
