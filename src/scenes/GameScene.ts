@@ -43,6 +43,8 @@ export class GameScene extends Phaser.Scene {
     private currentHuntingZone: string | null = null;
     private autoHuntTimer: number = 0;
     private killCount: number = 0;
+    private sessionExp: number = 0;
+    private sessionGold: number = 0;
 
     // UI
     private inventoryUI!: InventoryUI;
@@ -272,6 +274,13 @@ export class GameScene extends Phaser.Scene {
 
             // 퀘스트 업데이트
             this.questSystem.updateProgress('kill', data.monster.id);
+
+            // 자동 사냥 중이면 세션 통계 업데이트
+            if (this.isAutoHunting) {
+                this.sessionExp += data.exp;
+                this.sessionGold += data.gold;
+                this.updateHuntingHUD();
+            }
         });
 
         // NPC 상호작용
@@ -713,6 +722,8 @@ export class GameScene extends Phaser.Scene {
         this.isAutoHunting = true;
         this.currentHuntingZone = zone.id;
         this.killCount = 0;
+        this.sessionExp = 0;
+        this.sessionGold = 0;
         this.idleSystem.selectZone(zone.id);
         this.idleSystem.startHunting();
 
@@ -818,7 +829,7 @@ export class GameScene extends Phaser.Scene {
 
             if (killed) {
                 this.killCount++;
-                // 경험치/골드는 monsterDeath 이벤트에서 처리됨
+                // 경험치/골드 및 HUD 업데이트는 monsterDeath 이벤트에서 처리됨
             }
         });
     }
@@ -862,38 +873,80 @@ export class GameScene extends Phaser.Scene {
     }
 
     /**
-     * 사냥터 이름 HUD
+     * 사냥터 이름 HUD (실시간 통계 포함)
      */
     private showHuntingZoneHUD(zoneName: string): void {
         // 기존 HUD 제거
         const existing = this.children.getByName('huntingHUD');
         if (existing) existing.destroy();
 
-        const hud = this.add.container(this.cameras.main.width / 2, 30);
+        const hud = this.add.container(this.cameras.main.width / 2, 45);
         hud.setName('huntingHUD');
         hud.setDepth(1500);
         hud.setScrollFactor(0);
 
-        const bg = this.add.rectangle(0, 0, 250, 35, 0x000000, 0.7);
+        // 배경
+        const bg = this.add.rectangle(0, 0, 320, 55, 0x000000, 0.8);
         bg.setStrokeStyle(2, 0x8b5cf6);
         hud.add(bg);
 
-        const text = this.add.text(0, 0, `⚔️ ${zoneName}`, {
-            fontSize: '16px',
-            color: '#ffffff',
+        // 사냥터 이름
+        const nameText = this.add.text(-100, -15, `⚔️ ${zoneName}`, {
+            fontSize: '14px',
+            color: '#ffd700',
             fontStyle: 'bold'
-        }).setOrigin(0.5);
-        hud.add(text);
+        }).setOrigin(0, 0.5);
+        hud.add(nameText);
+
+        // 처치 수
+        const killText = this.add.text(-100, 10, '🗡️ 0마리', {
+            fontSize: '12px',
+            color: '#ff6b6b'
+        }).setOrigin(0, 0.5);
+        killText.setName('huntKillText');
+        hud.add(killText);
+
+        // 경험치
+        const expText = this.add.text(0, 10, '⭐ 0 EXP', {
+            fontSize: '12px',
+            color: '#4ade80'
+        }).setOrigin(0, 0.5);
+        expText.setName('huntExpText');
+        hud.add(expText);
+
+        // 골드
+        const goldText = this.add.text(80, 10, '💰 0 G', {
+            fontSize: '12px',
+            color: '#ffd700'
+        }).setOrigin(0, 0.5);
+        goldText.setName('huntGoldText');
+        hud.add(goldText);
 
         // 중지 버튼
-        const stopBtn = this.add.text(100, 0, '❌', {
-            fontSize: '18px'
+        const stopBtn = this.add.text(140, -5, '❌', {
+            fontSize: '20px'
         }).setOrigin(0.5);
         stopBtn.setInteractive({ useHandCursor: true });
         stopBtn.on('pointerdown', () => this.stopAutoHunt());
         stopBtn.on('pointerover', () => stopBtn.setScale(1.2));
         stopBtn.on('pointerout', () => stopBtn.setScale(1));
         hud.add(stopBtn);
+    }
+
+    /**
+     * 사냥 HUD 통계 업데이트
+     */
+    private updateHuntingHUD(): void {
+        const hud = this.children.getByName('huntingHUD') as Phaser.GameObjects.Container | null;
+        if (!hud) return;
+
+        const killText = hud.getByName('huntKillText') as Phaser.GameObjects.Text;
+        const expText = hud.getByName('huntExpText') as Phaser.GameObjects.Text;
+        const goldText = hud.getByName('huntGoldText') as Phaser.GameObjects.Text;
+
+        if (killText) killText.setText(`🗡️ ${this.killCount}마리`);
+        if (expText) expText.setText(`⭐ ${this.sessionExp.toLocaleString()} EXP`);
+        if (goldText) goldText.setText(`💰 ${this.sessionGold.toLocaleString()} G`);
     }
 
     /**
@@ -905,11 +958,22 @@ export class GameScene extends Phaser.Scene {
         this.isAutoHunting = false;
         this.idleSystem.stopHunting();
 
-        const stats = this.idleSystem.getSessionStats();
+        // 타이머 정리
+        if (this.autoHuntTimer) {
+            clearInterval(this.autoHuntTimer);
+            this.autoHuntTimer = 0;
+        }
+
+        // HUD 제거
+        const hud = this.children.getByName('huntingHUD');
+        if (hud) hud.destroy();
+
+        // 종료 메시지 (로컬 통계 사용)
         this.showAutoHuntMessage(
-            `⏹️ 사냥 종료\n처치: ${stats.kills}마리\n경험치: ${stats.exp}\n골드: ${stats.gold}`
+            `⏹️ 사냥 종료\n처치: ${this.killCount}마리\n경험치: ${this.sessionExp.toLocaleString()}\n골드: ${this.sessionGold.toLocaleString()}`
         );
 
+        const stats = { kills: this.killCount, exp: this.sessionExp, gold: this.sessionGold };
         this.events.emit('autoHuntStop', stats);
     }
 
