@@ -201,4 +201,32 @@ export class Monster extends Entity {
     }
 
     getDefinition(): MonsterDefinition { return this.definition; }
+
+    /** 사망 여부 확인 */
+    checkIsDead(): boolean {
+        return this.isDead;
+    }
+
+    /** 데미지 받기 (오버라이드) - 사망 시 true 반환 */
+    receiveDamage(amount: number): boolean {
+        if (this.isDead) return false;
+
+        this.combatStats.currentHp = Math.max(0, this.combatStats.currentHp - amount);
+        this.updateHpBar();
+
+        // 피격 이펙트
+        this.scene.tweens.add({
+            targets: this,
+            alpha: 0.5,
+            duration: 100,
+            yoyo: true,
+            repeat: 2
+        });
+
+        if (this.combatStats.currentHp <= 0) {
+            this.die();
+            return true;
+        }
+        return false;
+    }
 }

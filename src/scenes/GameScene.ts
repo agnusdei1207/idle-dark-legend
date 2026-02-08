@@ -548,6 +548,14 @@ export class GameScene extends Phaser.Scene {
         // 맵 이름 변경
         this.currentMap.nameKo = zone.name;
 
+        // 맵 타일 색상 변경 (써클별 분위기)
+        this.changeMapAtmosphere(zone.circle);
+
+        // 기존 NPC 숨기기
+        for (const npc of this.npcs) {
+            npc.setVisible(false);
+        }
+
         // 기존 몬스터 제거
         for (const monster of this.monsters) {
             monster.destroy();
@@ -557,10 +565,164 @@ export class GameScene extends Phaser.Scene {
         // 새 몬스터 스폰
         this.spawnHuntingZoneMonsters(zone.id);
 
-        this.showAutoHuntMessage(`🎯 ${zone.name}에서 자동 사냥을 시작합니다!`);
+        // 자동 전투 시작
+        this.startAutoBattle();
+
+        // 사냥터 이름 HUD 표시
+        this.showHuntingZoneHUD(zone.name);
+
+        this.showAutoHuntMessage(`⚔️ ${zone.name}\n자동 사냥 시작!`);
 
         // 이벤트 발송
         this.events.emit('autoHuntStart', zone);
+    }
+
+    /**
+     * 맵 분위기 변경 (써클별 색상)
+     */
+    private changeMapAtmosphere(circle: number): void {
+        const atmosphereColors: Record<number, Record<number, number>> = {
+            1: { 0: 0x2d4a4b, 1: 0x4a7c6f, 2: 0x5a8c7f, 3: 0x6b8e7d, 4: 0x3d5a5b }, // 숲
+            2: { 0: 0x3d3d5c, 1: 0x5a5a7a, 2: 0x6a6a8a, 3: 0x7a7a9a, 4: 0x4d4d6c }, // 던전
+            3: { 0: 0x4a5a3a, 1: 0x6a7a5a, 2: 0x7a8a6a, 3: 0x8a9a7a, 4: 0x5a6a4a }, // 해안
+            4: { 0: 0x2a3a5a, 1: 0x4a5a7a, 2: 0x5a6a8a, 3: 0x6a7a9a, 4: 0x3a4a6a }, // 해저
+            5: { 0: 0x3a2a3a, 1: 0x5a4a5a, 2: 0x6a5a6a, 3: 0x7a6a7a, 4: 0x4a3a4a }  // 호러
+        };
+
+        this.tileColors = atmosphereColors[circle] || this.tileColors;
+
+        // 맵 다시 그리기
+        this.worldContainer.removeAll(true);
+        this.createMap();
+    }
+
+    /**
+     * 자동 전투 시작
+     */
+    private startAutoBattle(): void {
+        // 2초마다 몬스터 하나 처치
+        this.autoHuntTimer = window.setInterval(() => {
+            if (!this.isAutoHunting) {
+                clearInterval(this.autoHuntTimer);
+                return;
+            }
+
+            const aliveMonsters = this.monsters.filter(m => !m.checkIsDead());
+            if (aliveMonsters.length === 0) {
+                // 모든 몬스터 처치 -> 새로 스폰
+                this.spawnHuntingZoneMonsters(this.currentHuntingZone!);
+                return;
+            }
+
+            // 랜덤 몬스터 하나 공격
+            const target = aliveMonsters[Math.floor(Math.random() * aliveMonsters.length)];
+            this.autoAttackMonster(target);
+        }, 1500);
+    }
+
+    /**
+     * 자동 공격
+     */
+    private autoAttackMonster(monster: Monster): void {
+        // 플레이어가 몬스터 방향으로 이동
+        const monsterPos = monster.getWorldPos();
+        this.player.moveToWorld(monsterPos.x - 0.5, monsterPos.y - 0.5, 300);
+
+        // 공격 이펙트
+        this.time.delayedCall(300, () => {
+            if (monster.checkIsDead()) return;
+
+            // 데미지 계산
+            const playerStats = this.player.getCombatStats();
+            const damage = Math.floor(playerStats.attack * (0.8 + Math.random() * 0.4));
+
+            // 몬스터에 데미지
+            const killed = monster.receiveDamage(damage);
+
+            // 데미지 숫자 표시
+            this.showDamageNumber(monster.x, monster.y - 20, damage);
+
+            // 공격 이펙트
+            this.showAttackEffect(monster.x, monster.y);
+
+            if (killed) {
+                this.killCount++;
+                // 경험치/골드는 monsterDeath 이벤트에서 처리됨
+            }
+        });
+    }
+
+    /**
+     * 데미지 숫자 표시
+     */
+    private showDamageNumber(x: number, y: number, damage: number): void {
+        const text = this.add.text(x, y, `-${damage}`, {
+            fontSize: '16px',
+            color: '#ff4444',
+            fontStyle: 'bold',
+            stroke: '#000000',
+            strokeThickness: 2
+        }).setOrigin(0.5).setDepth(2500);
+
+        this.tweens.add({
+            targets: text,
+            y: y - 40,
+            alpha: 0,
+            duration: 800,
+            onComplete: () => text.destroy()
+        });
+    }
+
+    /**
+     * 공격 이펙트
+     */
+    private showAttackEffect(x: number, y: number): void {
+        const effect = this.add.text(x, y, '💥', {
+            fontSize: '24px'
+        }).setOrigin(0.5).setDepth(2400);
+
+        this.tweens.add({
+            targets: effect,
+            scale: 1.5,
+            alpha: 0,
+            duration: 300,
+            onComplete: () => effect.destroy()
+        });
+    }
+
+    /**
+     * 사냥터 이름 HUD
+     */
+    private showHuntingZoneHUD(zoneName: string): void {
+        // 기존 HUD 제거
+        const existing = this.children.getByName('huntingHUD');
+        if (existing) existing.destroy();
+
+        const hud = this.add.container(this.cameras.main.width / 2, 30);
+        hud.setName('huntingHUD');
+        hud.setDepth(1500);
+        hud.setScrollFactor(0);
+
+        const bg = this.add.rectangle(0, 0, 250, 35, 0x000000, 0.7);
+        bg.setStrokeStyle(2, 0x8b5cf6);
+        hud.add(bg);
+
+        const text = this.add.text(0, 0, `⚔️ ${zoneName}`, {
+            fontSize: '16px',
+            color: '#ffffff',
+            fontStyle: 'bold'
+        }).setOrigin(0.5);
+        hud.add(text);
+
+        // 중지 버튼
+        const stopBtn = this.add.text(100, 0, '❌', {
+            fontSize: '18px'
+        }).setOrigin(0.5);
+        stopBtn.setInteractive({ useHandCursor: true });
+        stopBtn.on('pointerdown', () => this.stopAutoHunt());
+        stopBtn.on('pointerover', () => stopBtn.setScale(1.2));
+        stopBtn.on('pointerout', () => stopBtn.setScale(1));
+        hud.add(stopBtn);
     }
 
     /**
