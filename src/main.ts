@@ -10,6 +10,7 @@ import { ThreeGame } from './three/core/ThreeGame';
 import { threeGameConfig } from './config/three.config';
 import { BootScene } from './three/scenes/BootScene';
 import { MenuScene } from './three/scenes/MenuScene';
+import { GameScene } from './three/scenes/GameScene';
 
 // 게임 인스턴스 생성
 const game = new ThreeGame(threeGameConfig);
@@ -17,6 +18,7 @@ const game = new ThreeGame(threeGameConfig);
 // Scene 등록
 game.sceneManager.registerScene('boot', BootScene);
 game.sceneManager.registerScene('menu', MenuScene);
+game.sceneManager.registerScene('game', GameScene);
 
 // 전역 접근용 (디버깅)
 if (import.meta.env.DEV) {

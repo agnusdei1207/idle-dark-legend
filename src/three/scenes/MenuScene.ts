@@ -220,11 +220,12 @@ export class MenuScene implements BaseScene {
     private async startNewGame(): Promise<void> {
         console.log('MenuScene: Starting new game...');
 
-        // TODO: GameScene 등록 후 전환
-        // await this.game.switchScene('game');
-
-        // 임시: 알림만 표시
-        alert('새 게임 시작 (GameScene 구현 예정)');
+        try {
+            await this.game.switchScene('game');
+        } catch (error) {
+            console.error('Failed to start game:', error);
+            alert('게임 시작 실패');
+        }
     }
 
     /**
