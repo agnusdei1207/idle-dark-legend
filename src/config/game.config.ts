@@ -1,8 +1,5 @@
 import Phaser from 'phaser';
-import { BootScene } from '../scenes/BootScene';
-import { MenuScene } from '../scenes/MenuScene';
-import { GameScene } from '../scenes/GameScene';
-import { UIScene } from '../scenes/UIScene';
+import { BootScene, MenuScene, GameScene, UIScene } from '../scenes';
 
 /**
  * Phaser 3 게임 설정
