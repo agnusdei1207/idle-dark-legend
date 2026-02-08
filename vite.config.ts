@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
     server: {
+        host: '0.0.0.0',  // 모든 인터페이스에서 listen
         port: 5173,
         strictPort: true,
         hmr: false  // HMR 완전 비활성화 - Phaser 호환성 문제 해결

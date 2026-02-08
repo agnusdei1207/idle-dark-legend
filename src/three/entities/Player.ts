@@ -353,6 +353,30 @@ export class Player {
     }
 
     /**
+     * 레벨 설정 (저장 데이터 로드용)
+     */
+    public setLevel(level: number): void {
+        this.level = Math.max(1, Math.min(99, level));
+        console.log(`Player: Level set to ${this.level}`);
+    }
+
+    /**
+     * 경험치 설정 (저장 데이터 로드용)
+     */
+    public setExp(exp: number): void {
+        this.exp = Math.max(0, exp);
+        console.log(`Player: EXP set to ${this.exp}`);
+    }
+
+    /**
+     * 골드 설정 (저장 데이터 로드용)
+     */
+    public setGold(gold: number): void {
+        this.gold = Math.max(0, gold);
+        console.log(`Player: Gold set to ${this.gold}`);
+    }
+
+    /**
      * 골드 추가
      */
     public addGold(amount: number): void {

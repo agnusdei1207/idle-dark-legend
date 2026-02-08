@@ -21,7 +21,7 @@ import { OfflineRewardSystem } from '../systems/OfflineRewardSystem';
 import { ParticleSystem } from '../systems/ObjectPool';
 import { InventoryUI } from '../ui/InventoryUI';
 import { SkillsUI } from '../ui/SkillsUI';
-import { QuestsUI } from '../ui/QuestsUI';
+import { QuestUI } from '../ui/QuestUI';
 
 /**
  * GameScene 클래스
@@ -44,10 +44,17 @@ export class GameScene implements BaseScene {
     private particleSystem: ParticleSystem;
     private inventoryUI: InventoryUI;
     private skillsUI: SkillsUI;
-    private questsUI: QuestsUI;
+    private questsUI: QuestUI;
+    private saveData: any | null = null;
 
-    constructor(game: ThreeGame, data?: { mapId?: string }) {
+    constructor(game: ThreeGame, data?: { mapId?: string; saveData?: any }) {
         this.game = game;
+
+        // 저장 데이터 저장
+        if (data?.saveData) {
+            this.saveData = data.saveData;
+            console.log('GameScene: Loaded save data', this.saveData);
+        }
 
         // Scene 생성
         this.scene = new THREE.Scene();
@@ -79,7 +86,7 @@ export class GameScene implements BaseScene {
         // UI 시스템 초기화
         this.inventoryUI = new InventoryUI();
         this.skillsUI = new SkillsUI([], new Map());
-        this.questsUI = new QuestsUI();
+        this.questsUI = new QuestUI();
 
         // 맵 데이터 설정 (임시)
         this.currentMap = {
@@ -249,13 +256,49 @@ export class GameScene implements BaseScene {
     private createPlayer(): void {
         this.player = new Player(this.game);
 
-        // 맵 중앙에 배치
-        const centerTileX = 15;
-        const centerTileY = 15;
-        this.player.setPosition(
-            IsometricUtils.tileToWorld(centerTileX, centerTileY, 64, 32).x,
-            IsometricUtils.tileToWorld(centerTileX, centerTileY, 64, 32).y
-        );
+        // 저장된 데이터가 있으면 로드
+        if (this.saveData) {
+            console.log('Loading player from save data...');
+
+            // 레벨, 경험치, 골드 설정
+            if (this.saveData.level) {
+                this.player.setLevel(this.saveData.level);
+            }
+            if (this.saveData.exp) {
+                this.player.setExp(this.saveData.exp);
+            }
+            if (this.saveData.gold !== undefined) {
+                this.player.setGold(this.saveData.gold);
+            }
+
+            // 저장된 위치에 배치
+            if (this.saveData.position) {
+                const pos = IsometricUtils.tileToWorld(
+                    this.saveData.position.x || 15,
+                    this.saveData.position.y || 15,
+                    64, 32
+                );
+                this.player.setPosition(pos.x, pos.y);
+            } else {
+                // 맵 중앙에 배치
+                const centerTileX = 15;
+                const centerTileY = 15;
+                this.player.setPosition(
+                    IsometricUtils.tileToWorld(centerTileX, centerTileY, 64, 32).x,
+                    IsometricUtils.tileToWorld(centerTileX, centerTileY, 64, 32).y
+                );
+            }
+
+            console.log(`Player loaded: Level ${this.saveData.level}, ${this.saveData.exp} EXP, ${this.saveData.gold} Gold`);
+        } else {
+            // 맵 중앙에 배치
+            const centerTileX = 15;
+            const centerTileY = 15;
+            this.player.setPosition(
+                IsometricUtils.tileToWorld(centerTileX, centerTileY, 64, 32).x,
+                IsometricUtils.tileToWorld(centerTileX, centerTileY, 64, 32).y
+            );
+        }
 
         this.entityGroup.add(this.player.mesh);
 

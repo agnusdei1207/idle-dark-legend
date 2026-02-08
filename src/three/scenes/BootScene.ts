@@ -177,6 +177,16 @@ export class BootScene implements BaseScene {
      * 로딩 화면 제거
      */
     private hideLoadingScreen(): void {
+        // HTML 로딩 스크린 숨기기
+        const htmlLoading = document.getElementById('loading');
+        if (htmlLoading) {
+            htmlLoading.classList.add('hidden');
+            setTimeout(() => {
+                htmlLoading.remove();
+            }, 500);
+        }
+
+        // BootScene 로딩 스크린 제거
         const loadingScreen = document.getElementById('loading-screen');
         if (loadingScreen && loadingScreen.parentNode) {
             loadingScreen.parentNode.removeChild(loadingScreen);
