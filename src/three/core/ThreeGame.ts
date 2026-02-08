@@ -17,6 +17,7 @@
 import * as THREE from 'three';
 import { SceneManager } from './SceneManager';
 import { AssetManager } from './AssetManager';
+import { InputSystem } from '../systems/InputSystem';
 import type { SceneId } from '../../types/game.types';
 
 /**
@@ -52,6 +53,9 @@ export class ThreeGame {
 
     /** 에셋 매니저 */
     public assetManager: AssetManager;
+
+    /** 입력 시스템 */
+    public input: InputSystem;
 
     /** Clock (델타타임 계산) */
     private clock: THREE.Clock;
@@ -114,6 +118,7 @@ export class ThreeGame {
         // 매니저 초기화
         this.assetManager = new AssetManager(this.renderer);
         this.sceneManager = new SceneManager(this);
+        this.input = new InputSystem();
 
         // 상태 초기화
         this.currentScene = null;
@@ -229,6 +234,9 @@ export class ThreeGame {
         if (!this.isRunning) return;
 
         const deltaTime = this.clock.getDelta();
+
+        // 입력 시스템 업데이트
+        this.input.update();
 
         // 현재 Scene 업데이트
         if (this.currentScene && this.currentScene.update) {
