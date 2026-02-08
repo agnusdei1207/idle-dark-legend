@@ -194,6 +194,7 @@ npm run preview
 | 문서 | 설명 |
 |------|------|
 | [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) | 개발 계획 |
+| [ASSET_STRATEGY.md](ASSET_STRATEGY.md) | 에셋 확보 전략 |
 | [README.md](README.md) | 프로젝트 소개 |
 | [CREDITS.md](CREDITS.md) | 에셋 크레딧 |
 

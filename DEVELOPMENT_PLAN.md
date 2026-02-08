@@ -312,11 +312,19 @@ public/assets/
 ## 📋 우선순위 작업 목록
 
 ### Phase 1: 에셋 통합 (즉시)
-1. [ ] Ninja Adventure Pack 다운로드
-2. [ ] 캐릭터 스프라이트 적용
-3. [ ] 몬스터 스프라이트 적용
+> **상세 전략은 [ASSET_STRATEGY.md](ASSET_STRATEGY.md) 참조**
+
+#### 추천 옵션
+- **Option A (유료)**: Unity Asset Store - 2D Isometric Fantasy Heroes ($10)
+- **Option B (무료)**: itch.io - [8x8] Isometric TRPG Asset Pack by Gustavo Vituri
+- **Option C (혼합)**: 유료 캐릭터 + 무료 배경 ($10~20)
+
+#### 작업 목록
+1. [ ] 에셋 전략 선택 및 다운로드
+2. [ ] 캐릭터 스프라이트 적용 (전사, 마법사, 도적, 성직자, 무도가)
+3. [ ] 몬스터 스프라이트 적용 (1서클 10종)
 4. [ ] 스킬 아이콘 적용
-5. [ ] 타일셋 적용
+5. [ ] 타일셋 적용 (아이소메트릭)
 
 ### Phase 2: 스킬 이펙트 (1일)
 1. [ ] 스킬 이펙트 데이터 정의
