@@ -1,12 +1,28 @@
+/**
+ * ============================================================
+ * 어둠의전설 클래식 - 게임 설정
+ * ============================================================
+ * Phaser 3 기반 게임 엔진 설정
+ *
+ * [그래픽]
+ * - WebGL 우선, Canvas 폴백
+ * - 픽셀 아트 렌더링 최적화
+ * - 1280x720 기본 해상도 (16:9)
+ *
+ * [입력]
+ * - 키보드 (WASD, 방향키)
+ * - 마우스
+ * - 멀티터치 지원 (최대 3포인트)
+ *
+ * [물리]
+ * - Arcade Physics (탑다운/아이소메트릭용)
+ * - 중력 비활성화
+ * ============================================================
+ */
+
 import Phaser from 'phaser';
 import { BootScene, MenuScene, GameScene, UIScene } from '../scenes';
 
-/**
- * Phaser 3 게임 설정
- * - 반응형 스케일링
- * - WebGL 우선, Canvas 폴백
- * - 모바일 터치 지원
- */
 export const gameConfig: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO, // WebGL 우선, 지원 안되면 Canvas
 

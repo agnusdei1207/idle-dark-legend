@@ -4,7 +4,7 @@
 > Phaser 3 + TypeScript + Vite
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/Version-0.3.0-blue.svg)](https://github.com/agnusdei1207/dark-legend-classic)
+[![Version](https://img.shields.io/badge/Version-0.3.1-blue.svg)](https://github.com/agnusdei1207/dark-legend-classic)
 
 ---
 
@@ -155,6 +155,12 @@ npm run preview
 - [x] 어둠의전설 몬스터 데이터 (1~5서클)
 - [x] 어둠의전설 맵 데이터 (노비스~호러케슬)
 - [x] 어둠의전설 스킬 데이터
+
+### v0.3.1 - 버그 수정 및 안정화 (✅ 완료)
+- [x] GameScene 초기화 버그 수정 (map_village → map_novis_village)
+- [x] NPC 데이터 누락 문제 해결 (14개 NPC 추가)
+- [x] UIScene 오류 처리 개선
+- [x] 게임 시작 플로우 안정화
 
 ### v0.4.0 - 에셋 통합 (🔄 진행중)
 - [ ] Ninja Adventure Pack 다운로드

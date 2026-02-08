@@ -84,7 +84,7 @@ export class MenuScene extends Phaser.Scene {
         });
 
         // 버전 정보
-        this.add.text(10, height - 30, 'v0.2.0 - 팬 프로젝트', {
+        this.add.text(10, height - 30, 'v0.3.1 - 팬 프로젝트', {
             fontFamily: 'monospace',
             fontSize: '12px',
             color: '#555'

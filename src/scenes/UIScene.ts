@@ -225,6 +225,11 @@ export class UIScene extends Phaser.Scene {
     private setupListeners(): void {
         const gameScene = this.scene.get('GameScene');
 
+        if (!gameScene) {
+            console.warn('UIScene: GameScene not found');
+            return;
+        }
+
         gameScene.events.on('expChanged', (exp: number, level: number) => {
             this.currentExp = exp;
             this.level = level;

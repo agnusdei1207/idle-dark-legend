@@ -82,82 +82,79 @@ export class GameScene extends Phaser.Scene {
         super({ key: 'GameScene' });
     }
 
+    /**
+     * 씬 초기화 - 맵 로딩
+     */
     init(data: { mapId?: string, position?: Position }): void {
-        // 맵 전환 시 데이터 받기
-        const mapId = data.mapId || 'map_village';
-        this.currentMap = getMapById(mapId) || getMapById('map_village')!;
+        const DEFAULT_MAP_ID = 'map_novis_village';
+        const mapId = data.mapId || DEFAULT_MAP_ID;
+
+        this.currentMap = getMapById(mapId) || getMapById(DEFAULT_MAP_ID)!;
+
+        if (!this.currentMap) {
+            console.error(`[GameScene] 맵을 찾을 수 없습니다: ${mapId}`);
+            throw new Error(`Map not found: ${mapId}`);
+        }
+
+        console.log(`[GameScene] 맵 로드됨: ${this.currentMap.nameKo} (${this.currentMap.id})`);
     }
 
+    /**
+     * 게임 씬 생성 및 초기화
+     */
     create(): void {
-        console.log('🚀 GameScene.create() 시작!');
-
         try {
             const { width } = this.cameras.main;
-            console.log('  [1] 카메라 가져옴. width:', width);
 
-            // 카메라 배경색 설정 (검정 화면 방지)
+            // 카메라 배경색 설정
             this.cameras.main.setBackgroundColor('#1a1a2e');
-            console.log('  [2] 배경색 설정됨');
 
             // 시스템 초기화
             this.questSystem = new QuestSystem();
             this.combatSystem = new CombatSystem();
             this.idleSystem = new IdleSystem();
-            console.log('  [3] 시스템 초기화됨');
 
-            // 월드 컨테이너
+            // 월드 컨테이너 생성
             this.worldContainer = this.add.container(width / 2, 150);
-            console.log('  [4] 월드 컨테이너 생성됨');
 
             // 맵 생성
             this.createMap();
-            console.log('  [5] 맵 생성됨');
 
-            // 엔티티 생성
+            // 엔티티 생성 (플레이어, NPC, 몬스터)
             this.createEntities();
-            console.log('  [6] 엔티티 생성됨');
 
             // UI 생성
             this.createUI();
-            console.log('  [7] UI 생성됨');
 
             // 입력 설정
             this.setupInput();
-            console.log('  [8] 입력 설정됨');
 
-            // 이벤트 리스너
+            // 이벤트 리스너 설정
             this.setupEvents();
-            console.log('  [9] 이벤트 리스너 설정됨');
 
             // 페이드 인
             this.cameras.main.fadeIn(500);
-            console.log('  [10] 페이드 인 시작');
 
             // UI 씬 시작
             this.scene.launch('UIScene', { player: this.player });
-            console.log('  [11] UIScene 시작됨');
 
             // 저장 데이터 로드
             this.loadGame();
-            console.log('  [12] 게임 로드됨');
 
             // 오프라인 보상 체크
             this.checkOfflineReward();
-            console.log('  [13] 오프라인 보상 체크됨');
 
-            // 디버그 정보
+            // 디버그 정보 (개발 모드에서만)
             if (import.meta.env.DEV) {
                 this.add.text(10, 10, `🎮 ${this.currentMap.nameKo}`, {
                     fontSize: '14px', color: '#0f0'
                 }).setScrollFactor(0).setDepth(2000);
             }
 
-            // 디버그: GameScene 생성 완료 로그
-            console.log('✅ GameScene.create() 완료!');
-            console.log('  - 카메라 크기:', this.cameras.main.width, 'x', this.cameras.main.height);
-            console.log('  - 월드 컨테이너:', this.worldContainer.list.length, '개 오브젝트');
+            console.log(`[GameScene] 초기화 완료 - ${this.currentMap.nameKo}`);
         } catch (error) {
-            console.error('❌ GameScene.create() 에러:', error);
+            console.error('[GameScene] 초기화 실패:', error);
+            throw error;
         }
     }
 
