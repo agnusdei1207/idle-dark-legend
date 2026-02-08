@@ -34,7 +34,7 @@ export type IsoDirection = 'nw' | 'ne' | 'se' | 'sw';
  * - 땅(Earth) ↔ 바람(Wind)  
  * - 빛(Light) ↔ 어둠(Dark)
  */
-export type ElementType = 'water' | 'fire' | 'earth' | 'wind' | 'light' | 'dark' | 'none';
+export type ElementType = 'water' | 'fire' | 'earth' | 'wind' | 'light' | 'dark' | 'ice' | 'none';
 
 /** 속성 상성표 */
 export const ELEMENT_WEAKNESS: Record<ElementType, ElementType> = {
@@ -44,6 +44,7 @@ export const ELEMENT_WEAKNESS: Record<ElementType, ElementType> = {
     wind: 'earth',
     light: 'dark',
     dark: 'light',
+    ice: 'fire',
     none: 'none'
 };
 
@@ -55,6 +56,7 @@ export const ELEMENT_STRENGTH: Record<ElementType, ElementType> = {
     wind: 'water',
     light: 'dark',
     dark: 'light',
+    ice: 'earth',
     none: 'none'
 };
 
@@ -184,7 +186,7 @@ export interface InventorySlot {
 // ============================================================
 
 /** 스킬 타입 */
-export type SkillType = 'active' | 'passive' | 'buff' | 'debuff';
+export type SkillType = 'active' | 'passive' | 'buff' | 'debuff' | 'heal';
 
 /** 스킬 대상 */
 export type SkillTarget = 'self' | 'single' | 'area' | 'allies' | 'all';

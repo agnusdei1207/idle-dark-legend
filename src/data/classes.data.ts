@@ -3,18 +3,19 @@
  * 직업(클래스) 시스템 데이터
  * ============================================================
  * 
- * 어둠의전설 스타일 4대 직업:
+ * 어둠의전설 스타일 5대 직업:
  * - 전사 (Warrior) - 근접, 고체력, 탱커
  * - 마법사 (Mage) - 원거리, 속성 마법, 딜러
- * - 궁수 (Archer) - 원거리, 민첩, 딜러
  * - 도적 (Rogue) - 근접, 크리티컬, 암살
+ * - 성직자 (Cleric) - 힐러, 버퍼
+ * - 무도가 (Monk) - 하이브리드, 전직 불가
  * ============================================================
  */
 
 import type { BaseStats } from '../types/game.types';
 
 /** 직업 타입 */
-export type ClassType = 'warrior' | 'mage' | 'archer' | 'rogue';
+export type ClassType = 'warrior' | 'mage' | 'rogue' | 'cleric' | 'monk';
 
 /** 직업 정의 */
 export interface ClassDefinition {
@@ -87,23 +88,10 @@ export const CLASSES: ClassDefinition[] = [
         baseStats: { str: 2, dex: 3, con: 4, int: 10, wis: 8, luk: 3 },
         statGrowth: { str: 0, dex: 1, con: 1, int: 4, wis: 3, luk: 0 },
         primaryStat: 'int',
-        skillTreeIds: ['tree_mage_fire', 'tree_mage_ice', 'tree_mage_lightning'],
+        skillTreeIds: ['tree_mage_fire', 'tree_mage_ice', 'tree_mage_dark'],
         weaponTypes: ['staff', 'wand', 'orb'],
         armorTypes: ['cloth', 'light'],
         spriteKey: 'class_mage'
-    },
-    {
-        id: 'archer',
-        name: 'Archer',
-        nameKo: '궁수',
-        description: '원거리 물리 공격과 함정에 특화된 직업.',
-        baseStats: { str: 4, dex: 10, con: 5, int: 3, wis: 3, luk: 5 },
-        statGrowth: { str: 1, dex: 4, con: 1, int: 0, wis: 1, luk: 2 },
-        primaryStat: 'dex',
-        skillTreeIds: ['tree_archer_marksmanship', 'tree_archer_traps'],
-        weaponTypes: ['bow', 'crossbow'],
-        armorTypes: ['light', 'medium'],
-        spriteKey: 'class_archer'
     },
     {
         id: 'rogue',
@@ -112,11 +100,37 @@ export const CLASSES: ClassDefinition[] = [
         description: '은신과 치명타에 특화된 암살자. 높은 순간 딜.',
         baseStats: { str: 5, dex: 8, con: 4, int: 3, wis: 2, luk: 8 },
         statGrowth: { str: 2, dex: 3, con: 1, int: 0, wis: 0, luk: 3 },
-        primaryStat: 'luk',
+        primaryStat: 'dex',
         skillTreeIds: ['tree_rogue_assassination', 'tree_rogue_shadow'],
         weaponTypes: ['dagger', 'claw', 'short_sword'],
         armorTypes: ['light'],
         spriteKey: 'class_rogue'
+    },
+    {
+        id: 'cleric',
+        name: 'Cleric',
+        nameKo: '성직자',
+        description: '신성한 힘으로 치유와 보조를 담당. 파티의 생명선.',
+        baseStats: { str: 3, dex: 3, con: 5, int: 6, wis: 10, luk: 3 },
+        statGrowth: { str: 0, dex: 1, con: 2, int: 2, wis: 4, luk: 0 },
+        primaryStat: 'wis',
+        skillTreeIds: ['tree_cleric_heal', 'tree_cleric_holy'],
+        weaponTypes: ['mace', 'staff', 'hammer'],
+        armorTypes: ['cloth', 'medium'],
+        spriteKey: 'class_cleric'
+    },
+    {
+        id: 'monk',
+        name: 'Monk',
+        nameKo: '무도가',
+        description: '맨손 격투에 특화된 하이브리드 직업. 전직 불가.',
+        baseStats: { str: 7, dex: 5, con: 7, int: 3, wis: 4, luk: 4 },
+        statGrowth: { str: 2, dex: 2, con: 3, int: 0, wis: 1, luk: 1 },
+        primaryStat: 'con',
+        skillTreeIds: ['tree_monk_fist', 'tree_monk_spirit'],
+        weaponTypes: ['fist', 'knuckle'],
+        armorTypes: ['light', 'cloth'],
+        spriteKey: 'class_monk'
     }
 ];
 
@@ -155,21 +169,6 @@ export const ADVANCED_CLASSES: AdvancedClass[] = [
         bonusStats: { int: 10, luk: 8 },
         unlockSkills: ['skill_dark_pact', 'skill_soul_drain']
     },
-    // 궁수 전직
-    {
-        id: 'sniper', name: 'Sniper', nameKo: '저격수',
-        baseClass: 'archer', requiredLevel: 30,
-        description: '치명적인 정밀 사격의 달인.',
-        bonusStats: { dex: 15, luk: 5 },
-        unlockSkills: ['skill_headshot', 'skill_eagle_eye']
-    },
-    {
-        id: 'ranger', name: 'Ranger', nameKo: '레인저',
-        baseClass: 'archer', requiredLevel: 30,
-        description: '자연과 교감하는 숲의 수호자.',
-        bonusStats: { dex: 10, wis: 8 },
-        unlockSkills: ['skill_nature_bond', 'skill_beast_companion']
-    },
     // 도적 전직
     {
         id: 'assassin', name: 'Assassin', nameKo: '암살자',
@@ -184,7 +183,23 @@ export const ADVANCED_CLASSES: AdvancedClass[] = [
         description: '그림자를 자유자재로 다루는 암흑의 무희.',
         bonusStats: { dex: 12, luk: 8 },
         unlockSkills: ['skill_shadow_step', 'skill_blade_dance']
+    },
+    // 성직자 전직
+    {
+        id: 'bishop', name: 'Bishop', nameKo: '비숍',
+        baseClass: 'cleric', requiredLevel: 30,
+        description: '신의 축복을 내리는 고위 성직자.',
+        bonusStats: { wis: 15, int: 5 },
+        unlockSkills: ['skill_resurrection', 'skill_mass_heal']
+    },
+    {
+        id: 'paladin', name: 'Paladin', nameKo: '팔라딘',
+        baseClass: 'cleric', requiredLevel: 30,
+        description: '검과 신앙을 함께 다루는 성기사.',
+        bonusStats: { str: 10, wis: 8, con: 5 },
+        unlockSkills: ['skill_holy_sword', 'skill_divine_aura']
     }
+    // 무도가는 전직 불가
 ];
 
 // ============================================================

@@ -606,8 +606,15 @@ export class GameScene extends Phaser.Scene {
         const data = SaveSystem.load();
         if (!data) return;
 
-        // TODO: 플레이어 데이터 적용
-        this.player.getInventory().addGold(data.gold - 100); // 기본 100골드 제외
+        // 인벤토리 데이터 로드 (저장 형식에 맞춤)
+        this.player.getInventory().loadSaveData({
+            slots: data.inventory || [],
+            equipment: data.equipment || {
+                weapon: null, shield: null, helmet: null, armor: null,
+                gloves: null, boots: null, necklace: null, ring1: null, ring2: null
+            },
+            gold: data.gold || 0
+        });
         this.playTime = data.playTime || 0;
     }
 
