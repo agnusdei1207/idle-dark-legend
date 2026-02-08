@@ -21,9 +21,10 @@ import { GAME_CONSTANTS } from '../config/game.config';
 import { Player } from '../entities/Player';
 import { Monster } from '../entities/Monster';
 import { NPC } from '../entities/NPC';
-import { QuestSystem, CombatSystem, SaveSystem, getDefaultSaveData } from '../systems';
-import { InventoryUI, DialogueUI, QuestUI, ShopUI, CharacterUI, SkillTreeUI, CircleUI } from '../ui';
+import { QuestSystem, CombatSystem, SaveSystem, getDefaultSaveData, IdleSystem, HUNTING_ZONES } from '../systems';
+import { InventoryUI, DialogueUI, QuestUI, ShopUI, CharacterUI, SkillTreeUI, CircleUI, HuntingZoneUI, OfflineRewardUI } from '../ui';
 import { getMapById, generateProceduralMap } from '../data/maps.data';
+import { getMonstersByCircle } from '../data/monsters.data';
 import type { Position, MapDefinition } from '../types/game.types';
 
 export class GameScene extends Phaser.Scene {
@@ -35,6 +36,13 @@ export class GameScene extends Phaser.Scene {
     // 시스템
     private questSystem!: QuestSystem;
     private combatSystem!: CombatSystem;
+    private idleSystem!: IdleSystem;
+
+    // Idle 사냥 상태
+    private isAutoHunting: boolean = false;
+    private currentHuntingZone: string | null = null;
+    private autoHuntTimer: number = 0;
+    private killCount: number = 0;
 
     // UI
     private inventoryUI!: InventoryUI;
@@ -44,6 +52,8 @@ export class GameScene extends Phaser.Scene {
     private characterUI!: CharacterUI;
     private skillTreeUI!: SkillTreeUI;
     private circleUI!: CircleUI;
+    private huntingZoneUI!: HuntingZoneUI;
+    private offlineRewardUI!: OfflineRewardUI;
 
     // 맵
     private currentMap!: MapDefinition;
@@ -75,11 +85,12 @@ export class GameScene extends Phaser.Scene {
     }
 
     create(): void {
-        const { width, height } = this.cameras.main;
+        const { width } = this.cameras.main;
 
         // 시스템 초기화
         this.questSystem = new QuestSystem();
         this.combatSystem = new CombatSystem();
+        this.idleSystem = new IdleSystem();
 
         // 월드 컨테이너
         this.worldContainer = this.add.container(width / 2, 150);
@@ -107,6 +118,9 @@ export class GameScene extends Phaser.Scene {
 
         // 저장 데이터 로드
         this.loadGame();
+
+        // 오프라인 보상 체크
+        this.checkOfflineReward();
 
         // 디버그 정보
         if (import.meta.env.DEV) {
@@ -194,6 +208,11 @@ export class GameScene extends Phaser.Scene {
         this.characterUI = new CharacterUI(this);
         this.skillTreeUI = new SkillTreeUI(this);
         this.circleUI = new CircleUI(this);
+
+        // Idle 시스템 UI
+        this.huntingZoneUI = new HuntingZoneUI(this, this.idleSystem);
+        this.huntingZoneUI.setPlayerLevel(this.player.getLevel());
+        this.offlineRewardUI = new OfflineRewardUI(this);
     }
 
     /**
@@ -214,6 +233,7 @@ export class GameScene extends Phaser.Scene {
             C: this.input.keyboard.addKey('C'),
             K: this.input.keyboard.addKey('K'),
             G: this.input.keyboard.addKey('G'),
+            H: this.input.keyboard.addKey('H'),
             SPACE: this.input.keyboard.addKey('SPACE'),
             ESC: this.input.keyboard.addKey('ESC'),
             ONE: this.input.keyboard.addKey('ONE'),
@@ -228,6 +248,7 @@ export class GameScene extends Phaser.Scene {
         this.keys.C.on('down', () => this.characterUI.toggle());
         this.keys.K.on('down', () => this.skillTreeUI.toggle());
         this.keys.G.on('down', () => this.circleUI.toggle());
+        this.keys.H.on('down', () => this.huntingZoneUI.toggle());
         this.keys.SPACE.on('down', () => this.interactWithNearestNPC());
         this.keys.ESC.on('down', () => this.handleEscape());
     }
@@ -473,5 +494,155 @@ export class GameScene extends Phaser.Scene {
                 this.player.moveToWorld(newX, newY, 100);
             }
         }
+    }
+
+    /**
+     * 오프라인 보상 체크
+     */
+    private checkOfflineReward(): void {
+        const lastLogout = SaveSystem.getLastLogoutTime();
+        if (!lastLogout) return;
+
+        const progress = this.idleSystem.calculateOfflineProgress(
+            lastLogout,
+            this.player.getLevel(),
+            this.currentHuntingZone || undefined
+        );
+
+        if (progress.effectiveSeconds >= 60) {
+            // 1분 이상 오프라인이면 보상 표시
+            this.offlineRewardUI.show(progress, () => {
+                // 보상 지급
+                this.player.gainExp(progress.earnedExp);
+                this.player.getInventory().addGold(progress.earnedGold);
+
+                for (const item of progress.earnedItems) {
+                    this.player.getInventory().addItem(item.itemId, item.quantity);
+                }
+
+                this.showAutoHuntMessage(`오프라인 보상 획득!\\n경험치: ${progress.earnedExp}\\n골드: ${progress.earnedGold}`);
+            });
+        }
+    }
+
+    /**
+     * 자동 사냥 시작
+     */
+    startAutoHunt(zoneId?: string): void {
+        // 추천 사냥터 또는 지정 사냥터
+        const zone = zoneId
+            ? HUNTING_ZONES.find(z => z.id === zoneId)
+            : this.idleSystem.getRecommendedZone(this.player.getLevel());
+
+        if (!zone) {
+            this.showAutoHuntMessage('적합한 사냥터가 없습니다.');
+            return;
+        }
+
+        this.isAutoHunting = true;
+        this.currentHuntingZone = zone.id;
+        this.killCount = 0;
+        this.idleSystem.selectZone(zone.id);
+        this.idleSystem.startHunting();
+
+        // 맵 이름 변경
+        this.currentMap.nameKo = zone.name;
+
+        // 기존 몬스터 제거
+        for (const monster of this.monsters) {
+            monster.destroy();
+        }
+        this.monsters = [];
+
+        // 새 몬스터 스폰
+        this.spawnHuntingZoneMonsters(zone.id);
+
+        this.showAutoHuntMessage(`🎯 ${zone.name}에서 자동 사냥을 시작합니다!`);
+
+        // 이벤트 발송
+        this.events.emit('autoHuntStart', zone);
+    }
+
+    /**
+     * 자동 사냥 중지
+     */
+    stopAutoHunt(): void {
+        if (!this.isAutoHunting) return;
+
+        this.isAutoHunting = false;
+        this.idleSystem.stopHunting();
+
+        const stats = this.idleSystem.getSessionStats();
+        this.showAutoHuntMessage(
+            `⏹️ 사냥 종료\n처치: ${stats.kills}마리\n경험치: ${stats.exp}\n골드: ${stats.gold}`
+        );
+
+        this.events.emit('autoHuntStop', stats);
+    }
+
+    /**
+     * 사냥터 몬스터 스폰
+     */
+    private spawnHuntingZoneMonsters(zoneId: string): void {
+        const zone = HUNTING_ZONES.find(z => z.id === zoneId);
+        if (!zone) return;
+
+        // 써클에 맞는 몬스터 가져오기
+        const monsters = getMonstersByCircle(zone.circle);
+        if (monsters.length === 0) return;
+
+        // 10마리 스폰
+        for (let i = 0; i < 10; i++) {
+            const monsterDef = monsters[Math.floor(Math.random() * monsters.length)];
+            const x = 3 + Math.random() * 4;
+            const y = 3 + Math.random() * 4;
+
+            try {
+                const monster = new Monster(this, monsterDef.id, x, y, 3000);
+                this.monsters.push(monster);
+            } catch (e) {
+                // 몬스터 생성 실패 시 무시
+            }
+        }
+    }
+
+    /**
+     * 자동 사냥 메시지 표시
+     */
+    private showAutoHuntMessage(message: string): void {
+        const text = this.add.text(
+            this.cameras.main.width / 2,
+            this.cameras.main.height / 2,
+            message,
+            {
+                fontSize: '18px',
+                color: '#ffffff',
+                backgroundColor: '#000000aa',
+                padding: { x: 20, y: 10 }
+            }
+        ).setOrigin(0.5).setDepth(3000);
+
+        this.tweens.add({
+            targets: text,
+            alpha: 0,
+            y: text.y - 50,
+            duration: 2000,
+            delay: 1000,
+            onComplete: () => text.destroy()
+        });
+    }
+
+    /**
+     * 사냥터 UI 토글
+     */
+    toggleHuntingZoneUI(): void {
+        this.huntingZoneUI.toggle();
+    }
+
+    /**
+     * 현재 자동 사냥 중인지
+     */
+    getIsAutoHunting(): boolean {
+        return this.isAutoHunting;
     }
 }

@@ -115,4 +115,19 @@ export class SaveSystem {
         const s = seconds % 60;
         return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     }
+
+    /** 마지막 로그아웃 시간 */
+    static getLastLogoutTime(): number | null {
+        const data = this.load();
+        return data?.savedAt || null;
+    }
+
+    /** 로그아웃 시간 저장 */
+    static saveLogoutTime(): void {
+        const data = this.load();
+        if (data) {
+            data.savedAt = Date.now();
+            this.save(data);
+        }
+    }
 }

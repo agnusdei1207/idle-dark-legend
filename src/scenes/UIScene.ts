@@ -213,7 +213,7 @@ export class UIScene extends Phaser.Scene {
     private createHelpText(): void {
         const { height } = this.cameras.main;
 
-        this.add.text(20, height - 30, '[I] 인벤토리  [Q] 퀘스트  [C] 캐릭터  [K] 스킬  [G] 서클  [Space] 대화  [ESC] 메뉴', {
+        this.add.text(20, height - 30, '[I] 인벤토리  [Q] 퀘스트  [C] 캐릭터  [K] 스킬  [G] 서클  [H] 사냥  [Space] 대화  [ESC] 메뉴', {
             fontSize: '11px',
             color: '#666666'
         });
