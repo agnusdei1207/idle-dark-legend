@@ -987,6 +987,31 @@ export class GameScene extends Phaser.Scene {
 
         const stats = { kills: this.killCount, exp: this.sessionExp, gold: this.sessionGold };
         this.events.emit('autoHuntStop', stats);
+
+        // 몬스터 모두 제거
+        for (const monster of this.monsters) {
+            monster.destroy();
+        }
+        this.monsters = [];
+
+        // NPC 다시 표시
+        for (const npc of this.npcs) {
+            npc.setVisible(true);
+        }
+
+        // 사냥터 관련 상태 초기화
+        this.currentHuntingZone = null;
+
+        // 마을 색상으로 복원
+        this.tileColors = { 0: 0x2d4a4b, 1: 0x4a7c6f, 2: 0x5a8c7f, 3: 0x6b8e7d, 4: 0x3d5a5b };
+        this.worldContainer.removeAll(true);
+        this.createMap();
+
+        // 플레이어 위치 초기화
+        this.player.moveToWorld(5, 5, 0);
+
+        // 맵 이름 복원
+        this.currentMap.nameKo = '시작 마을';
     }
 
     /**
