@@ -10,7 +10,6 @@ import * as THREE from 'three';
 import type { ThreeGame } from '../core/ThreeGame';
 import type { MonsterDefinition, Position } from '../../types/game.types';
 import { IsometricUtils } from '../utils/IsometricUtils';
-import { SpriteUtils } from '../utils/SpriteUtils';
 import { AnimationController } from '../systems/AnimationSystem';
 
 /**
@@ -96,59 +95,9 @@ export class Monster {
     }
 
     /**
-     * 몬스터 스프라이트 생성
+     * 몬스터 메시 생성 (박스 형태)
      */
-    private async createMonsterSprite(type: string, level: number): Promise<void> {
-        try {
-            let spritePath: string;
-            let frameCount: number;
-
-            // 몬스터 타입별 스프라이트 경로
-            switch (type) {
-                case 'slime':
-                    spritePath = '/assets/sprites/slime.png';
-                    frameCount = 2;
-                    break;
-                case 'wolf':
-                    spritePath = '/assets/sprites/wolf.png';
-                    frameCount = 3;
-                    break;
-                default:
-                    // 기본 슬라임 사용
-                    spritePath = '/assets/sprites/slime.png';
-                    frameCount = 2;
-            }
-
-            // 스프라이트 시트 로드
-            const texture = await SpriteUtils.loadTexture(spritePath);
-            const frames = SpriteUtils.extractFrames(texture, 64, 64, 1, frameCount);
-
-            // 애니메이션 스프라이트 생성
-            const animated = SpriteUtils.createAnimatedSprite(frames, 6);
-            this.mesh.add(animated.sprite);
-            animated.sprite.position.y = 32;
-
-            // 애니메이션 컨트롤러에 스프라이트 연결
-            this.animationController.sprite = animated.sprite;
-
-            // 레벨에 따른 크기 조정
-            const levelScale = 1 + (level - 1) * 0.1;
-            animated.sprite.scale.set(64 * levelScale, 64 * levelScale, 1);
-
-            console.log(`Monster: Loaded sprite for ${type}`);
-        } catch (error) {
-            console.error(`Monster: Failed to load sprite for ${type}, using fallback`, error);
-            this.createFallbackMesh(type, level);
-        }
-
-        // HP 바는 항상 생성
-        this.createHPBar();
-    }
-
-    /**
-     * 대체 메시 (스프라이트 로드 실패 시)
-     */
-    private createFallbackMesh(type: string, level: number): void {
+    private createMonsterMesh(type: string, level: number): void {
         // 몬스터 타입별 색상과 크기
         const monsterConfigs: Record<string, { color: number; scale: number; height: number }> = {
             slime: { color: 0x27ae60, scale: 0.8, height: 20 },
@@ -175,6 +124,30 @@ export class Monster {
         body.castShadow = true;
         this.mesh.add(body);
 
+        // 머리 (대부분의 몬스터)
+        if (type !== 'slime') {
+            const headGeometry = new THREE.BoxGeometry(20 * finalScale, 20 * finalScale, 20 * finalScale);
+            const headMaterial = new THREE.MeshLambertMaterial({ color: this.getHeadColor(type) });
+            const head = new THREE.Mesh(headGeometry, headMaterial);
+            head.position.y = config.height * finalScale;
+            head.castShadow = true;
+            this.mesh.add(head);
+        }
+
+        // 눈 (공격적인 몬스터)
+        if (['goblin', 'orc', 'demon', 'dragon'].includes(type)) {
+            const eyeGeometry = new THREE.BoxGeometry(4 * finalScale, 4 * finalScale, 2 * finalScale);
+            const eyeMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+
+            const leftEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+            leftEye.position.set(-5 * finalScale, config.height * finalScale - 5, 8 * finalScale);
+            this.mesh.add(leftEye);
+
+            const rightEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+            rightEye.position.set(5 * finalScale, config.height * finalScale - 5, 8 * finalScale);
+            this.mesh.add(rightEye);
+        }
+
         // 그림자
         const shadowGeometry = new THREE.CircleGeometry(16 * finalScale, 32);
         const shadowMaterial = new THREE.MeshBasicMaterial({
@@ -186,14 +159,9 @@ export class Monster {
         shadow.rotation.x = -Math.PI / 2;
         shadow.position.y = -4;
         this.mesh.add(shadow);
-    }
 
-    /**
-     * 몬스터 메시 생성 (호환성 유지)
-     */
-    private createMonsterMesh(type: string, level: number): void {
-        // 비동기로 스프라이트 로드
-        this.createMonsterSprite(type, level);
+        // HP 바
+        this.createHPBar();
     }
 
     /**

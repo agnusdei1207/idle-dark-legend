@@ -157,139 +157,93 @@ export class GameScene implements BaseScene {
         const mapWidth = 30;
         const mapHeight = 30;
 
-        try {
-            // 잔디 타일 텍스처 로드
-            const grassTexture = await SpriteUtils.loadTexture('/assets/sprites/grass.png');
+        // 배경 타일 (색상 기반)
+        const tileGrid = IsometricUtils.createTileGrid(mapWidth, mapHeight, {
+            width: 64,
+            height: 32
+        }, 0x27ae60);
 
-            // 타일 그리드 생성
-            for (let y = 0; y < mapHeight; y++) {
-                for (let x = 0; x < mapWidth; x++) {
-                    const pos = IsometricUtils.tileToWorld(x, y, 64, 32);
-                    const sprite = new THREE.Sprite(grassTexture.clone());
-                    sprite.position.set(pos.x, pos.y, 0);
-                    sprite.scale.set(64, 32, 1);
-                    this.mapGroup.add(sprite);
-                }
-            }
+        this.mapGroup.add(tileGrid);
 
-            // 벽 타일
-            await this.createWallTiles(mapWidth, mapHeight);
+        // 벽 타일 (테두리)
+        this.createWallTiles(mapWidth, mapHeight);
 
-            // 장식 추가
-            await this.addMapDecorations(mapWidth, mapHeight);
-        } catch (error) {
-            console.error('Failed to load map textures, using fallback', error);
-            // 대체로 색상 타일 사용
-            const tileGrid = IsometricUtils.createTileGrid(mapWidth, mapHeight, {
-                width: 64,
-                height: 32
-            }, 0x27ae60);
-            this.mapGroup.add(tileGrid);
-            this.createWallTiles(mapWidth, mapHeight);
-            this.addMapDecorations(mapWidth, mapHeight);
-        }
+        // 장식 추가
+        this.addMapDecorations(mapWidth, mapHeight);
     }
 
     /**
      * 벽 타일 생성
      */
-    private async createWallTiles(width: number, height: number): Promise<void> {
-        try {
-            // 흙 타일 텍스처 로드
-            const dirtTexture = await SpriteUtils.loadTexture('/assets/sprites/dirt.png');
+    private createWallTiles(width: number, height: number): void {
+        // 상단 벽
+        for (let x = 0; x < width; x++) {
+            const pos = IsometricUtils.tileToWorld(x, 0, 64, 32);
+            const wall = SpriteUtils.createColorSprite(0x8b4513, 64, 32);
+            wall.position.set(pos.x, pos.y, 1);
+            this.mapGroup.add(wall);
+        }
 
-            // 상단 벽
-            for (let x = 0; x < width; x++) {
-                const pos = IsometricUtils.tileToWorld(x, 0, 64, 32);
-                const sprite = new THREE.Sprite(dirtTexture.clone());
-                sprite.position.set(pos.x, pos.y, 1);
-                sprite.scale.set(64, 32, 1);
-                this.mapGroup.add(sprite);
-            }
+        // 하단 벽
+        for (let x = 0; x < width; x++) {
+            const pos = IsometricUtils.tileToWorld(x, height - 1, 64, 32);
+            const wall = SpriteUtils.createColorSprite(0x8b4513, 64, 32);
+            wall.position.set(pos.x, pos.y, 1);
+            this.mapGroup.add(wall);
+        }
 
-            // 하단 벽
-            for (let x = 0; x < width; x++) {
-                const pos = IsometricUtils.tileToWorld(x, height - 1, 64, 32);
-                const sprite = new THREE.Sprite(dirtTexture.clone());
-                sprite.position.set(pos.x, pos.y, 1);
-                sprite.scale.set(64, 32, 1);
-                this.mapGroup.add(sprite);
-            }
+        // 좌단 벽
+        for (let y = 0; y < height; y++) {
+            const pos = IsometricUtils.tileToWorld(0, y, 64, 32);
+            const wall = SpriteUtils.createColorSprite(0x8b4513, 64, 32);
+            wall.position.set(pos.x, pos.y, 1);
+            this.mapGroup.add(wall);
+        }
 
-            // 좌단 벽
-            for (let y = 0; y < height; y++) {
-                const pos = IsometricUtils.tileToWorld(0, y, 64, 32);
-                const sprite = new THREE.Sprite(dirtTexture.clone());
-                sprite.position.set(pos.x, pos.y, 1);
-                sprite.scale.set(64, 32, 1);
-                this.mapGroup.add(sprite);
-            }
-
-            // 우단 벽
-            for (let y = 0; y < height; y++) {
-                const pos = IsometricUtils.tileToWorld(width - 1, y, 64, 32);
-                const sprite = new THREE.Sprite(dirtTexture.clone());
-                sprite.position.set(pos.x, pos.y, 1);
-                sprite.scale.set(64, 32, 1);
-                this.mapGroup.add(sprite);
-            }
-        } catch (error) {
-            console.error('Failed to load wall tiles', error);
-            // 대체로 색상 사용
-            for (let x = 0; x < width; x++) {
-                const pos = IsometricUtils.tileToWorld(x, 0, 64, 32);
-                const wall = SpriteUtils.createColorSprite(0x8b4513, 64, 32);
-                wall.position.set(pos.x, pos.y, 1);
-                this.mapGroup.add(wall);
-            }
-            // ... 나머지 벽도 유사하게
+        // 우단 벽
+        for (let y = 0; y < height; y++) {
+            const pos = IsometricUtils.tileToWorld(width - 1, y, 64, 32);
+            const wall = SpriteUtils.createColorSprite(0x8b4513, 64, 32);
+            wall.position.set(pos.x, pos.y, 1);
+            this.mapGroup.add(wall);
         }
     }
 
     /**
      * 맵 장식 추가
      */
-    private async addMapDecorations(width: number, height: number): Promise<void> {
-        try {
-            // 나무와 바위 텍스처 로드
-            const treeTexture = await SpriteUtils.loadTexture('/assets/sprites/tree.png');
-            const rockTexture = await SpriteUtils.loadTexture('/assets/sprites/rock.png');
+    private addMapDecorations(width: number, height: number): void {
+        // 무작위 나무/바위
+        for (let i = 0; i < 20; i++) {
+            const x = Math.floor(Math.random() * (width - 2)) + 1;
+            const y = Math.floor(Math.random() * (height - 2)) + 1;
 
-            // 무작위 나무/바위 배치
-            for (let i = 0; i < 20; i++) {
-                const x = Math.floor(Math.random() * (width - 2)) + 1;
-                const y = Math.floor(Math.random() * (height - 2)) + 1;
+            // 타일 위에만 배치 (벽 제외)
+            if (x > 0 && x < width - 1 && y > 0 && y < height - 1) {
+                const pos = IsometricUtils.tileToWorld(x, y, 64, 32);
+                const isTree = Math.random() > 0.5;
 
-                if (x > 0 && x < width - 1 && y > 0 && y < height - 1) {
-                    const pos = IsometricUtils.tileToWorld(x, y, 64, 32);
-                    const isTree = Math.random() > 0.3;
+                if (isTree) {
+                    // 나무 (3D 박스로)
+                    const trunkGeometry = new THREE.BoxGeometry(8, 20, 8);
+                    const trunkMaterial = new THREE.MeshLambertMaterial({ color: 0x8B4513 });
+                    const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
+                    trunk.position.set(pos.x, pos.y + 10, pos.x + pos.y);
+                    this.mapGroup.add(trunk);
 
-                    if (isTree) {
-                        const sprite = new THREE.Sprite(treeTexture.clone());
-                        sprite.position.set(pos.x, pos.y + 48, pos.x + pos.y);
-                        sprite.scale.set(64, 96, 1);
-                        this.mapGroup.add(sprite);
-                    } else {
-                        const sprite = new THREE.Sprite(rockTexture.clone());
-                        sprite.position.set(pos.x, pos.y + 24, pos.x + pos.y);
-                        sprite.scale.set(64, 48, 1);
-                        this.mapGroup.add(sprite);
-                    }
-                }
-            }
-        } catch (error) {
-            console.error('Failed to load decorations', error);
-            // 대체로 3D 박스 사용
-            for (let i = 0; i < 10; i++) {
-                const x = Math.floor(Math.random() * (width - 2)) + 1;
-                const y = Math.floor(Math.random() * (height - 2)) + 1;
-                if (x > 0 && x < width - 1 && y > 0 && y < height - 1) {
-                    const pos = IsometricUtils.tileToWorld(x, y, 64, 32);
-                    const treeGeometry = new THREE.BoxGeometry(24, 24, 24);
-                    const treeMaterial = new THREE.MeshLambertMaterial({ color: 0x27ae60 });
-                    const tree = new THREE.Mesh(treeGeometry, treeMaterial);
-                    tree.position.set(pos.x, pos.y + 32, pos.x + pos.y);
-                    this.mapGroup.add(tree);
+                    // 나뭇잎
+                    const leavesGeometry = new THREE.BoxGeometry(24, 24, 24);
+                    const leavesMaterial = new THREE.MeshLambertMaterial({ color: 0x27ae60 });
+                    const leaves = new THREE.Mesh(leavesGeometry, leavesMaterial);
+                    leaves.position.set(pos.x, pos.y + 32, pos.x + pos.y);
+                    this.mapGroup.add(leaves);
+                } else {
+                    // 바위
+                    const rockGeometry = new THREE.BoxGeometry(16, 12, 16);
+                    const rockMaterial = new THREE.MeshLambertMaterial({ color: 0x7f8c8d });
+                    const rock = new THREE.Mesh(rockGeometry, rockMaterial);
+                    rock.position.set(pos.x, pos.y + 6, pos.x + pos.y);
+                    this.mapGroup.add(rock);
                 }
             }
         }
