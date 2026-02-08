@@ -484,13 +484,17 @@ export class GameScene implements BaseScene {
         // WASD 이동
         const wasdDir = input.getWASDDirection();
         if (wasdDir.x !== 0 || wasdDir.y !== 0) {
-            this.player.move(deltaTime, wasdDir);
+            // 화면 방향을 아이소메트릭 방향으로 변환
+            const isoDir = IsometricUtils.screenDirectionToIsometric(wasdDir);
+            this.player.move(deltaTime, isoDir);
         }
 
         // 방향키 이동
         const arrowDir = input.getArrowDirection();
         if (arrowDir.x !== 0 || arrowDir.y !== 0) {
-            this.player.move(deltaTime, arrowDir);
+            // 화면 방향을 아이소메트릭 방향으로 변환
+            const isoDir = IsometricUtils.screenDirectionToIsometric(arrowDir);
+            this.player.move(deltaTime, isoDir);
         }
     }
 
@@ -874,7 +878,20 @@ export class GameScene implements BaseScene {
      * Z-index 정렬 (엔티티 깊이 정렬)
      */
     private sortEntitiesByDepth(): void {
-        // 모든 엔티티를 Z-index (x + y) 기준으로 정렬
+        // 모든 엔티티의 Z-depth 업데이트
+        if (this.player) {
+            IsometricUtils.updateObjectDepth(this.player.mesh);
+        }
+
+        this.monsters.forEach((monster) => {
+            IsometricUtils.updateObjectDepth(monster.mesh);
+        });
+
+        this.npcs.forEach((npc) => {
+            IsometricUtils.updateObjectDepth(npc.mesh);
+        });
+
+        // 정렬을 위한 배열 생성
         const entities: Array<{ mesh: THREE.Group; z: number }> = [];
 
         if (this.player) {
@@ -889,7 +906,7 @@ export class GameScene implements BaseScene {
             entities.push({ mesh: npc.mesh, z: npc.mesh.position.z });
         });
 
-        // Z-index 오름차순 정렬
+        // Z-index 오름차순 정렬 (작을수록 뒤에 렌더링)
         entities.sort((a, b) => a.z - b.z);
 
         // 정렬된 순서대로 entityGroup에 재배치

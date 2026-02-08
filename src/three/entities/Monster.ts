@@ -83,8 +83,14 @@ export class Monster {
         this.mesh.position.set(pos.x, pos.y, 0);
         this.spawnPosition = new THREE.Vector3(pos.x, pos.y, 0);
 
-        // Z-index 정렬
-        this.mesh.position.z = pos.x + pos.y;
+        // Z-index 정렬 - 모든 자식 메시도 업데이트
+        const depth = pos.x + pos.y;
+        this.mesh.position.z = depth;
+        this.mesh.children.forEach((child) => {
+            if (child instanceof THREE.Mesh) {
+                child.position.z = depth;
+            }
+        });
 
         // 애니메이션 컨트롤러 (메시 기반)
         this.animationController = new AnimationController(this.mesh);
@@ -278,8 +284,14 @@ export class Monster {
         // 애니메이션 업데이트
         this.animationController.update(deltaTime);
 
-        // Z-index 업데이트
-        this.mesh.position.z = this.mesh.position.x + this.mesh.position.y;
+        // Z-index 업데이트 - 모든 자식 메시도 업데이트
+        const depth = this.mesh.position.x + this.mesh.position.y;
+        this.mesh.position.z = depth;
+        this.mesh.children.forEach((child) => {
+            if (child instanceof THREE.Mesh) {
+                child.position.z = depth;
+            }
+        });
 
         // HP 바 업데이트 (항상 카메라를 바라봄)
         this.updateHPBar();

@@ -9,13 +9,6 @@
 import * as THREE from 'three';
 
 /**
- * 아이소메트릭 변환 상수
- */
-const ISO_ANGLE = Math.PI / 6; // 30도
-const COS_30 = Math.cos(ISO_ANGLE);
-const SIN_30 = Math.sin(ISO_ANGLE);
-
-/**
  * 2D 타일 좌표
  */
 export interface TileCoord {
@@ -42,7 +35,8 @@ export class IsometricUtils {
     public static tileToWorld(tileX: number, tileY: number, tileWidth: number = 64, tileHeight: number = 32): WorldCoord {
         const worldX = (tileX - tileY) * (tileWidth / 2);
         const worldY = (tileX + tileY) * (tileHeight / 2);
-        return { x: worldX, y: worldY, z: 0 };
+        const worldZ = worldX + worldY; // Z-index용
+        return { x: worldX, y: worldY, z: worldZ };
     }
 
     /**
@@ -55,47 +49,13 @@ export class IsometricUtils {
     }
 
     /**
-     * 화면 좌표 → 월드 좌표
-     */
-    public static screenToWorld(
-        screenX: number,
-        screenY: number,
-        camera: THREE.Camera,
-        canvasWidth: number,
-        canvasHeight: number
-    ): { x: number; y: number } {
-        // NDC (Normalized Device Coordinates)로 변환
-        const ndcX = (screenX / canvasWidth) * 2 - 1;
-        const ndcY = -(screenY / canvasHeight) * 2 + 1;
-
-        // Orthographic camera인 경우
-        if (camera instanceof THREE.OrthographicCamera) {
-            const worldX = ndcX * camera.right * camera.zoom;
-            const worldY = ndcY * camera.top * camera.zoom;
-            return { x: worldX, y: worldY };
-        }
-
-        // Perspective camera인 경우 (raycasting)
-        // TODO: raycasting 구현 필요
-        return { x: ndcX, y: ndcY };
-    }
-
-    /**
-     * 아이소메트릭 행렬 생성
-     */
-    public static createIsometricMatrix(): THREE.Matrix4 {
-        const matrix = new THREE.Matrix4();
-        matrix.makeRotationX(ISO_ANGLE);
-        return matrix;
-    }
-
-    /**
      * 아이소메트릭 Orthographic Camera 생성
+     * 2D 평면 위에서 아이소메트릭 뷰를 위한 카메라
      */
     public static createIsometricCamera(
         viewWidth: number,
         viewHeight: number,
-        near: number = 0.1,
+        near: number = -1000,
         far: number = 1000
     ): THREE.OrthographicCamera {
         const aspectRatio = viewWidth / viewHeight;
@@ -110,23 +70,34 @@ export class IsometricUtils {
             far
         );
 
-        // 아이소메트릭 뷰 각도
-        camera.position.set(0, 0, 100);
+        // 2D 아이소메트릭 뷰: 카메라는 Z축 위에서 내려다보는 형태
+        // 회전 없이 직접 위에서 바라봄
+        camera.position.set(0, 0, 1);
+        camera.up.set(0, 1, 0);
         camera.lookAt(0, 0, 0);
-
-        // X축 회전으로 아이소메트릭 뷰
-        camera.rotateX(ISO_ANGLE);
 
         return camera;
     }
 
     /**
      * Z-index 정렬 (깊이 정렬)
+     * 엔티티의 Z-position을 업데이트하여 올바른 렌더링 순서 보장
      */
-    public static sortDepth(objects: THREE.Object3D[]): void {
-        objects.sort((a, b) => {
-            return (a.position.y + a.position.x) - (b.position.y + b.position.x);
-        });
+    public static updateObjectDepth(object: THREE.Object3D): void {
+        // 아이소메트릭에서는 y + x 값이 클수록 더 앞에 있음
+        // Three.js에서는 Z-position이 렌더링 순서를 결정 (음수일수록 뒤, 양수일수록 앞)
+        const depth = object.position.y + object.position.x;
+        object.position.z = depth;
+
+        // 그룹의 모든 자식도 같은 Z-position을 가지도록
+        if (object instanceof THREE.Group) {
+            object.children.forEach((child) => {
+                if (child instanceof THREE.Mesh) {
+                    child.position.z = depth;
+                    child.renderOrder = Math.floor(depth);
+                }
+            });
+        }
     }
 
     /**
@@ -144,7 +115,6 @@ export class IsometricUtils {
         });
 
         const mesh = new THREE.Mesh(geometry, material);
-        mesh.rotation.x = -Math.PI / 2; // 평평하게
 
         return mesh;
     }
@@ -164,7 +134,7 @@ export class IsometricUtils {
             for (let x = 0; x < width; x++) {
                 const pos = this.tileToWorld(x, y, tileSize.width, tileSize.height);
                 const tile = this.createTileMesh(tileSize.width, tileSize.height, color);
-                tile.position.set(pos.x, pos.y, 0);
+                tile.position.set(pos.x, pos.y, pos.z);
 
                 // 그리드 라인 효과를 위해 색상 번갈아가며
                 if ((x + y) % 2 === 0) {
@@ -179,18 +149,41 @@ export class IsometricUtils {
     }
 
     /**
+     * 화면 방향을 아이소메트릭 방향으로 변환
+     * 화면에서의 입력 방향(위, 아래, 좌, 우)을 아이소메트릭 타일 방향으로 변환
+     */
+    public static screenDirectionToIsometric(
+        screenDir: { x: number; y: number }
+    ): { x: number; y: number } {
+        // 화면 방향을 아이소메트릭 방향으로 변환
+        // 위(+y) → 북동쪽 (타일 x+1, y+0)
+        // 아래(-y) → 남서쪽 (타일 x-1, y-0)
+        // 오른쪽(+x) → 남동쪽 (타일 x+0, y+1)
+        // 왼쪽(-x) → 북서쪽 (타일 x-0, y-1)
+
+        // 45도 회전 행렬 적용
+        const cos45 = Math.cos(Math.PI / 4);
+        const sin45 = Math.sin(Math.PI / 4);
+
+        return {
+            x: screenDir.x * cos45 - screenDir.y * sin45,
+            y: screenDir.x * sin45 + screenDir.y * cos45
+        };
+    }
+
+    /**
      * 아이소메트릭 방향 벡터 (8방향)
      */
     public static getDirectionVector(direction: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7): THREE.Vector2 {
         const vectors: THREE.Vector2[] = [
-            new THREE.Vector2(0, 1),    // N (위)
-            new THREE.Vector2(1, 1),    // NE
-            new THREE.Vector2(1, 0),    // E (오른쪽)
-            new THREE.Vector2(1, -1),   // SE
-            new THREE.Vector2(0, -1),   // S (아래)
-            new THREE.Vector2(-1, -1),  // SW
-            new THREE.Vector2(-1, 0),   // W (왼쪽)
-            new THREE.Vector2(-1, 1),   // NW
+            new THREE.Vector2(0, 1),     // N (위)
+            new THREE.Vector2(1, 1),     // NE
+            new THREE.Vector2(1, 0),     // E (오른쪽)
+            new THREE.Vector2(1, -1),    // SE
+            new THREE.Vector2(0, -1),    // S (아래)
+            new THREE.Vector2(-1, -1),   // SW
+            new THREE.Vector2(-1, 0),    // W (왼쪽)
+            new THREE.Vector2(-1, 1),    // NW
         ];
 
         return vectors[direction] || vectors[0];
@@ -209,5 +202,22 @@ export class IsometricUtils {
 
         // 아이소메트릭 보정
         return (octant + 6) % 8;
+    }
+
+    /**
+     * 색상 스프라이트 생성 (간단한 박스)
+     */
+    public static createColorSprite(
+        color: number,
+        width: number,
+        height: number
+    ): THREE.Mesh {
+        const geometry = new THREE.PlaneGeometry(width, height);
+        const material = new THREE.MeshBasicMaterial({
+            color,
+            side: THREE.DoubleSide
+        });
+        const sprite = new THREE.Mesh(geometry, material);
+        return sprite;
     }
 }

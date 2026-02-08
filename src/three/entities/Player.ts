@@ -165,8 +165,14 @@ export class Player {
         this.mesh.position.x += direction.x * this.moveSpeed * deltaTime;
         this.mesh.position.y += direction.y * this.moveSpeed * deltaTime;
 
-        // Z-index 정렬 (아이소메트릭)
-        this.mesh.position.z = this.mesh.position.x + this.mesh.position.y;
+        // Z-index 정렬 (아이소메트릭) - 모든 자식 메시도 업데이트
+        const depth = this.mesh.position.x + this.mesh.position.y;
+        this.mesh.position.z = depth;
+        this.mesh.children.forEach((child) => {
+            if (child instanceof THREE.Mesh) {
+                child.position.z = depth;
+            }
+        });
     }
 
     /**
@@ -204,8 +210,14 @@ export class Player {
                 this.mesh.position.y += (dy / distance) * speed;
             }
 
-            // Z-index 업데이트
-            this.mesh.position.z = this.mesh.position.x + this.mesh.position.y;
+            // Z-index 업데이트 - 모든 자식 메시도 업데이트
+            const depth = this.mesh.position.x + this.mesh.position.y;
+            this.mesh.position.z = depth;
+            this.mesh.children.forEach((child) => {
+                if (child instanceof THREE.Mesh) {
+                    child.position.z = depth;
+                }
+            });
         }
 
         // 애니메이션 업데이트
