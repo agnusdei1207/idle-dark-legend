@@ -11,12 +11,17 @@ import type { ThreeGame } from '../core/ThreeGame';
 import type { BaseScene } from '../core/SceneManager';
 import { IsometricUtils } from '../utils/IsometricUtils';
 import { SpriteUtils } from '../utils/SpriteUtils';
-import type { MapDefinition } from '../../types/game.types';
+import type { MapDefinition, Position } from '../../types/game.types';
 import { Player } from '../entities/Player';
 import { Monster } from '../entities/Monster';
 import { NPC } from '../entities/NPC';
 import { getMonsterById } from '../../data/monsters.data';
 import { DialogueSystem } from '../systems/DialogueSystem';
+import { OfflineRewardSystem } from '../systems/OfflineRewardSystem';
+import { ParticleSystem } from '../systems/ObjectPool';
+import { InventoryUI } from '../ui/InventoryUI';
+import { SkillsUI } from '../ui/SkillsUI';
+import { QuestsUI } from '../ui/QuestsUI';
 
 /**
  * GameScene 클래스
@@ -35,6 +40,11 @@ export class GameScene implements BaseScene {
     private currentMap: MapDefinition | null = null;
     private dialogueSystem: DialogueSystem;
     private activeNPC: NPC | null = null;
+    private offlineRewardSystem: OfflineRewardSystem;
+    private particleSystem: ParticleSystem;
+    private inventoryUI: InventoryUI;
+    private skillsUI: SkillsUI;
+    private questsUI: QuestsUI;
 
     constructor(game: ThreeGame, data?: { mapId?: string }) {
         this.game = game;
@@ -59,6 +69,17 @@ export class GameScene implements BaseScene {
 
         // 대화 시스템
         this.dialogueSystem = new DialogueSystem();
+
+        // 오프라인 보상 시스템
+        this.offlineRewardSystem = new OfflineRewardSystem();
+
+        // 파티클 시스템
+        this.particleSystem = ParticleSystem.getInstance();
+
+        // UI 시스템 초기화
+        this.inventoryUI = new InventoryUI();
+        this.skillsUI = new SkillsUI([], new Map());
+        this.questsUI = new QuestsUI();
 
         // 맵 데이터 설정 (임시)
         this.currentMap = {
@@ -98,6 +119,9 @@ export class GameScene implements BaseScene {
 
         // UI 표시
         this.showGameUI();
+
+        // 오프라인 보상 체크
+        this.checkOfflineReward();
 
         // 조명 설정
         this.setupLighting();
@@ -388,15 +412,20 @@ export class GameScene implements BaseScene {
                 <div class="player-gold" style="font-size: 14px; color: #f1c40f; margin-top: 5px;">Gold: 0</div>
             </div>
 
-            <!-- ESC 안내 -->
-            <div id="esc-hint" style="
+            <!-- 단축키 안내 -->
+            <div id="controls-hint" style="
                 position: absolute;
                 top: 20px;
                 right: 20px;
                 color: #7f8c8d;
-                font-size: 14px;
+                font-size: 12px;
                 z-index: 1000;
-            ">ESC: 메뉴 | SPACE: 공격</div>
+                text-align: right;
+                line-height: 1.6;
+            ">
+                <div>ESC: 메뉴 | SPACE: 공격/대화</div>
+                <div>I: 인벤토리 | K: 스킬 | J: 퀘스트</div>
+            </div>
         `;
 
         container.insertAdjacentHTML('beforeend', hudHtml);
@@ -500,7 +529,8 @@ export class GameScene implements BaseScene {
 
         // 공격
         if (nearestMonster) {
-            const damage = this.player.stats?.str || 10; // 기본 공격력
+            const playerStats = this.player.getStats();
+            const damage = playerStats?.str || 10; // 기본 공격력
             nearestMonster.takeDamage(damage, this.player);
             this.showDamageNumber(nearestMonster.mesh.position, damage, 'monster');
             this.player.playAttackAnimation();
@@ -531,44 +561,11 @@ export class GameScene implements BaseScene {
         const container = document.getElementById('game-container');
         if (!container) return;
 
-        const damageId = `damage-${Date.now()}-${Math.random()}`;
-        const color = target === 'player' ? '#e74c3c' : '#f39c12';
+        // 화면 좌표로 변환 (간단히 중앙 기준)
+        const x = container.clientWidth / 2;
+        const y = container.clientHeight / 2;
 
-        const damageHtml = `
-            <div id="${damageId}" style="
-                position: absolute;
-                left: 50%;
-                top: 50%;
-                transform: translate(-50%, -50%);
-                color: ${color};
-                font-size: 24px;
-                font-weight: bold;
-                text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-                pointer-events: none;
-                z-index: 3000;
-                animation: damageFloat 1s ease-out forwards;
-            ">-${damage}</div>
-            <style>
-                @keyframes damageFloat {
-                    0% {
-                        opacity: 1;
-                        transform: translate(-50%, -50%) translateY(0) scale(1);
-                    }
-                    100% {
-                        opacity: 0;
-                        transform: translate(-50%, -100%) translateY(-50px) scale(1.2);
-                    }
-                }
-            </style>
-        `;
-
-        container.insertAdjacentHTML('beforeend', damageHtml);
-
-        // 1초 후 제거
-        setTimeout(() => {
-            const el = document.getElementById(damageId);
-            if (el) el.remove();
-        }, 1000);
+        this.particleSystem.spawnDamageText(damage, x, y, target === 'player');
     }
 
     /**
@@ -578,41 +575,10 @@ export class GameScene implements BaseScene {
         const container = document.getElementById('game-container');
         if (!container) return;
 
-        const expId = `exp-${Date.now()}`;
-        const expHtml = `
-            <div id="${expId}" style="
-                position: absolute;
-                top: 30%;
-                left: 50%;
-                transform: translateX(-50%);
-                color: #f39c12;
-                font-size: 18px;
-                font-weight: bold;
-                text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-                pointer-events: none;
-                z-index: 3000;
-                animation: expFloat 2s ease-out forwards;
-            ">+${exp} EXP</div>
-            <style>
-                @keyframes expFloat {
-                    0% {
-                        opacity: 1;
-                        transform: translateX(-50%) translateY(0);
-                    }
-                    100% {
-                        opacity: 0;
-                        transform: translateX(-50%) translateY(-80px);
-                    }
-                }
-            </style>
-        `;
+        const x = container.clientWidth / 2;
+        const y = container.clientHeight * 0.3;
 
-        container.insertAdjacentHTML('beforeend', expHtml);
-
-        setTimeout(() => {
-            const el = document.getElementById(expId);
-            if (el) el.remove();
-        }, 2000);
+        this.particleSystem.spawnExpText(exp, x, y);
     }
 
     /**
@@ -622,41 +588,10 @@ export class GameScene implements BaseScene {
         const container = document.getElementById('game-container');
         if (!container) return;
 
-        const goldId = `gold-${Date.now()}`;
-        const goldHtml = `
-            <div id="${goldId}" style="
-                position: absolute;
-                top: 35%;
-                left: 50%;
-                transform: translateX(-50%);
-                color: #f1c40f;
-                font-size: 18px;
-                font-weight: bold;
-                text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-                pointer-events: none;
-                z-index: 3000;
-                animation: goldFloat 2s ease-out forwards;
-            ">+${gold} G</div>
-            <style>
-                @keyframes goldFloat {
-                    0% {
-                        opacity: 1;
-                        transform: translateX(-50%) translateY(0);
-                    }
-                    100% {
-                        opacity: 0;
-                        transform: translateX(-50%) translateY(-60px);
-                    }
-                }
-            </style>
-        `;
+        const x = container.clientWidth / 2;
+        const y = container.clientHeight * 0.35;
 
-        container.insertAdjacentHTML('beforeend', goldHtml);
-
-        setTimeout(() => {
-            const el = document.getElementById(goldId);
-            if (el) el.remove();
-        }, 2000);
+        this.particleSystem.spawnGoldText(gold, x, y);
     }
 
     /**
@@ -730,6 +665,39 @@ export class GameScene implements BaseScene {
         const hint = document.getElementById('npc-interaction-hint');
         if (hint) {
             hint.style.display = 'none';
+        }
+    }
+
+    /**
+     * 오프라인 보상 체크
+     */
+    private checkOfflineReward(): void {
+        const reward = OfflineRewardSystem.calculateOfflineReward();
+        if (reward) {
+            this.offlineRewardSystem.showOfflineReward(reward, {
+                onClaim: (reward) => {
+                    if (!this.player) return;
+
+                    // 경험치 지급
+                    this.player.gainExp(reward.exp);
+
+                    // 골드 지급
+                    this.player.addGold(reward.gold);
+
+                    console.log(`Offline reward claimed: ${reward.exp} EXP, ${reward.gold} Gold`);
+
+                    // 효과 표시
+                    this.showExpNotification(reward.exp);
+                    this.showGoldNotification(reward.gold);
+                },
+                onClose: () => {
+                    // 마지막 플레이 시간 저장
+                    OfflineRewardSystem.saveLastPlayTime();
+                }
+            });
+        } else {
+            // 보상이 없더라도 마지막 플레이 시간은 저장
+            OfflineRewardSystem.saveLastPlayTime();
         }
     }
 
@@ -913,6 +881,9 @@ export class GameScene implements BaseScene {
         // HUD 업데이트
         this.updateHUD();
 
+        // 파티클 시스템 업데이트
+        this.particleSystem.update(deltaTime);
+
         // ESC 키로 메뉴
         if (this.game.input.justPressed('Escape')) {
             // TODO: 일시정지 또는 메뉴 표시
@@ -921,10 +892,40 @@ export class GameScene implements BaseScene {
             if (this.dialogueSystem.isDialogueActive()) {
                 this.dialogueSystem.end();
             }
+            // 열린 UI 닫기
+            this.inventoryUI.close();
+            this.skillsUI.close();
+            this.questsUI.close();
+        }
+
+        // I 키로 인벤토리 토글
+        if (this.game.input.justPressed('KeyI')) {
+            if (!this.dialogueSystem.isDialogueActive()) {
+                this.inventoryUI.toggle();
+            }
+        }
+
+        // K 키로 스킬 창 토글
+        if (this.game.input.justPressed('KeyK')) {
+            if (!this.dialogueSystem.isDialogueActive()) {
+                this.skillsUI.toggle();
+            }
+        }
+
+        // J 키로 퀘스트 창 토글
+        if (this.game.input.justPressed('KeyJ')) {
+            if (!this.dialogueSystem.isDialogueActive()) {
+                this.questsUI.toggle();
+            }
         }
 
         // SPACE 키로 공격 또는 NPC 대화
         if (this.game.input.justPressed('Space')) {
+            // UI가 열려 있으면 동작하지 않음
+            if (this.inventoryUI['isOpen'] || this.skillsUI['isOpen'] || this.questsUI['isOpen']) {
+                return;
+            }
+
             // 대화 중이면 다음 대화
             if (this.dialogueSystem.isDialogueActive()) {
                 // 대화 시스템이 처리
@@ -956,6 +957,9 @@ export class GameScene implements BaseScene {
      * 정리
      */
     public shutdown(): void {
+        // 마지막 플레이 시간 저장
+        OfflineRewardSystem.saveLastPlayTime();
+
         // 대화 시스템 정리
         if (this.dialogueSystem.isDialogueActive()) {
             this.dialogueSystem.end();
@@ -980,12 +984,20 @@ export class GameScene implements BaseScene {
         // UI 제거
         const hud = document.getElementById('game-hud');
         const playerInfo = document.getElementById('player-info');
-        const escHint = document.getElementById('esc-hint');
+        const controlsHint = document.getElementById('controls-hint');
         const npcHint = document.getElementById('npc-interaction-hint');
         if (hud) hud.remove();
         if (playerInfo) playerInfo.remove();
-        if (escHint) escHint.remove();
+        if (controlsHint) controlsHint.remove();
         if (npcHint) npcHint.remove();
+
+        // UI 시스템 정리
+        this.inventoryUI.destroy();
+        this.skillsUI.destroy();
+        this.questsUI.destroy();
+
+        // 파티클 시스템 정리
+        this.particleSystem.destroy();
 
         console.log('GameScene: Shutdown');
     }

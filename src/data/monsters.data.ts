@@ -287,7 +287,8 @@ export const MONSTERS_CIRCLE_2: MonsterDefinition[] = [
         name: 'Goblin Soldier',
         nameKo: '고블린병사',
         spriteKey: 'monster_goblin_soldier',
-        
+        type: 'goblin',
+
         level: 12,
         element: 'none',
         stats: createCombatStats(12, 100, 15, 6),
@@ -305,7 +306,8 @@ export const MONSTERS_CIRCLE_2: MonsterDefinition[] = [
         name: 'Goblin Warrior',
         nameKo: '고블린전사',
         spriteKey: 'monster_goblin_warrior',
-        
+        type: 'goblin',
+
         level: 18,
         element: 'none',
         stats: createCombatStats(18, 150, 22, 10),
@@ -323,7 +325,8 @@ export const MONSTERS_CIRCLE_2: MonsterDefinition[] = [
         name: 'Hobgoblin',
         nameKo: '홉고블린',
         spriteKey: 'monster_hobgoblin',
-        
+        type: 'goblin',
+
         level: 25,
         element: 'none',
         stats: createCombatStats(25, 250, 35, 15),
@@ -341,7 +344,8 @@ export const MONSTERS_CIRCLE_2: MonsterDefinition[] = [
         name: 'Werewolf',
         nameKo: '늑대인간',
         spriteKey: 'monster_werewolf',
-        
+        type: 'wolf',
+
         level: 30,
         element: 'dark',
         stats: createCombatStats(30, 350, 45, 18),
@@ -461,7 +465,8 @@ export const MONSTERS_CIRCLE_3: MonsterDefinition[] = [
         name: 'Skeleton Warrior',
         nameKo: '스켈레톤워리어',
         spriteKey: 'monster_skeleton_warrior',
-        
+        type: 'skeleton',
+
         level: 55,
         element: 'dark',
         stats: createCombatStats(55, 700, 110, 45),

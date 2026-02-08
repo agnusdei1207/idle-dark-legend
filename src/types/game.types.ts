@@ -237,7 +237,7 @@ export interface SkillDefinition {
 // ============================================================
 
 /** NPC 타입 */
-export type NPCType = 'merchant' | 'quest' | 'trainer' | 'banker' | 'guard' | 'citizen';
+export type NPCType = 'merchant' | 'quest' | 'trainer' | 'banker' | 'guard' | 'citizen' | 'ferry' | 'special';
 
 /** NPC 정의 */
 export interface NPCDefinition {

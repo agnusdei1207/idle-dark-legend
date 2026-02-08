@@ -28,5 +28,12 @@
   },
   "include": [
     "src"
+  ],
+  "exclude": [
+    "src/scenes",
+    "src/entities",
+    "src/systems/index.ts",
+    "src/ui/CharacterUI.ts",
+    "src/ui/SkillTreeUI.ts"
   ]
 }
