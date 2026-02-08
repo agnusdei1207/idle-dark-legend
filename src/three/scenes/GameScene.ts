@@ -16,6 +16,7 @@ import { Player } from '../entities/Player';
 import { Monster } from '../entities/Monster';
 import { NPC } from '../entities/NPC';
 import { getMonsterById } from '../../data/monsters.data';
+import { DialogueSystem } from '../systems/DialogueSystem';
 
 /**
  * GameScene 클래스
@@ -32,6 +33,8 @@ export class GameScene implements BaseScene {
     private npcs: Map<string, NPC> = new Map();
     private cameraTarget: THREE.Vector3;
     private currentMap: MapDefinition | null = null;
+    private dialogueSystem: DialogueSystem;
+    private activeNPC: NPC | null = null;
 
     constructor(game: ThreeGame, data?: { mapId?: string }) {
         this.game = game;
@@ -53,6 +56,9 @@ export class GameScene implements BaseScene {
 
         // 카메라 타겟
         this.cameraTarget = new THREE.Vector3(0, 0, 0);
+
+        // 대화 시스템
+        this.dialogueSystem = new DialogueSystem();
 
         // 맵 데이터 설정 (임시)
         this.currentMap = {
@@ -454,8 +460,116 @@ export class GameScene implements BaseScene {
         // NPC 상호작용 범위 체크
         this.npcs.forEach((npc, id) => {
             const inRange = npc.isInRange(playerPosition);
-            if (inRange) {
-                // TODO: NPC 상호작용 표시
+            if (inRange && !this.dialogueSystem.isDialogueActive()) {
+                // 상호작용 가능 표시
+                this.showNPCInteractionHint(npc);
+                this.activeNPC = npc;
+            }
+        });
+
+        // 범위 밖이면 힌트 숨김
+        if (this.activeNPC && !this.activeNPC.isInRange(playerPosition)) {
+            this.hideNPCInteractionHint();
+            this.activeNPC = null;
+        }
+    }
+
+    /**
+     * NPC 상호작용 힌트 표시
+     */
+    private showNPCInteractionHint(npc: NPC): void {
+        let hint = document.getElementById('npc-interaction-hint');
+        if (!hint) {
+            const container = document.getElementById('game-container');
+            if (!container) return;
+
+            const hintHtml = `
+                <div id="npc-interaction-hint" style="
+                    position: absolute;
+                    bottom: 200px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: rgba(46, 204, 113, 0.9);
+                    color: white;
+                    padding: 10px 20px;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    z-index: 1500;
+                    animation: pulse 1.5s infinite;
+                ">Space: 대화</div>
+                <style>
+                    @keyframes pulse {
+                        0%, 100% { opacity: 1; transform: translateX(-50%) scale(1); }
+                        50% { opacity: 0.7; transform: translateX(-50%) scale(1.05); }
+                    }
+                </style>
+            `;
+            container.insertAdjacentHTML('beforeend', hintHtml);
+            hint = document.getElementById('npc-interaction-hint');
+        }
+
+        if (hint) {
+            hint.style.display = 'block';
+        }
+    }
+
+    /**
+     * NPC 상호작용 힌트 숨김
+     */
+    private hideNPCInteractionHint(): void {
+        const hint = document.getElementById('npc-interaction-hint');
+        if (hint) {
+            hint.style.display = 'none';
+        }
+    }
+
+    /**
+     * NPC 대화 시작
+     */
+    public startDialogue(npc: NPC): void {
+        // 임시 대화 데이터
+        const dialogueData = [
+            {
+                id: 'dialogue_1',
+                speaker: npc.data.name,
+                speakerKo: npc.data.nameKo,
+                text: `안녕하세요! 저는 ${npc.data.nameKo}입니다.`,
+                choices: [
+                    {
+                        text: '상점 열기',
+                        nextDialogueId: 'dialogue_shop'
+                    },
+                    {
+                        text: '안녕히 가기',
+                        nextDialogueId: undefined
+                    }
+                ]
+            },
+            {
+                id: 'dialogue_shop',
+                speaker: npc.data.name,
+                speakerKo: npc.data.nameKo,
+                text: '무엇을 도와드릴까요?',
+                choices: [
+                    {
+                        text: '아이템 사기',
+                        nextDialogueId: undefined
+                    },
+                    {
+                        text: '아이템 팔기',
+                        nextDialogueId: undefined
+                    },
+                    {
+                        text: '나가기',
+                        nextDialogueId: undefined
+                    }
+                ]
+            }
+        ];
+
+        this.dialogueSystem.start(dialogueData, {
+            onEnd: () => {
+                console.log('Dialogue ended');
             }
         });
     }
@@ -570,11 +684,22 @@ export class GameScene implements BaseScene {
         if (this.game.input.justPressed('Escape')) {
             // TODO: 일시정지 또는 메뉴 표시
             console.log('GameScene: ESC pressed');
+            // 대화 중이면 대화 종료
+            if (this.dialogueSystem.isDialogueActive()) {
+                this.dialogueSystem.end();
+            }
         }
 
-        // SPACE 키로 공격
+        // SPACE 키로 공격 또는 NPC 대화
         if (this.game.input.justPressed('Space')) {
-            if (this.player) {
+            // 대화 중이면 다음 대화
+            if (this.dialogueSystem.isDialogueActive()) {
+                // 대화 시스템이 처리
+            } else if (this.activeNPC) {
+                // NPC 대화 시작
+                this.startDialogue(this.activeNPC);
+            } else if (this.player) {
+                // 공격
                 this.player.playAttackAnimation();
             }
         }
@@ -598,6 +723,14 @@ export class GameScene implements BaseScene {
      * 정리
      */
     public shutdown(): void {
+        // 대화 시스템 정리
+        if (this.dialogueSystem.isDialogueActive()) {
+            this.dialogueSystem.end();
+        }
+
+        // NPC 힌트 제거
+        this.hideNPCInteractionHint();
+
         // 플레이어 정리
         if (this.player) {
             this.player.destroy();
@@ -615,9 +748,11 @@ export class GameScene implements BaseScene {
         const hud = document.getElementById('game-hud');
         const playerInfo = document.getElementById('player-info');
         const escHint = document.getElementById('esc-hint');
+        const npcHint = document.getElementById('npc-interaction-hint');
         if (hud) hud.remove();
         if (playerInfo) playerInfo.remove();
         if (escHint) escHint.remove();
+        if (npcHint) npcHint.remove();
 
         console.log('GameScene: Shutdown');
     }
