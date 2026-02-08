@@ -28,6 +28,7 @@ export class Player {
     private currentMp: number;
     private level: number = 1;
     private exp: number = 0;
+    private gold: number = 0;
     private classType: ClassType = 'warrior';
 
     // 이동 관련
@@ -314,6 +315,60 @@ export class Player {
      */
     public isDead(): boolean {
         return this.currentHp <= 0;
+    }
+
+    /**
+     * 현재 HP 가져오기
+     */
+    public getCurrentHp(): number {
+        return this.currentHp;
+    }
+
+    /**
+     * 현재 MP 가져오기
+     */
+    public getCurrentMp(): number {
+        return this.currentMp;
+    }
+
+    /**
+     * 현재 경험치 가져오기
+     */
+    public getCurrentExp(): number {
+        return this.exp;
+    }
+
+    /**
+     * 현재 레벨 가져오기
+     */
+    public getLevel(): number {
+        return this.level;
+    }
+
+    /**
+     * 골드 가져오기
+     */
+    public getGold(): number {
+        return this.gold;
+    }
+
+    /**
+     * 골드 추가
+     */
+    public addGold(amount: number): void {
+        this.gold += amount;
+        console.log(`Player: Gained ${amount} gold. Total: ${this.gold}`);
+    }
+
+    /**
+     * 골드 사용
+     */
+    public spendGold(amount: number): boolean {
+        if (this.gold >= amount) {
+            this.gold -= amount;
+            return true;
+        }
+        return false;
     }
 
     /**

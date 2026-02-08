@@ -384,8 +384,8 @@ export class GameScene implements BaseScene {
                 border-radius: 8px;
                 border: 1px solid #34495e;
             ">
-                <div>Warrior Lv.1</div>
-                <div style="font-size: 14px; color: #7f8c8d; margin-top: 5px;">Gold: 0</div>
+                <div class="player-title">Warrior Lv.1</div>
+                <div class="player-gold" style="font-size: 14px; color: #f1c40f; margin-top: 5px;">Gold: 0</div>
             </div>
 
             <!-- ESC 안내 -->
@@ -461,7 +461,8 @@ export class GameScene implements BaseScene {
 
                 // 골드 보상
                 const goldGain = monster.data.gold.min + Math.floor(Math.random() * (monster.data.gold.max - monster.data.gold.min));
-                if (goldGain > 0) {
+                if (this.player && goldGain > 0) {
+                    this.player.addGold(goldGain);
                     this.showGoldNotification(goldGain);
                 }
 
@@ -811,25 +812,48 @@ export class GameScene implements BaseScene {
         const mpBar = document.getElementById('mp-bar');
         const expBar = document.getElementById('exp-bar');
 
+        // HP 업데이트
         if (hpText && hpBar) {
-            const currentHp = 100; // TODO: 실제 플레이어 HP
-            const maxHp = 100;
+            const currentHp = this.player.getCurrentHp();
+            const maxHp = this.player.getMaxHp();
             hpText.textContent = `${currentHp}/${maxHp}`;
             hpBar.style.width = `${(currentHp / maxHp) * 100}%`;
         }
 
+        // MP 업데이트
         if (mpText && mpBar) {
-            const currentMp = 50; // TODO: 실제 플레이어 MP
-            const maxMp = 50;
+            const currentMp = this.player.getCurrentMp();
+            const maxMp = this.player.getMaxMp();
             mpText.textContent = `${currentMp}/${maxMp}`;
             mpBar.style.width = `${(currentMp / maxMp) * 100}%`;
         }
 
+        // EXP 업데이트
         if (expText && expBar) {
-            const currentExp = 0; // TODO: 실제 플레이어 EXP
-            const expNeeded = 100;
-            expText.textContent = `${currentExp}/${expNeeded} Lv.1`;
+            const currentExp = this.player.getCurrentExp();
+            const expNeeded = this.player.getExpNeeded();
+            const level = this.player.getLevel();
+            expText.textContent = `${currentExp}/${expNeeded} Lv.${level}`;
             expBar.style.width = `${(currentExp / expNeeded) * 100}%`;
+        }
+
+        // 플레이어 정보 업데이트
+        const playerInfo = document.getElementById('player-info');
+        if (playerInfo && this.player) {
+            const level = this.player.getLevel();
+            const gold = this.player.getGold();
+
+            // title 업데이트
+            const titleDiv = playerInfo.querySelector('.player-title');
+            if (titleDiv) {
+                titleDiv.textContent = `Warrior Lv.${level}`;
+            }
+
+            // 골드 업데이트
+            const goldDiv = playerInfo.querySelector('.player-gold');
+            if (goldDiv) {
+                goldDiv.textContent = `Gold: ${gold}`;
+            }
         }
     }
 
