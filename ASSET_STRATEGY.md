@@ -2,7 +2,7 @@
 
 > **일관성 있는 다크 판타지 아이소메트릭 에셋 확보 전략**
 > 작성일: 2026-02-08
-> 버전: v1.0
+> 버전: v1.1 (모든 직업 대응 에셋 추가)
 
 ---
 
@@ -77,13 +77,36 @@ Unity Asset Store에서는 5대 직업을 모두 포함한 완전한 아이소�
 
 ### 추천 무료 에셋
 
-#### 1. [8x8] Isometric TRPG Asset Pack by Gustavo Vituri
+#### 1. [8x8] Isometric TRPG Asset Pack by Gustavo Vituri (⭐ 최고 추천)
 - **링크**: https://gvituri.itch.io/isometric-trpg
 - **라이선스**: CC0 (완전 무료)
 - **내용**: 타일, 캐릭터, 적, UI 포함
 - **특징**: 가장 완성도 높은 무료 아이소메트릭 팩
+- **평가**: ⭐⭐⭐⭐⭐
 
-#### 2. Kenney.nl Roguelike Characters
+#### 2. GG Complete Isometric Character Set by Game Gland (⭐ 유료 추천)
+- **링크**: https://gamegland.itch.io/gg-complete-isometric-character-set
+- **비용**: Name your price (원하는 가격 지정, $0+)
+- **내용**: 12개 캐릭터 스프라이트 시트
+- **애니메이션**: Idle, Attack, Walk, Die (4종)
+- **방향**: 8방향 이동
+- **특징**: RPG/RTS용으로 설계된 완전한 세트
+- **평가**: ⭐⭐⭐⭐⭐ 5대 직업 모두 가능할 가능성 높음
+
+#### 3. 7Soul's RPG Graphics - Sprites
+- **링크**: https://7soul.itch.io/7souls-rpg-graphics-sprites
+- **비용**: $6 USD
+- **내용**:
+  - 20개 헤드 (4색 변형)
+  - 15개 바디 (4색 변형)
+  - 15개 풀 스프라이트 (4색 변형)
+  - 34개 몬스터 (3색 변형)
+- **크기**: 16x16 픽셀
+- **특징**: 커스터마이즈 가능한 헤드/바디 분리
+- **주의**: 탑다운 뷰 (아이소메트릭 아님)
+- **평가**: ⭐⭐⭐⭐ 다양한 캐릭터 조합 가능
+
+#### 4. Kenney.nl Roguelike Characters
 - **링크**: https://kenney.nl/assets/roguelike-characters
 - **라이선스**: CC0
 - **내용**: 450+ 캐릭터 스프라이트
@@ -101,6 +124,14 @@ Unity Asset Store에서는 5대 직업을 모두 포함한 완전한 아이소�
   - Warped Caves Pixel Art Pack (CC0)
   - Sunny Land 2D Pixel Art Pack (CC0)
   - Tiny RPG Monsters Pack (부분 무료)
+
+#### 5. CraftPix.net Free Characters
+- **링크**: https://craftpix.net/freebies/
+- **무료 캐릭터**:
+  - [Free Knight Character Sprites](https://craftpix.net/freebies/free-knight-character-sprites-pixel-art/) - 전사
+  - [Free Wizard Sprite Sheets](https://craftpix.net/freebies/free-wizard-sprite-sheets-pixel-art/) - 마법사
+  - [Free Samurai Sprite Sheets](https://craftpix.net/freebies/free-samurai-pixel-art-sprite-sheets/) - 무도가 스타일
+- **라이선스**: 상업적 이용 가능
 
 **총 비용**: $0
 
@@ -222,18 +253,31 @@ Unity Asset Store에서는 5대 직업을 모두 포함한 완전한 아이소�
 
 ## 📝 최종 권장사항
 
-### ⭐ 최고 추천: 완전 무료 옵션
+### ⭐⭐⭐ 최고 추천: GG Complete Isometric Character Set
+**GG Complete Isometric Character Set by Game Gland**
+- **링크**: https://gamegland.itch.io/gg-complete-isometric-character-set
+- **비용**: Name your price (최소 $0, 권장 $5-10)
+- **내용**: 12개 캐릭터 스프라이트 시트
+- **애니메이션**: Idle, Attack, Walk, Die (4종)
+- **방향**: 8방향 이동
+- **총비용**: $0-10 (완전한 세트)
+- **평가**: ⭐⭐⭐⭐⭐ 가장 추천
+
+### ⭐⭐⭐ 무료 옵션
 **itch.io [8x8] Isometric TRPG Asset Pack by Gustavo Vituri**
 - **링크**: https://gvituri.itch.io/isometric-trpg
 - **비용**: 완전 무료 (CC0)
 - **내용**: 타일, 캐릭터, 적, UI 포함
 - **총비용**: $0
 
-### ⚠️ Unity Asset Store 옵션 (비권장)
-- "2D Isometric Fantasy Heroes" ($10)
-- **문제점**: 전사×3, 궁수×2만 포함
-- **마법사/도적/성직자/무도가 스프라이트 없음**
-- **총비용**: $10+ (불완전한 세트)
+### ⭐⭐⭐ 유료 옵션 (커스터마이즈 가능)
+**7Soul's RPG Graphics - Sprites**
+- **링크**: https://7soul.itch.io/7souls-rpg-graphics-sprites
+- **비용**: $6 USD
+- **내용**: 커스터마이즈 가능한 헤드/바디 시스템 (15+ 조합)
+- **특징**: 34 몬스터 포함
+- **주의**: 탑다운 뷰 (아이소메트릭 아님)
+- **총비용**: $6
 
 ### 💰 커스텀 제작 (최상의 품질)
 - Fiverr/ArtStation에서 아티스트 의뢰
