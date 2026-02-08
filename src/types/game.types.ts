@@ -519,3 +519,13 @@ export interface GameSettings {
     /** UI 크기 배율 */
     uiScale: number;
 }
+
+// ============================================================
+// Scene 시스템 (Three.js)
+// ============================================================
+
+/** Scene ID */
+export type SceneId =
+    | 'boot'      // 부트 Scene (에셋 로딩)
+    | 'menu'      // 메인 메뉴
+    | 'game';     // 게임 Scene
