@@ -1,9 +1,12 @@
 # 🎮 Idle 어둠의전설 클래식
 
-> **방치형 RPG** - 어둠의전설 향수 + 현대 Idle 게임
+> **방치형 RPG** - 어둠의전설 향수 + 현대 Idle 게임  
 > Phaser 3 + TypeScript + Vite
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Assets: CC0](https://img.shields.io/badge/Assets-CC0-green.svg)](https://creativecommons.org/publicdomain/zero/1.0/)
+
+---
 
 ## ✨ 특징
 
@@ -13,6 +16,7 @@
 - **효율적 성장**: 사냥터별 최적 레벨 추천
 
 ### 🗺️ 어둠의전설 원작 사냥터
+
 | 써클 | 레벨 | 대표 사냥터 |
 |------|------|------------|
 | 1써클 | 1~10 | 노비스 던전, 우드랜드 |
@@ -86,6 +90,40 @@ npm run preview
 
 ---
 
+## 🎨 에셋
+
+### 사용 에셋 팩
+
+#### Ninja Adventure Asset Pack ⭐ (메인)
+
+| 항목 | 정보 |
+|------|------|
+| **제작자** | pixel-boy (Antoine Duroisin) |
+| **라이선스** | CC0 (완전 무료, 상업용 가능) |
+| **URL** | https://pixel-boy.itch.io/ninja-adventure-asset-pack |
+
+**포함 내용:**
+- 캐릭터 50종+ (애니메이션)
+- 몬스터 30종+ (애니메이션)
+- 보스 9종
+- 타일셋, UI, BGM 37곡, SFX 100+, 이펙트 30+
+
+#### OpenGameArt CC0 RPG SFX (보조)
+
+| 항목 | 정보 |
+|------|------|
+| **라이선스** | CC0 |
+| **URL** | https://opengameart.org/content/80-cc0-rpg-sfx |
+
+**포함 내용:**
+- 스킬 효과음 80종+
+
+### 에셋 다운로드 및 설정
+
+자세한 내용은 [ASSET_GUIDE.md](docs/ASSET_GUIDE.md) 참조
+
+---
+
 ## 📁 프로젝트 구조
 
 ```
@@ -102,19 +140,6 @@ src/
 public/assets/      # 게임 에셋 (이미지, 오디오)
 docs/               # 문서
 ```
-
----
-
-## 🎨 에셋
-
-### 사용 에셋
-
-| 에셋 | 라이선스 | 출처 |
-|------|----------|------|
-| Ninja Adventure Pack | CC0 | [itch.io](https://pixel-boy.itch.io/ninja-adventure-asset-pack) |
-| OpenGameArt RPG SFX | CC0 | [opengameart.org](https://opengameart.org) |
-
-에셋 다운로드 및 설정 방법은 [ASSET_DOWNLOAD.md](docs/ASSET_DOWNLOAD.md) 참조
 
 ---
 
@@ -142,18 +167,29 @@ docs/               # 문서
 
 ### v0.2.0 - Idle 시스템 (✅ 완료)
 - [x] 자동 사냥 시스템
-- [x] 오프라인 보상
+- [x] 오프라인 보상 (8시간)
 - [x] 사냥터 선택 UI
 
 ### v0.3.0 - 에셋 통합 (🔄 진행중)
-- [ ] 캐릭터 스프라이트
-- [ ] 몬스터 스프라이트
+- [ ] Ninja Adventure Pack 다운로드
+- [ ] 캐릭터/몬스터 스프라이트
 - [ ] BGM/SFX
 
 ### v0.4.0 - 콘텐츠 확장
 - [ ] 보스 레이드
 - [ ] PvP
 - [ ] 거래 시스템
+
+---
+
+## 📚 문서
+
+| 문서 | 설명 |
+|------|------|
+| [PROGRESS.md](docs/PROGRESS.md) | 개발 진행 상황 |
+| [ASSET_GUIDE.md](docs/ASSET_GUIDE.md) | 에셋 규격 및 출처 |
+| [IDLE_SYSTEM.md](docs/IDLE_SYSTEM.md) | Idle 시스템 설계 |
+| [CREDITS.md](CREDITS.md) | 에셋 크레딧 |
 
 ---
 
@@ -169,15 +205,33 @@ docs/               # 문서
 
 ## 📜 라이선스
 
-MIT License - 자유롭게 사용, 수정, 배포 가능
+- **코드**: MIT License
+- **에셋**: CC0 (별도 명시된 경우 제외)
+
+자세한 내용은 [LICENSE](LICENSE) 및 [CREDITS.md](CREDITS.md) 참조
 
 ---
 
 ## 🙏 크레딧
 
-- **원작**: 어둠의전설 (넥슨)
-- **엔진**: [Phaser 3](https://phaser.io/)
-- **에셋**: [Ninja Adventure](https://pixel-boy.itch.io/ninja-adventure-asset-pack), [OpenGameArt](https://opengameart.org/)
+### 에셋
+
+| 에셋 | 제작자 | 라이선스 |
+|------|--------|----------|
+| Ninja Adventure Pack | pixel-boy | CC0 |
+| RPG SFX | OpenGameArt | CC0 |
+
+### 영감
+
+- **어둠의전설** (넥슨) - 게임 컨셉, 사냥터/몬스터 이름
+
+### 기술
+
+| 라이브러리 | 라이선스 |
+|-----------|----------|
+| Phaser 3 | MIT |
+| TypeScript | Apache-2.0 |
+| Vite | MIT |
 
 ---
 
