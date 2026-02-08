@@ -10,6 +10,7 @@ import * as THREE from 'three';
 import type { ThreeGame } from '../core/ThreeGame';
 import type { NPCDefinition } from '../../types/game.types';
 import { IsometricUtils } from '../utils/IsometricUtils';
+import { SpriteUtils } from '../utils/SpriteUtils';
 
 /**
  * NPC 클래스
@@ -38,9 +39,49 @@ export class NPC {
     }
 
     /**
-     * NPC 메시 생성
+     * NPC 스프라이트 생성
      */
-    private createNPCMesh(type: string): void {
+    private async createNPCSprite(type: string): Promise<void> {
+        try {
+            let spritePath: string;
+            let frameCount: number;
+
+            // NPC 타입별 스프라이트 경로
+            switch (type) {
+                case 'merchant':
+                    spritePath = '/assets/sprites/merchant.png';
+                    frameCount = 2;
+                    break;
+                default:
+                    // 기본 상인 사용
+                    spritePath = '/assets/sprites/merchant.png';
+                    frameCount = 2;
+            }
+
+            // 스프라이트 시트 로드
+            const texture = await SpriteUtils.loadTexture(spritePath);
+            const frames = SpriteUtils.extractFrames(texture, 64, 64, 1, frameCount);
+
+            // 첫 번째 프레임만 사용 (정지 상태)
+            const sprite = new THREE.Sprite(frames[0]);
+            sprite.scale.set(64, 64, 1);
+            sprite.position.y = 32;
+            this.mesh.add(sprite);
+
+            console.log(`NPC: Loaded sprite for ${type}`);
+        } catch (error) {
+            console.error(`NPC: Failed to load sprite for ${type}, using fallback`, error);
+            this.createFallbackMesh(type);
+        }
+
+        // 그림자는 항상 추가
+        this.addShadow();
+    }
+
+    /**
+     * 대체 메시 (스프라이트 로드 실패 시)
+     */
+    private createFallbackMesh(type: string): void {
         // NPC 타입별 색상
         const colors: Record<string, number> = {
             merchant: 0xf39c12,
@@ -59,22 +100,21 @@ export class NPC {
         const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
         body.position.y = 22;
         body.castShadow = true;
+        this.mesh.add(body);
 
         // 머리
         const headGeometry = new THREE.BoxGeometry(20, 20, 20);
-        const headMaterial = new THREE.MeshLambertMaterial({ color: 0xf5cba });
+        const headMaterial = new THREE.MeshLambertMaterial({ color: 0xf5deb3 });
         const head = new THREE.Mesh(headGeometry, headMaterial);
         head.position.y = 44;
         head.castShadow = true;
-
-        // 메시에 추가
         this.mesh.add(head);
-        this.mesh.add(body);
+    }
 
-        // 이름표 (텍스트 스프라이트)
-        // TODO: 텍스처 생성
-
-        // 그림자
+    /**
+     * 그림자 추가
+     */
+    private addShadow(): void {
         const shadowGeometry = new THREE.CircleGeometry(16, 32);
         const shadowMaterial = new THREE.MeshBasicMaterial({
             color: 0x000000,
@@ -85,6 +125,14 @@ export class NPC {
         shadow.rotation.x = -Math.PI / 2;
         shadow.position.y = -4;
         this.mesh.add(shadow);
+    }
+
+    /**
+     * NPC 메시 생성 (호환성 유지)
+     */
+    private createNPCMesh(type: string): void {
+        // 비동기로 스프라이트 로드
+        this.createNPCSprite(type);
     }
 
     /**

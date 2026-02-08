@@ -10,6 +10,7 @@ import * as THREE from 'three';
 import type { ThreeGame } from '../core/ThreeGame';
 import { AnimationController } from '../systems/AnimationSystem';
 import { IsometricUtils } from '../utils/IsometricUtils';
+import { SpriteUtils } from '../utils/SpriteUtils';
 import type { BaseStats, Position } from '../../types/game.types';
 import { getClassById } from '../../data/classes.data';
 
@@ -63,10 +64,42 @@ export class Player {
     }
 
     /**
-     * 캐릭터 메시 생성 (2.5D - 3D 모델)
+     * 캐릭터 스프라이트 생성
      */
-    private createCharacterMesh(): void {
-        // 바디 (박스 형태, 2.5D)
+    private async createCharacterSprite(): Promise<void> {
+        try {
+            // 플레이어 스프라이트 시트 로드 (64x64 x4 프레임 = 256x64)
+            const texture = await SpriteUtils.loadTexture('/assets/sprites/player.png');
+            const frames = SpriteUtils.extractFrames(texture, 64, 64, 1, 4);
+
+            // 애니메이션 스프라이트 생성
+            const animated = SpriteUtils.createAnimatedSprite(frames, 8);
+            this.mesh.add(animated.sprite);
+            animated.sprite.position.y = 32;
+
+            // 애니메이션 컨트롤러에 스프라이트 연결
+            this.animationController.sprite = animated.sprite;
+
+            // 업데이트 함수 등록
+            const originalUpdate = this.update.bind(this);
+            this.update = (deltaTime: number) => {
+                animated.update(deltaTime);
+                // 원래 업데이트 로직은 그대로 실행
+            };
+
+            console.log('Player: Sprite loaded successfully');
+        } catch (error) {
+            console.error('Player: Failed to load sprite, using fallback', error);
+            // 실패하면 기본 박스 사용
+            this.createFallbackMesh();
+        }
+    }
+
+    /**
+     * 대체 메시 (스프라이트 로드 실패 시)
+     */
+    private createFallbackMesh(): void {
+        // 바디
         const bodyGeometry = new THREE.BoxGeometry(32, 48, 16);
         const bodyMaterial = new THREE.MeshLambertMaterial({ color: 0x3498db });
         const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
@@ -76,35 +109,11 @@ export class Player {
 
         // 머리
         const headGeometry = new THREE.BoxGeometry(24, 24, 24);
-        const headMaterial = new THREE.MeshLambertMaterial({ color: 0xf5cba });
+        const headMaterial = new THREE.MeshLambertMaterial({ color: 0xf39c12 });
         const head = new THREE.Mesh(headGeometry, headMaterial);
         head.position.y = 60;
         head.castShadow = true;
         this.mesh.add(head);
-
-        // 팔
-        const armGeometry = new THREE.BoxGeometry(8, 32, 8);
-        const armMaterial = new THREE.MeshLambertMaterial({ color: 0x3498db });
-
-        const leftArm = new THREE.Mesh(armGeometry, armMaterial);
-        leftArm.position.set(-20, 50, 0);
-        this.mesh.add(leftArm);
-
-        const rightArm = new THREE.Mesh(armGeometry, armMaterial);
-        rightArm.position.set(20, 50, 0);
-        this.mesh.add(rightArm);
-
-        // 다리
-        const legGeometry = new THREE.BoxGeometry(10, 32, 10);
-        const legMaterial = new THREE.MeshLambertMaterial({ color: 0x2c3e50 });
-
-        const leftLeg = new THREE.Mesh(legGeometry, legMaterial);
-        leftLeg.position.set(-8, 0, 0);
-        this.mesh.add(leftLeg);
-
-        const rightLeg = new THREE.Mesh(legGeometry, legMaterial);
-        rightLeg.position.set(8, 0, 0);
-        this.mesh.add(rightLeg);
 
         // 그림자
         const shadowGeometry = new THREE.CircleGeometry(20, 32);
@@ -117,6 +126,14 @@ export class Player {
         shadow.rotation.x = -Math.PI / 2;
         shadow.position.y = -5;
         this.mesh.add(shadow);
+    }
+
+    /**
+     * 캐릭터 메시 생성 (호환성 유지)
+     */
+    private createCharacterMesh(): void {
+        // 비동기로 스프라이트 로드
+        this.createCharacterSprite();
     }
 
     /**

@@ -185,6 +185,35 @@ export class SpriteUtils {
     }
 
     /**
+     * 이미지 로딩 (Promise)
+     */
+    public static async loadImage(path: string): Promise<HTMLImageElement> {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+            img.src = path;
+        });
+    }
+
+    /**
+     * 텍스처 로딩 (Promise)
+     */
+    public static async loadTexture(path: string, pixelated: boolean = true): Promise<THREE.Texture> {
+        const img = await this.loadImage(path);
+        const texture = new THREE.Texture(img);
+        texture.needsUpdate = true;
+
+        if (pixelated) {
+            this.setPixelated(texture);
+        } else {
+            this.setSmooth(texture);
+        }
+
+        return texture;
+    }
+
+    /**
      * 스프라이트 시트에서 프레임 추출
      */
     public static extractFrames(
