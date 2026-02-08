@@ -10,29 +10,47 @@
 
 어둠의전설 클래식의 다크 판타지 분위기를 재현하기 위해, 아래 세 가지 전략 중 하나를 선택하여 에셋을 확보할 수 있습니다.
 
+> **⚠️ 중요**: Unity Asset Store에서는 5대 직업(전사, 마법사, 도적, 성직자, 무도가)을 모두 포함한 완전한 아이소메트릭 캐릭터 팩을 찾기 어렵습니다. 무료 에셋이나 커스텀 제작을 권장합니다.
+
 | 전략 | 비용 | 일관성 | 추천 대상 |
 |------|------|--------|-----------|
-| **A. Unity Asset Store** | $30-50 | ⭐⭐⭐⭐⭐ | 빠른 개발, 높은 품질 |
-| **B. itch.io 무료 팩** | $0 | ⭐⭐⭐ | 예산 제한, 오픈소스 |
-| **C. 혼합 전략** | $10-20 | ⭐⭐⭐⭐ | 균형 접근 |
+| **A. 무료 에셋 (itch.io)** | $0 | ⭐⭐⭐ | ⭐ 추천 - 완전한 세트 |
+| **B. Unity Asset Store** | $30-50 | ⭐⭐⭐ | ⚠️ 불완전 - 직업 일부만 존재 |
+| **C. 커스텀 제작** | $50-200+ | ⭐⭐⭐⭐⭐ | 완벽한 일관성 |
 
 ---
 
-## 🎯 추천 전략 A: Unity Asset Store (최우선)
+## 🎯 추천 전략 A: 무료 에셋 (최우선 추천)
 
 ### 장점
-- ✅ 완성도 높은 아이소메트릭 스타일
-- ✅ 애니메이션 포함 (이동, 공격, 사망 등)
-- ✅ 일관적인 아트 스타일
-- ✅ 상용 프로젝트 사용 가능
+- ✅ 무료 (CC0 라이선스)
+- ✅ 완전한 캐릭터 세트 가능
+- ✅ 상업적 이용 가능
+- ✅ 오픈소스 친화적
+
+### 추천: [8x8] Isometric TRPG Asset Pack by Gustavo Vituri
+- **링크**: https://gvituri.itch.io/isometric-trpg
+- **비용**: 완전 무료 (CC0)
+- **내용**: 타일, 캐릭터, 적, UI 포함된 완제품 팩
+- **평가**: ⭐⭐⭐⭐⭐ 가장 추천하는 옵션
+
+---
+
+## ⚠️ Unity Asset Store (참고용)
+
+### ⚠️ 제한사항
+Unity Asset Store에서는 5대 직업을 모두 포함한 완전한 아이소메트릭 캐릭터 팩을 찾기 어렵습니다. 아래 옵션들은 참고만 하세요.
 
 ### 추천 에셋 팩
 
-#### 1. 2D Isometric Fantasy Heroes Sprites x 9 Animations ($10)
-- **링크**: [Unity Asset Store](https://assetstore.unity.com/packages/2d/characters/2d-isometric-fantasy-heroes-sprites-x-9-animations-256051)
-- **내용**: 전사, 마법사, 도적 등 판타지 캐릭터 스프라이트
+#### 1. 2D Isometric Fantasy Heroes Sprites x 9 Animations (~$10)
+- **링크**: [Unity Asset Store](https://assetstore.unity.com/packages/2d/characters/2d-isometric-fantasy-heroes-sprites-x-9-animations-84772)
+- **내용**: Archer × 2, Warrior × 3 (총 5개 캐릭터)
 - **애니메이션**: 9가지 (Idle, Walk, Attack, Hurt, Death 등)
+- **출시**: 2017년 12월
 - **해상도**: 64x64 픽셀
+- **주의**: 전사와 궁수만 포함, 마법사/도적/성직자/무도가는 별도 필요
+- **평가**: ⚠️ 불완전한 세트 - 5대 직업 모두를 얻을 수 없음
 
 #### 2. Isometric Dark Fantasy 2D Environments ($20+)
 - **링크**: [Unity Asset Store](https://assetstore.unity.com/packages/2d/environments/isometric-dark-fantasy-227487)
@@ -46,10 +64,11 @@
 - **스타일**: 다크 판타지
 
 **총 예상 비용**: $45-50 USD
+**⚠️ 단점**: 캐릭터가 불완전함 - 마법사/도적/성직자/무도가 스프라이트가 없음
 
 ---
 
-## 🆓 무료 전략 B: itch.io + OpenGameArt
+## 🆓 무료 전략 B: itch.io + OpenGameArt (⭐ 추천)
 
 ### 장점
 - ✅ 무료 (CC0 라이선스)
@@ -89,25 +108,26 @@
 
 ## ⚖️ 혼합 전략 C: 유료 + 무료 조합
 
-### 추천 조합
+### ⚠️ Unity Asset Store 캐릭터는 불완전함
 
-#### 캐릭터: Unity Asset Store ($10)
-- **2D Isometric Fantasy Heroes Sprites**로 5대 직업 커버
-- 고품질 애니메이션 보장
+#### 문제점
+- "2D Isometric Fantasy Heroes" = 전사×3, 궁수×2만 있음
+- 마법사/도적/성직자/무도가 스프라이트 없음
+- 5대 직업을 모두 얻을 수 없음
 
-#### 몬스터: 무료 에셋
+### 대안: 완전 무료 조합
+
+#### 캐릭터 + 몬스터 + 배경: 무료 에셋
+- Gustavo Vituri **Isometric TRPG Asset Pack** (itch.io) - CC0
+  - 캐릭터, 적, 타일, UI 포함
 - Ansimuz **Tiny RPG Monsters Pack** (itch.io)
-- OpenGameArt.org 몬스터 컬렉션
-
-#### 배경/타일: 무료 에셋
-- Gustavo Vituri **Isometric TRPG Asset Pack** (itch.io)
-- Kenney.nl **Isometric Prototypes Tiles**
+  - 추가 몬스터 스프라이트
 
 #### 아이템/UI: 직접 제작
 - 아이템 아이콘은 16x16으로 직접 제작 가능
 - UI는 CSS로 대부분 구현됨
 
-**총 예상 비용**: $10-20 USD
+**총 예상 비용**: $0 (완전 무료)
 
 ---
 
@@ -202,17 +222,23 @@
 
 ## 📝 최종 권장사항
 
-### 빠른 개발을 원할 경우
-**Unity Asset Store + 무료 배경**
-- 캐릭터: "2D Isometric Fantasy Heroes" ($10)
-- 배경: itch.io 무료 팩
-- **총비용**: $10
-
-### 완전한 무료 옵션
-**itch.io [8x8] Isometric TRPG Asset Pack**
-- Gustavo Vituri 팩 사용
-- 필요시 추가 무료 에셋 보완
+### ⭐ 최고 추천: 완전 무료 옵션
+**itch.io [8x8] Isometric TRPG Asset Pack by Gustavo Vituri**
+- **링크**: https://gvituri.itch.io/isometric-trpg
+- **비용**: 완전 무료 (CC0)
+- **내용**: 타일, 캐릭터, 적, UI 포함
 - **총비용**: $0
+
+### ⚠️ Unity Asset Store 옵션 (비권장)
+- "2D Isometric Fantasy Heroes" ($10)
+- **문제점**: 전사×3, 궁수×2만 포함
+- **마법사/도적/성직자/무도가 스프라이트 없음**
+- **총비용**: $10+ (불완전한 세트)
+
+### 💰 커스텀 제작 (최상의 품질)
+- Fiverr/ArtStation에서 아티스트 의뢰
+- 5대 직업 + 몬스터 세트
+- **총비용**: $50-200+
 
 ---
 
