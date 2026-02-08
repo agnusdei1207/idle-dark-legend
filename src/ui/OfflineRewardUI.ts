@@ -204,4 +204,8 @@ export class OfflineRewardUI extends Phaser.GameObjects.Container {
     getIsOpen(): boolean {
         return this.isOpen;
     }
+
+    close(): void {
+        this.claim();
+    }
 }

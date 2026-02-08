@@ -326,18 +326,67 @@ export class GameScene extends Phaser.Scene {
     }
 
     /**
-     * ESC 키 처리
+     * ESC 키 처리 - 우선순위에 따라 UI 닫기
      */
     private handleEscape(): void {
+        // 1. 대화 중이면 무시
         if (this.dialogueUI.getIsOpen()) return;
-        if (this.inventoryUI.getIsOpen()) { this.inventoryUI.toggle(); return; }
-        if (this.questUI.getIsOpen()) { this.questUI.toggle(); return; }
-        if (this.shopUI.getIsOpen()) { this.shopUI.close(); return; }
-        if (this.characterUI.getIsOpen()) { this.characterUI.toggle(); return; }
-        if (this.skillTreeUI.getIsOpen()) { this.skillTreeUI.toggle(); return; }
-        if (this.circleUI.getIsOpen()) { this.circleUI.toggle(); return; }
 
-        // 게임 메뉴 열기 (구현 필요)
+        // 2. 오프라인 보상 UI
+        if (this.offlineRewardUI.getIsOpen()) {
+            this.offlineRewardUI.close();
+            return;
+        }
+
+        // 3. 사냥터 선택 UI
+        if (this.huntingZoneUI.getIsOpen()) {
+            this.huntingZoneUI.close();
+            return;
+        }
+
+        // 4. 상점 UI
+        if (this.shopUI.getIsOpen()) {
+            this.shopUI.close();
+            return;
+        }
+
+        // 5. 인벤토리
+        if (this.inventoryUI.getIsOpen()) {
+            this.inventoryUI.toggle();
+            return;
+        }
+
+        // 6. 퀘스트
+        if (this.questUI.getIsOpen()) {
+            this.questUI.toggle();
+            return;
+        }
+
+        // 7. 캐릭터
+        if (this.characterUI.getIsOpen()) {
+            this.characterUI.toggle();
+            return;
+        }
+
+        // 8. 스킬트리
+        if (this.skillTreeUI.getIsOpen()) {
+            this.skillTreeUI.toggle();
+            return;
+        }
+
+        // 9. 서클
+        if (this.circleUI.getIsOpen()) {
+            this.circleUI.toggle();
+            return;
+        }
+
+        // 10. 자동 사냥 중이면 중지
+        if (this.isAutoHunting) {
+            this.stopAutoHunt();
+            return;
+        }
+
+        // 11. 모든 UI가 닫혀있으면 게임 메뉴 열기
         this.showGameMenu();
     }
 
@@ -345,8 +394,130 @@ export class GameScene extends Phaser.Scene {
      * 게임 메뉴 표시
      */
     private showGameMenu(): void {
-        // TODO: 메뉴 씬 전환
-        console.log('게임 메뉴');
+        this.showPauseMenu();
+    }
+
+    /**
+     * 일시정지 메뉴
+     */
+    private showPauseMenu(): void {
+        // 기존 메뉴 제거
+        const existing = this.children.getByName('pauseMenu');
+        if (existing) {
+            existing.destroy();
+            this.isPaused = false;
+            return;
+        }
+
+        this.isPaused = true;
+        const { width, height } = this.cameras.main;
+
+        const menu = this.add.container(width / 2, height / 2);
+        menu.setName('pauseMenu');
+        menu.setDepth(5000);
+        menu.setScrollFactor(0);
+
+        // 반투명 배경
+        const overlay = this.add.rectangle(0, 0, width, height, 0x000000, 0.7);
+        menu.add(overlay);
+
+        // 메뉴 박스
+        const box = this.add.rectangle(0, 0, 300, 350, 0x1a1a2e, 0.95);
+        box.setStrokeStyle(3, 0x8b5cf6);
+        menu.add(box);
+
+        // 타이틀
+        const title = this.add.text(0, -130, '⚙️ 게임 메뉴', {
+            fontSize: '24px',
+            color: '#ffd700',
+            fontStyle: 'bold'
+        }).setOrigin(0.5);
+        menu.add(title);
+
+        // 메뉴 버튼들
+        const buttons = [
+            { text: '▶️ 계속하기', action: () => this.closePauseMenu() },
+            { text: '💾 저장하기', action: () => { this.saveGame(); this.showSaveMessage(); } },
+            { text: '🏠 마을로 돌아가기', action: () => this.returnToVillage() },
+            { text: '🚪 타이틀로', action: () => this.scene.start('MenuScene') }
+        ];
+
+        buttons.forEach((btn, i) => {
+            const y = -50 + i * 55;
+            const btnBg = this.add.rectangle(0, y, 220, 45, 0x2a2a4e);
+            btnBg.setStrokeStyle(1, 0x4a4a6a);
+            btnBg.setInteractive({ useHandCursor: true });
+            menu.add(btnBg);
+
+            const btnText = this.add.text(0, y, btn.text, {
+                fontSize: '16px',
+                color: '#ffffff'
+            }).setOrigin(0.5);
+            menu.add(btnText);
+
+            btnBg.on('pointerover', () => {
+                btnBg.setFillStyle(0x3a3a5e);
+                btnText.setColor('#ffd700');
+            });
+            btnBg.on('pointerout', () => {
+                btnBg.setFillStyle(0x2a2a4e);
+                btnText.setColor('#ffffff');
+            });
+            btnBg.on('pointerdown', btn.action);
+        });
+
+        // ESC 안내
+        const hint = this.add.text(0, 140, '[ESC] 닫기', {
+            fontSize: '12px',
+            color: '#666666'
+        }).setOrigin(0.5);
+        menu.add(hint);
+    }
+
+    private closePauseMenu(): void {
+        const menu = this.children.getByName('pauseMenu');
+        if (menu) {
+            menu.destroy();
+            this.isPaused = false;
+        }
+    }
+
+    private showSaveMessage(): void {
+        const text = this.add.text(
+            this.cameras.main.width / 2,
+            this.cameras.main.height / 2 + 100,
+            '💾 저장되었습니다!',
+            { fontSize: '16px', color: '#4ade80' }
+        ).setOrigin(0.5).setDepth(5001).setScrollFactor(0);
+
+        this.tweens.add({
+            targets: text,
+            alpha: 0,
+            duration: 1500,
+            onComplete: () => text.destroy()
+        });
+    }
+
+    private returnToVillage(): void {
+        if (this.isAutoHunting) {
+            this.stopAutoHunt();
+        }
+        this.closePauseMenu();
+
+        // NPC 다시 표시
+        for (const npc of this.npcs) {
+            npc.setVisible(true);
+        }
+
+        // 마을 색상으로 복원
+        this.tileColors = { 0: 0x2d4a4b, 1: 0x4a7c6f, 2: 0x5a8c7f, 3: 0x6b8e7d, 4: 0x3d5a5b };
+        this.worldContainer.removeAll(true);
+        this.createMap();
+
+        // 플레이어 위치 초기화
+        this.player.moveToWorld(5, 5, 0);
+
+        this.showAutoHuntMessage('🏠 마을로 돌아왔습니다!');
     }
 
     /**
