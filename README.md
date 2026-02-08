@@ -1,58 +1,54 @@
-# 🎮 어둠의전설 클래식 리메이크
+# 🎮 Idle 어둠의전설 클래식
 
-> **Shadow Realm Tribute** - Classic Isometric RPG  
+> **방치형 RPG** - 어둠의전설 향수 + 현대 Idle 게임
 > Phaser 3 + TypeScript + Vite
 
-원작 [어둠의전설](https://namu.wiki/w/%EC%96%B4%EB%91%A0%EC%9D%98%EC%A0%84%EC%84%A4)을 벤치마크한 클래식 아이소메트릭 RPG 엔진입니다.
-
-![Game Preview](./docs/preview.png)
-
----
-
-## 📋 목차
-
-- [특징](#-특징)
-- [빠른 시작](#-빠른-시작)
-- [게임 시스템](#-게임-시스템)
-- [직업 시스템](#-직업-시스템)
-- [문서](#-문서)
-- [개발 현황](#-개발-현황)
-
----
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## ✨ 특징
 
-### 🎨 어둠의전설 스타일 UI
-- 클래식 다크 테마 HUD
-- 캐릭터 초상화 + HP/MP/EXP 바
-- 원형 미니맵
-- 스킬바 (F1-F10)
-- 채팅창 (전체/일반/파티/서클/귓속말)
+### 🎯 Idle/방치형 RPG
+- **자동 사냥**: 클릭 없이 자동으로 몬스터 사냥
+- **오프라인 보상**: 최대 8시간 오프라인 사냥 보상
+- **효율적 성장**: 사냥터별 최적 레벨 추천
 
-### ⚔️ 완전한 RPG 시스템
-- **4대 직업**: 전사, 마법사, 궁수, 도적
-- **전직 시스템**: 30레벨에 상위 직업으로 전직
-- **스킬 트리**: 직업별 다중 스킬 트리
-- **속성 시스템**: 불/물/땅/바람/빛/어둠
+### 🗺️ 어둠의전설 원작 사냥터
+| 써클 | 레벨 | 대표 사냥터 |
+|------|------|------------|
+| 1써클 | 1~10 | 노비스 던전, 우드랜드 |
+| 2써클 | 11~40 | 포테의 숲, 피에트 던전 |
+| 3써클 | 41~70 | 아벨 해안던전, 아벨 던전 |
+| 4써클 | 71~98 | 뤼케시온 해안, 난파선 |
+| 5써클 | 99+ | 호러캐슬, 베크나 탑 |
+
+### ⚔️ 직업 시스템
+- **4대 기본 직업**: 전사, 마법사, 궁수, 도적
+- **8개 전직**: 버서커, 팔라딘, 아크메이지, 네크로맨서 등
+- **스킬 트리**: 독자적 스킬 성장
 
 ### 👥 소셜 시스템
 - **파티**: 최대 6인 파티
 - **서클(길드)**: 생성, 가입, 등급, 버프
-- **대화**: NPC 대화 및 퀘스트
 
-### 🗺️ 월드 시스템
-- 아이소메트릭 타일맵
-- 맵 간 포탈 이동
-- 몬스터 스폰 및 AI
+### 🎨 클래식 UI
+- 어둠의전설 스타일 다크 테마
+- 클래식 HUD (초상화, HP/MP바, 미니맵)
+- 레트로 감성 + 현대적 UX
 
 ---
 
-## 🚀 빠른 시작
+## 🚀 시작하기
+
+### 요구사항
+- Node.js 18+
+- npm 또는 yarn
+
+### 설치
 
 ```bash
-# 클론
-git clone https://github.com/your-repo/dark-legend-classic.git
-cd dark-legend-classic
+# 저장소 클론
+git clone https://github.com/agnusdei1207/idle-dark-legend.git
+cd idle-dark-legend
 
 # 의존성 설치
 npm install
@@ -63,102 +59,30 @@ npm run dev
 
 브라우저에서 http://localhost:5173 접속
 
+### 빌드
+
+```bash
+# 프로덕션 빌드
+npm run build
+
+# 빌드 미리보기
+npm run preview
+```
+
 ---
 
-## 🎮 게임 시스템
-
-### 조작키
+## 🎮 조작법
 
 | 키 | 기능 |
 |----|------|
-| ↑↓←→ / WASD | 이동 |
-| Space | NPC와 대화 / 아이템 줍기 |
-| I | 인벤토리 |
-| C | 캐릭터 정보 |
-| K | 스킬 트리 |
-| Q | 퀘스트 로그 |
-| G | 서클(길드) |
-| M | 월드맵 |
-| F1-F10 | 스킬 사용 |
-| 1-8 | 퀵슬롯 |
-| Enter | 채팅 |
-| ESC | 메뉴 / 닫기 |
-
-### 전투 시스템
-
-- **물리 공격**: 힘(STR) 기반, 회피 가능
-- **마법 공격**: 지능(INT) 기반, 속성 데미지
-- **크리티컬**: 민첩(DEX) + 행운(LUK) 영향
-- **속성 상성**: 
-  - 🔥 불 > 🌲 땅 > ⚡ 바람 > 💧 물 > 🔥 불
-  - ☀️ 빛 ⟷ 🌑 어둠 (상호 유리)
-
----
-
-## ⚔️ 직업 시스템
-
-### 기본 직업
-
-| 직업 | 설명 | 주요 스탯 | 전직 (Lv.30) |
-|------|------|----------|--------------|
-| 🗡️ 전사 | 근접 탱커/딜러 | STR, CON | 기사, 광전사 |
-| 🧙 마법사 | 원거리 속성 마법 | INT, WIS | 대마법사, 흑마법사 |
-| 🏹 궁수 | 원거리 물리 | DEX, LUK | 저격수, 레인저 |
-| 🗡️ 도적 | 근접 암살자 | DEX, LUK | 암살자, 그림자 무희 |
-
-### 스킬 트리
-
-각 직업은 2-3개의 스킬 트리를 보유:
-
-**전사**
-- 전투 숙련: 슬래시 → 파워 스트라이크 → 회오리 → 돌진 → 분노 → 지진
-- 방어 숙련: 블록 → 강철 피부 → 도발 → 방패의 벽 → 최후의 저항
-
-**마법사**
-- 화염 마법: 파이어볼 → 화염파 → 화염 방패 → 인페르노 → 메테오
-- 빙결 마법: 아이스 볼트 → 프로스트 노바 → 아이스 아머 → 블리자드 → 절대 영도
-
----
-
-## 📚 문서
-
-| 문서 | 설명 |
-|------|------|
-| [에셋 가이드](./docs/ASSET_GUIDE.md) | 스프라이트, 타일셋, 오디오 교체 방법 |
-| [진행 상황](./docs/PROGRESS.md) | 개발 완료/진행중/예정 작업 추적 |
-| [프로젝트 계획](./docs/PROJECT_PLAN.md) | 상세 기획 문서 |
-
----
-
-## 📊 개발 현황
-
-### ✅ 완료 (100%)
-- 코어 엔진 (Phaser 3 + Vite + TypeScript)
-- 아이소메트릭 렌더링 및 이동
-- 인벤토리/전투/퀘스트/대화 시스템
-- 저장/로드 (LocalStorage)
-- 오디오 매니저
-
-### 🔄 진행중 (70%)
-- 어둠의전설 스타일 UI
-- 직업 시스템 및 스킬 트리
-- 서클(길드) 시스템
-- 파티 시스템
-
-### ⏳ 예정 (0%)
-- 에셋 통합 (스프라이트, 타일셋)
-- PvP 시스템
-- 보스 레이드
-- 거래 시스템
-
----
-
-## 🛠️ 기술 스택
-
-- **엔진**: [Phaser 3](https://phaser.io/phaser3)
-- **언어**: TypeScript
-- **빌더**: Vite
-- **맵 에디터**: Tiled (권장)
+| `I` | 인벤토리 |
+| `C` | 캐릭터 정보 |
+| `K` | 스킬 트리 |
+| `Q` | 퀘스트 로그 |
+| `G` | 서클 (길드) |
+| `H` | 사냥터 선택 |
+| `Space` | NPC 대화 |
+| `ESC` | 창 닫기/메뉴 |
 
 ---
 
@@ -166,31 +90,95 @@ npm run dev
 
 ```
 src/
-├── config/          # 게임 설정
-├── data/            # 아이템, 스킬, 몬스터 등 데이터
-├── entities/        # 플레이어, 몬스터, NPC
-├── scenes/          # Phaser 씬
-├── systems/         # 인벤토리, 전투, 퀘스트 등 시스템
-├── types/           # TypeScript 타입 정의
-├── ui/              # HUD, 인벤토리창, 스킬창 등 UI
-└── utils/           # 유틸리티 함수
+├── config/         # 게임 설정
+├── data/           # 게임 데이터 (아이템, 스킬, 몬스터)
+├── entities/       # 게임 엔티티 (플레이어, 몬스터, NPC)
+├── scenes/         # Phaser 씬
+├── systems/        # 게임 시스템 (인벤토리, 전투, Idle)
+├── ui/             # UI 컴포넌트
+├── types/          # TypeScript 타입
+└── utils/          # 유틸리티
 
-public/
-└── assets/          # 게임 에셋 (이미지, 오디오)
-
-docs/
-├── ASSET_GUIDE.md   # 에셋 교체 가이드
-├── PROGRESS.md      # 진행 상황
-└── PROJECT_PLAN.md  # 프로젝트 계획
+public/assets/      # 게임 에셋 (이미지, 오디오)
+docs/               # 문서
 ```
+
+---
+
+## 🎨 에셋
+
+### 사용 에셋
+
+| 에셋 | 라이선스 | 출처 |
+|------|----------|------|
+| Ninja Adventure Pack | CC0 | [itch.io](https://pixel-boy.itch.io/ninja-adventure-asset-pack) |
+| OpenGameArt RPG SFX | CC0 | [opengameart.org](https://opengameart.org) |
+
+에셋 다운로드 및 설정 방법은 [ASSET_DOWNLOAD.md](docs/ASSET_DOWNLOAD.md) 참조
+
+---
+
+## 📊 개발 현황
+
+| 기능 | 상태 |
+|------|------|
+| 코어 시스템 | ✅ 100% |
+| Idle 시스템 | ✅ 100% |
+| 직업 시스템 | ✅ 100% |
+| 소셜 시스템 | ✅ 100% |
+| UI 시스템 | ✅ 100% |
+| 에셋 통합 | ⏳ 0% |
+
+상세 진행 상황은 [PROGRESS.md](docs/PROGRESS.md) 참조
+
+---
+
+## 🗺️ 로드맵
+
+### v0.1.0 - 코어 (✅ 완료)
+- [x] 프로젝트 설정
+- [x] 아이소메트릭 렌더링
+- [x] 기본 게임 시스템
+
+### v0.2.0 - Idle 시스템 (✅ 완료)
+- [x] 자동 사냥 시스템
+- [x] 오프라인 보상
+- [x] 사냥터 선택 UI
+
+### v0.3.0 - 에셋 통합 (🔄 진행중)
+- [ ] 캐릭터 스프라이트
+- [ ] 몬스터 스프라이트
+- [ ] BGM/SFX
+
+### v0.4.0 - 콘텐츠 확장
+- [ ] 보스 레이드
+- [ ] PvP
+- [ ] 거래 시스템
+
+---
+
+## 🤝 기여
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ---
 
 ## 📜 라이선스
 
-This project is for educational purposes.  
-Original game rights belong to their respective owners.
+MIT License - 자유롭게 사용, 수정, 배포 가능
 
 ---
 
-**Made with ❤️ for classic RPG lovers**
+## 🙏 크레딧
+
+- **원작**: 어둠의전설 (넥슨)
+- **엔진**: [Phaser 3](https://phaser.io/)
+- **에셋**: [Ninja Adventure](https://pixel-boy.itch.io/ninja-adventure-asset-pack), [OpenGameArt](https://opengameart.org/)
+
+---
+
+*어둠의전설을 추억하며... ⚔️*

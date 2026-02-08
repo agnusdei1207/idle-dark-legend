@@ -13,3 +13,9 @@ export type {
     CircleBuff,
     CircleRank
 } from './CircleSystem';
+export { IdleSystem, HUNTING_ZONES } from './IdleSystem';
+export type {
+    HuntingZone,
+    OfflineProgress,
+    IdleConfig
+} from './IdleSystem';
