@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/assets/ui/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="description" content="Classic isometric RPG inspired by 90s Korean online games" />
+    <title>Shadow Realm Tribute - Classic Isometric RPG</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: #1a1a2e;
+      }
+      
+      #game-container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      
+      canvas {
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+      }
+      
+      /* Loading screen */
+      #loading {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        transition: opacity 0.5s ease;
+      }
+      
+      #loading.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+      
+      #loading h1 {
+        color: #e94560;
+        font-family: 'Georgia', serif;
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+        text-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
+      }
+      
+      #loading-bar-container {
+        width: 300px;
+        height: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        overflow: hidden;
+        border: 2px solid #e94560;
+      }
+      
+      #loading-bar {
+        width: 0%;
+        height: 100%;
+        background: linear-gradient(90deg, #e94560, #0f3460);
+        transition: width 0.3s ease;
+      }
+      
+      #loading-text {
+        color: #eee;
+        font-family: 'Georgia', serif;
+        margin-top: 1rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="loading">
+      <h1>Shadow Realm</h1>
+      <div id="loading-bar-container">
+        <div id="loading-bar"></div>
+      </div>
+      <p id="loading-text">Loading...</p>
+    </div>
+    <div id="game-container"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
