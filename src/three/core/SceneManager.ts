@@ -11,6 +11,7 @@
  * ============================================================
  */
 
+import * as THREE from 'three';
 import type { ThreeGame } from './ThreeGame';
 import type { SceneId } from '../../types/game.types';
 

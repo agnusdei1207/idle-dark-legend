@@ -96,6 +96,9 @@ export interface CombatStats {
     critDamage: number;
     attackSpeed: number;
     moveSpeed: number;
+    /** Three.js 2.5D specific stats */
+    attackRange?: number;
+    chaseRange?: number;
 }
 
 // ============================================================
@@ -252,11 +255,27 @@ export interface NPCDefinition {
     questIds?: string[];
 }
 
+/** 몬스터 AI 타입 */
+export type MonsterAI = 'passive' | 'aggressive' | 'defensive';
+
+/** 몬스터 타입 */
+export type MonsterType =
+    | 'slime'
+    | 'goblin'
+    | 'orc'
+    | 'skeleton'
+    | 'demon'
+    | 'dragon'
+    | 'ghost'
+    | 'wolf';
+
 /** 몬스터 정의 */
 export interface MonsterDefinition {
     id: string;
     name: string;
     nameKo: string;
+    /** 몬스터 타입 (외형 결정) */
+    type: MonsterType;
     /** 스프라이트 키 */
     spriteKey: string;
     /** 레벨 */
@@ -264,13 +283,20 @@ export interface MonsterDefinition {
     /** 속성 */
     element: ElementType;
     /** 기본 스탯 */
-    stats: CombatStats;
+    stats: {
+        maxHp: number;
+        maxMp: number;
+        attack: number;
+        defense: number;
+        moveSpeed?: number;
+        attackSpeed?: number;
+        attackRange?: number;
+        chaseRange?: number;
+    } & Partial<CombatStats>;
     /** 공격 패턴 */
     attackPattern: 'melee' | 'ranged' | 'magic';
-    /** 공격 사거리 */
-    attackRange: number;
-    /** 감지 범위 */
-    aggroRange: number;
+    /** AI 타입 */
+    ai?: MonsterAI;
     /** 드롭 테이블 */
     drops: {
         itemId: string;
@@ -282,8 +308,6 @@ export interface MonsterDefinition {
     exp: number;
     /** 골드 */
     gold: { min: number; max: number };
-    /** AI 타입 */
-    aiType: 'passive' | 'aggressive' | 'defensive';
 }
 
 // ============================================================
