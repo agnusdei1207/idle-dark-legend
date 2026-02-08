@@ -36,17 +36,19 @@ export class BootScene extends Phaser.Scene {
         // ============================================
         // 에셋 로딩
         // ============================================
+        // 주의: 현재 에셋 파일이 없으므로 주석 처리됨
+        // 에셋을 추가한 후 아래 주석을 해제하세요
 
         // 타일셋 (scrabling의 32x32 Pixel Isometric Tiles)
         // License: CC BY 4.0
         // URL: https://scrabling.itch.io/pixel-isometric-tiles
-        this.load.image('tiles-nature', 'assets/tilesets/isometric-tiles.png');
+        // this.load.image('tiles-nature', 'assets/tilesets/isometric-tiles.png');
 
         // 플레이스홀더 스프라이트 (나중에 교체)
-        this.load.spritesheet('player', 'assets/sprites/player.png', {
-            frameWidth: 32,
-            frameHeight: 48
-        });
+        // this.load.spritesheet('player', 'assets/sprites/player.png', {
+        //     frameWidth: 32,
+        //     frameHeight: 48
+        // });
 
         // UI 요소
         // this.load.image('button', 'assets/ui/button.png');

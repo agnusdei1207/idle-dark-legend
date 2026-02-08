@@ -207,61 +207,150 @@ export const ADVANCED_CLASSES: AdvancedClass[] = [
 // ============================================================
 
 export const SKILL_TREES: SkillTree[] = [
-    // 전사 - 전투 트리
+    // ============================================================
+    // 전사 스킬 트리
+    // ============================================================
     {
         id: 'tree_warrior_combat',
         name: 'Combat Mastery',
         nameKo: '전투 숙련',
         classId: 'warrior',
         nodes: [
-            { skillId: 'skill_slash', tier: 1, position: 1, requiredPoints: 0, maxLevel: 5, prerequisites: [] },
-            { skillId: 'skill_power_strike', tier: 2, position: 0, requiredPoints: 5, maxLevel: 5, prerequisites: ['skill_slash'] },
-            { skillId: 'skill_whirlwind', tier: 2, position: 2, requiredPoints: 5, maxLevel: 5, prerequisites: ['skill_slash'] },
-            { skillId: 'skill_charge', tier: 3, position: 1, requiredPoints: 10, maxLevel: 5, prerequisites: ['skill_power_strike', 'skill_whirlwind'] },
-            { skillId: 'skill_fury', tier: 4, position: 1, requiredPoints: 20, maxLevel: 3, prerequisites: ['skill_charge'] },
-            { skillId: 'skill_earthquake', tier: 5, position: 1, requiredPoints: 30, maxLevel: 1, prerequisites: ['skill_fury'] }
+            { skillId: 'skill_slash', tier: 1, position: 1, requiredPoints: 0, maxLevel: 10, prerequisites: [] },
+            { skillId: 'skill_double_attack', tier: 2, position: 0, requiredPoints: 5, maxLevel: 10, prerequisites: ['skill_slash'] },
+            { skillId: 'skill_rescue', tier: 2, position: 2, requiredPoints: 5, maxLevel: 5, prerequisites: ['skill_slash'] },
+            { skillId: 'skill_triple_attack', tier: 3, position: 0, requiredPoints: 15, maxLevel: 10, prerequisites: ['skill_double_attack'] },
+            { skillId: 'skill_charge', tier: 3, position: 2, requiredPoints: 15, maxLevel: 10, prerequisites: ['skill_rescue'] },
+            { skillId: 'skill_mega_attack', tier: 4, position: 0, requiredPoints: 30, maxLevel: 10, prerequisites: ['skill_triple_attack'] },
+            { skillId: 'skill_focus', tier: 4, position: 2, requiredPoints: 30, maxLevel: 5, prerequisites: ['skill_charge'] },
+            { skillId: 'skill_crasher', tier: 5, position: 1, requiredPoints: 50, maxLevel: 10, prerequisites: ['skill_mega_attack', 'skill_focus'] }
         ]
     },
-    // 전사 - 방어 트리
     {
         id: 'tree_warrior_defense',
         name: 'Defense Mastery',
         nameKo: '방어 숙련',
         classId: 'warrior',
         nodes: [
-            { skillId: 'skill_block', tier: 1, position: 1, requiredPoints: 0, maxLevel: 5, prerequisites: [] },
-            { skillId: 'skill_iron_skin', tier: 2, position: 0, requiredPoints: 5, maxLevel: 5, prerequisites: ['skill_block'] },
+            { skillId: 'skill_block', tier: 1, position: 1, requiredPoints: 0, maxLevel: 10, prerequisites: [] },
+            { skillId: 'skill_iron_skin', tier: 2, position: 0, requiredPoints: 5, maxLevel: 10, prerequisites: ['skill_block'] },
             { skillId: 'skill_taunt', tier: 2, position: 2, requiredPoints: 5, maxLevel: 5, prerequisites: ['skill_block'] },
-            { skillId: 'skill_shield_wall', tier: 3, position: 1, requiredPoints: 10, maxLevel: 5, prerequisites: ['skill_iron_skin'] },
-            { skillId: 'skill_last_stand', tier: 4, position: 1, requiredPoints: 20, maxLevel: 3, prerequisites: ['skill_shield_wall'] }
+            { skillId: 'skill_shield_wall', tier: 3, position: 1, requiredPoints: 15, maxLevel: 10, prerequisites: ['skill_iron_skin'] },
+            { skillId: 'skill_last_stand', tier: 4, position: 1, requiredPoints: 30, maxLevel: 5, prerequisites: ['skill_shield_wall'] }
         ]
     },
-    // 마법사 - 화염 트리
+    // ============================================================
+    // 마법사 스킬 트리
+    // ============================================================
     {
         id: 'tree_mage_fire',
         name: 'Fire Magic',
         nameKo: '화염 마법',
         classId: 'mage',
         nodes: [
-            { skillId: 'skill_fireball', tier: 1, position: 1, requiredPoints: 0, maxLevel: 5, prerequisites: [] },
-            { skillId: 'skill_flame_wave', tier: 2, position: 0, requiredPoints: 5, maxLevel: 5, prerequisites: ['skill_fireball'] },
-            { skillId: 'skill_fire_shield', tier: 2, position: 2, requiredPoints: 5, maxLevel: 5, prerequisites: ['skill_fireball'] },
-            { skillId: 'skill_inferno', tier: 3, position: 1, requiredPoints: 10, maxLevel: 5, prerequisites: ['skill_flame_wave'] },
-            { skillId: 'skill_meteor', tier: 5, position: 1, requiredPoints: 30, maxLevel: 1, prerequisites: ['skill_inferno'] }
+            { skillId: 'skill_flamera', tier: 1, position: 1, requiredPoints: 0, maxLevel: 10, prerequisites: [] },
+            { skillId: 'skill_flare', tier: 2, position: 1, requiredPoints: 10, maxLevel: 10, prerequisites: ['skill_flamera'] },
+            { skillId: 'skill_meteor', tier: 5, position: 1, requiredPoints: 80, maxLevel: 10, prerequisites: ['skill_flare'] }
         ]
     },
-    // 마법사 - 빙결 트리
     {
         id: 'tree_mage_ice',
         name: 'Ice Magic',
         nameKo: '빙결 마법',
         classId: 'mage',
         nodes: [
-            { skillId: 'skill_ice_bolt', tier: 1, position: 1, requiredPoints: 0, maxLevel: 5, prerequisites: [] },
-            { skillId: 'skill_frost_nova', tier: 2, position: 0, requiredPoints: 5, maxLevel: 5, prerequisites: ['skill_ice_bolt'] },
-            { skillId: 'skill_ice_armor', tier: 2, position: 2, requiredPoints: 5, maxLevel: 5, prerequisites: ['skill_ice_bolt'] },
-            { skillId: 'skill_blizzard', tier: 3, position: 1, requiredPoints: 10, maxLevel: 5, prerequisites: ['skill_frost_nova'] },
-            { skillId: 'skill_absolute_zero', tier: 5, position: 1, requiredPoints: 30, maxLevel: 1, prerequisites: ['skill_blizzard'] }
+            { skillId: 'skill_teramiera', tier: 1, position: 1, requiredPoints: 0, maxLevel: 10, prerequisites: [] },
+            { skillId: 'skill_ice_blast', tier: 2, position: 1, requiredPoints: 10, maxLevel: 10, prerequisites: ['skill_teramiera'] }
+        ]
+    },
+    {
+        id: 'tree_mage_dark',
+        name: 'Dark Magic',
+        nameKo: '암흑 마법',
+        classId: 'mage',
+        nodes: [
+            { skillId: 'skill_pravo', tier: 1, position: 1, requiredPoints: 0, maxLevel: 10, prerequisites: [] },
+            { skillId: 'skill_pravera', tier: 3, position: 1, requiredPoints: 50, maxLevel: 10, prerequisites: ['skill_pravo'] },
+            { skillId: 'skill_ragnarok', tier: 4, position: 1, requiredPoints: 60, maxLevel: 10, prerequisites: ['skill_pravera'] },
+            { skillId: 'skill_magic_protection', tier: 2, position: 2, requiredPoints: 10, maxLevel: 10, prerequisites: [] }
+        ]
+    },
+    // ============================================================
+    // 도적 스킬 트리
+    // ============================================================
+    {
+        id: 'tree_rogue_assassination',
+        name: 'Assassination',
+        nameKo: '암살',
+        classId: 'rogue',
+        nodes: [
+            { skillId: 'skill_stab', tier: 1, position: 1, requiredPoints: 0, maxLevel: 10, prerequisites: [] },
+            { skillId: 'skill_assault', tier: 2, position: 0, requiredPoints: 5, maxLevel: 10, prerequisites: ['skill_stab'] },
+            { skillId: 'skill_backstep', tier: 3, position: 1, requiredPoints: 25, maxLevel: 10, prerequisites: ['skill_assault'] }
+        ]
+    },
+    {
+        id: 'tree_rogue_shadow',
+        name: 'Shadow Arts',
+        nameKo: '그림자 기술',
+        classId: 'rogue',
+        nodes: [
+            { skillId: 'skill_hide', tier: 1, position: 1, requiredPoints: 0, maxLevel: 10, prerequisites: [] },
+            { skillId: 'skill_amnesia', tier: 2, position: 1, requiredPoints: 10, maxLevel: 5, prerequisites: ['skill_hide'] }
+        ]
+    },
+    // ============================================================
+    // 성직자 스킬 트리
+    // ============================================================
+    {
+        id: 'tree_cleric_heal',
+        name: 'Healing Arts',
+        nameKo: '치유술',
+        classId: 'cleric',
+        nodes: [
+            { skillId: 'skill_kuro', tier: 1, position: 1, requiredPoints: 0, maxLevel: 10, prerequisites: [] },
+            { skillId: 'skill_kurano', tier: 2, position: 0, requiredPoints: 10, maxLevel: 10, prerequisites: ['skill_kuro'] },
+            { skillId: 'skill_kurus', tier: 2, position: 2, requiredPoints: 10, maxLevel: 10, prerequisites: ['skill_kuro'] },
+            { skillId: 'skill_kuranoso', tier: 3, position: 1, requiredPoints: 35, maxLevel: 10, prerequisites: ['skill_kurano'] },
+            { skillId: 'skill_divenomo', tier: 2, position: 1, requiredPoints: 5, maxLevel: 5, prerequisites: [] },
+            { skillId: 'skill_dispella', tier: 3, position: 2, requiredPoints: 20, maxLevel: 10, prerequisites: ['skill_divenomo'] }
+        ]
+    },
+    {
+        id: 'tree_cleric_holy',
+        name: 'Holy Power',
+        nameKo: '신성력',
+        classId: 'cleric',
+        nodes: [
+            { skillId: 'skill_holy_bolt', tier: 1, position: 1, requiredPoints: 0, maxLevel: 10, prerequisites: [] },
+            { skillId: 'skill_immortal', tier: 4, position: 1, requiredPoints: 40, maxLevel: 10, prerequisites: ['skill_holy_bolt'] }
+        ]
+    },
+    // ============================================================
+    // 무도가 스킬 트리
+    // ============================================================
+    {
+        id: 'tree_monk_fist',
+        name: 'Martial Arts',
+        nameKo: '권술',
+        classId: 'monk',
+        nodes: [
+            { skillId: 'skill_jeongkwon', tier: 1, position: 1, requiredPoints: 0, maxLevel: 10, prerequisites: [] },
+            { skillId: 'skill_dangak', tier: 2, position: 0, requiredPoints: 5, maxLevel: 10, prerequisites: ['skill_jeongkwon'] },
+            { skillId: 'skill_yangui', tier: 2, position: 2, requiredPoints: 5, maxLevel: 10, prerequisites: ['skill_jeongkwon'] },
+            { skillId: 'skill_ihyeong', tier: 3, position: 1, requiredPoints: 20, maxLevel: 10, prerequisites: ['skill_dangak', 'skill_yangui'] },
+            { skillId: 'skill_dalma', tier: 5, position: 1, requiredPoints: 50, maxLevel: 10, prerequisites: ['skill_ihyeong'] }
+        ]
+    },
+    {
+        id: 'tree_monk_spirit',
+        name: 'Spirit Arts',
+        nameKo: '기공술',
+        classId: 'monk',
+        nodes: [
+            { skillId: 'skill_jangpung', tier: 1, position: 1, requiredPoints: 0, maxLevel: 10, prerequisites: [] },
+            { skillId: 'skill_geumgang', tier: 3, position: 1, requiredPoints: 30, maxLevel: 10, prerequisites: ['skill_jangpung'] },
+            { skillId: 'skill_kuranoto', tier: 2, position: 2, requiredPoints: 10, maxLevel: 10, prerequisites: [] }
         ]
     }
 ];

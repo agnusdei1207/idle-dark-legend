@@ -22,10 +22,11 @@ import { Player } from '../entities/Player';
 import { Monster } from '../entities/Monster';
 import { NPC } from '../entities/NPC';
 import { QuestSystem, CombatSystem, SaveSystem, getDefaultSaveData, IdleSystem, HUNTING_ZONES } from '../systems';
-import { InventoryUI, DialogueUI, QuestUI, ShopUI, CharacterUI, SkillTreeUI, CircleUI, HuntingZoneUI, OfflineRewardUI } from '../ui';
+import { InventoryUI, DialogueUI, QuestUI, ShopUI, CharacterUI, SkillTreeUI, CircleUI, HuntingZoneUI, OfflineRewardUI, JobSelectionUI } from '../ui';
 import { getMapById, generateProceduralMap } from '../data/maps.data';
 import { getMonstersByCircle } from '../data/monsters.data';
 import type { Position, MapDefinition } from '../types/game.types';
+import type { ClassType } from '../data/classes.data';
 
 export class GameScene extends Phaser.Scene {
     // 엔티티
@@ -56,6 +57,7 @@ export class GameScene extends Phaser.Scene {
     private circleUI!: CircleUI;
     private huntingZoneUI!: HuntingZoneUI;
     private offlineRewardUI!: OfflineRewardUI;
+    private jobSelectionUI!: JobSelectionUI;
 
     // 맵
     private currentMap!: MapDefinition;
@@ -87,48 +89,75 @@ export class GameScene extends Phaser.Scene {
     }
 
     create(): void {
-        const { width } = this.cameras.main;
+        console.log('🚀 GameScene.create() 시작!');
 
-        // 시스템 초기화
-        this.questSystem = new QuestSystem();
-        this.combatSystem = new CombatSystem();
-        this.idleSystem = new IdleSystem();
+        try {
+            const { width } = this.cameras.main;
+            console.log('  [1] 카메라 가져옴. width:', width);
 
-        // 월드 컨테이너
-        this.worldContainer = this.add.container(width / 2, 150);
+            // 카메라 배경색 설정 (검정 화면 방지)
+            this.cameras.main.setBackgroundColor('#1a1a2e');
+            console.log('  [2] 배경색 설정됨');
 
-        // 맵 생성
-        this.createMap();
+            // 시스템 초기화
+            this.questSystem = new QuestSystem();
+            this.combatSystem = new CombatSystem();
+            this.idleSystem = new IdleSystem();
+            console.log('  [3] 시스템 초기화됨');
 
-        // 엔티티 생성
-        this.createEntities();
+            // 월드 컨테이너
+            this.worldContainer = this.add.container(width / 2, 150);
+            console.log('  [4] 월드 컨테이너 생성됨');
 
-        // UI 생성
-        this.createUI();
+            // 맵 생성
+            this.createMap();
+            console.log('  [5] 맵 생성됨');
 
-        // 입력 설정
-        this.setupInput();
+            // 엔티티 생성
+            this.createEntities();
+            console.log('  [6] 엔티티 생성됨');
 
-        // 이벤트 리스너
-        this.setupEvents();
+            // UI 생성
+            this.createUI();
+            console.log('  [7] UI 생성됨');
 
-        // 페이드 인
-        this.cameras.main.fadeIn(500);
+            // 입력 설정
+            this.setupInput();
+            console.log('  [8] 입력 설정됨');
 
-        // UI 씬 시작
-        this.scene.launch('UIScene', { player: this.player });
+            // 이벤트 리스너
+            this.setupEvents();
+            console.log('  [9] 이벤트 리스너 설정됨');
 
-        // 저장 데이터 로드
-        this.loadGame();
+            // 페이드 인
+            this.cameras.main.fadeIn(500);
+            console.log('  [10] 페이드 인 시작');
 
-        // 오프라인 보상 체크
-        this.checkOfflineReward();
+            // UI 씬 시작
+            this.scene.launch('UIScene', { player: this.player });
+            console.log('  [11] UIScene 시작됨');
 
-        // 디버그 정보
-        if (import.meta.env.DEV) {
-            this.add.text(10, 10, `🎮 ${this.currentMap.nameKo}`, {
-                fontSize: '14px', color: '#0f0'
-            }).setScrollFactor(0).setDepth(2000);
+            // 저장 데이터 로드
+            this.loadGame();
+            console.log('  [12] 게임 로드됨');
+
+            // 오프라인 보상 체크
+            this.checkOfflineReward();
+            console.log('  [13] 오프라인 보상 체크됨');
+
+            // 디버그 정보
+            if (import.meta.env.DEV) {
+                this.add.text(10, 10, `🎮 ${this.currentMap.nameKo}`, {
+                    fontSize: '14px', color: '#0f0'
+                }).setScrollFactor(0).setDepth(2000);
+            }
+
+            // 디버그: GameScene 생성 완료 로그
+            console.log('✅ GameScene.create() 완료!');
+            console.log('  - 카메라 크기:', this.cameras.main.width, 'x', this.cameras.main.height);
+            console.log('  - 월드 컨테이너:', this.worldContainer.list.length, '개 오브젝트');
+        } catch (error) {
+            console.error('❌ GameScene.create() 에러:', error);
         }
     }
 
@@ -215,6 +244,9 @@ export class GameScene extends Phaser.Scene {
         this.huntingZoneUI = new HuntingZoneUI(this, this.idleSystem);
         this.huntingZoneUI.setPlayerLevel(this.player.getLevel());
         this.offlineRewardUI = new OfflineRewardUI(this);
+
+        // 직업 선택 UI
+        this.jobSelectionUI = new JobSelectionUI(this);
     }
 
     /**
@@ -306,9 +338,21 @@ export class GameScene extends Phaser.Scene {
             // MP 회복 등 추가 가능
         });
 
+        // 골드 변경 시 UIScene에 반영
+        this.player.getInventory().on('goldChanged', (gold: number) => {
+            const uiScene = this.scene.get('UIScene') as any;
+            if (uiScene?.updateGold) {
+                uiScene.updateGold(gold);
+            }
+        });
+
         // 레벨업
         this.events.on('levelUp', (level: number) => {
             this.showLevelUpMessage(level);
+            // 레벨 6 전직 체크
+            if (level === 6 && !this.player.getData('job')) {
+                this.showJobSelectionPrompt();
+            }
         });
     }
 
@@ -341,7 +385,10 @@ export class GameScene extends Phaser.Scene {
         // 1. 대화 중이면 무시
         if (this.dialogueUI.getIsOpen()) return;
 
-        // 2. 오프라인 보상 UI
+        // 2. 직업 선택 UI (닫기 불가 - 선택 필수)
+        if (this.jobSelectionUI.getIsOpen()) return;
+
+        // 3. 오프라인 보상 UI
         if (this.offlineRewardUI.getIsOpen()) {
             this.offlineRewardUI.close();
             return;
@@ -404,6 +451,45 @@ export class GameScene extends Phaser.Scene {
      */
     private showGameMenu(): void {
         this.showPauseMenu();
+    }
+
+    /**
+     * 직업 선택 UI 표시 (레벨 6 전직)
+     */
+    private showJobSelectionPrompt(): void {
+        this.jobSelectionUI.open((selectedJob: ClassType) => {
+            this.player.setData('job', selectedJob);
+            this.player.setData('classType', selectedJob);
+
+            // UIScene에 직업 정보 전달
+            const uiScene = this.scene.get('UIScene') as any;
+            if (uiScene?.updateClass) {
+                const jobNames: Record<ClassType, string> = {
+                    warrior: '전사',
+                    mage: '마법사',
+                    rogue: '도적',
+                    cleric: '성직자',
+                    monk: '무도가'
+                };
+                uiScene.updateClass(jobNames[selectedJob]);
+            }
+
+            this.showAutoHuntMessage(`🎉 ${this.getJobName(selectedJob)}(으)로 전직했습니다!`);
+        });
+    }
+
+    /**
+     * 직업 이름 가져오기
+     */
+    private getJobName(job: ClassType): string {
+        const names: Record<ClassType, string> = {
+            warrior: '전사',
+            mage: '마법사',
+            rogue: '도적',
+            cleric: '성직자',
+            monk: '무도가'
+        };
+        return names[job] || job;
     }
 
     /**

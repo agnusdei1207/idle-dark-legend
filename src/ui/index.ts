@@ -11,3 +11,4 @@ export { PartyUI } from './PartyUI';
 export type { PartyMember } from './PartyUI';
 export { OfflineRewardUI } from './OfflineRewardUI';
 export { HuntingZoneUI } from './HuntingZoneUI';
+export { JobSelectionUI } from './JobSelectionUI';
