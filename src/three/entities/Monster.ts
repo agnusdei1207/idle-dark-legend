@@ -484,6 +484,21 @@ export class Monster {
     }
 
     /**
+     * 공격 가능 여부 확인
+     */
+    public canAttack(): boolean {
+        return this.attackCooldown <= 0;
+    }
+
+    /**
+     * 공격 쿨다임 리셋
+     */
+    public resetAttackCooldown(): void {
+        const attackSpeed = this.data.stats.attackSpeed || 1.5;
+        this.attackCooldown = attackSpeed;
+    }
+
+    /**
      * 데미지 플래시 효과
      */
     private flashDamage(): void {

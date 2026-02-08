@@ -434,19 +434,228 @@ export class GameScene implements BaseScene {
         this.monsters.forEach((monster) => {
             if (!monster.isDead()) {
                 monster.updateAI(deltaTime, playerPosition, this.player);
+
+                // 플레이어 공격 범위 확인
+                const distance = this.getDistance(this.player.getPosition(), monster.getPosition());
+                if (distance <= 60 && monster.data.ai !== 'passive') {
+                    // 몬스터가 플레이어를 공격
+                    if (monster.canAttack()) {
+                        const damage = monster.data.stats.attack || 10;
+                        this.player.takeDamage(damage);
+                        this.showDamageNumber(this.player.mesh.position, damage, 'player');
+                        monster.resetAttackCooldown();
+                    }
+                }
             }
         });
 
-        // 죽은 몬스터 제거
+        // 죽은 몬스터 처리
         this.monsters.forEach((monster, id) => {
             if (monster.isDead()) {
-                // TODO: 죽은 몬스터 처리 (경험치, 드롭 등)
-                console.log(`Monster ${id} died`);
+                // 경험치 보상
+                const expGain = monster.data.exp || 0;
+                if (this.player && expGain > 0) {
+                    this.player.gainExp(expGain);
+                    this.showExpNotification(expGain);
+                }
+
+                // 골드 보상
+                const goldGain = monster.data.gold.min + Math.floor(Math.random() * (monster.data.gold.max - monster.data.gold.min));
+                if (goldGain > 0) {
+                    this.showGoldNotification(goldGain);
+                }
+
+                console.log(`Monster ${id} died - gained ${expGain} EXP, ${goldGain} gold`);
+
+                // 메시에서 제거
                 this.entityGroup.remove(monster.mesh);
                 monster.destroy();
                 this.monsters.delete(id);
             }
         });
+    }
+
+    /**
+     * 플레이어 공격 처리
+     */
+    private handlePlayerAttack(): void {
+        if (!this.player) return;
+
+        const playerPosition = this.player.getPosition();
+
+        // 근처 몬스터 찾기
+        let nearestMonster: Monster | null = null;
+        let nearestDistance = Infinity;
+
+        this.monsters.forEach((monster) => {
+            if (!monster.isDead()) {
+                const distance = this.getDistance(playerPosition, monster.getPosition());
+                if (distance <= 80 && distance < nearestDistance) {
+                    nearestDistance = distance;
+                    nearestMonster = monster;
+                }
+            }
+        });
+
+        // 공격
+        if (nearestMonster) {
+            const damage = this.player.stats?.str || 10; // 기본 공격력
+            nearestMonster.takeDamage(damage, this.player);
+            this.showDamageNumber(nearestMonster.mesh.position, damage, 'monster');
+            this.player.playAttackAnimation();
+
+            // 반격 체크
+            if (nearestMonster.isDead()) {
+                console.log('Monster killed!');
+            } else {
+                // 공격당하면 추적 시작
+                // (몬스터 AI가 자동 처리)
+            }
+        }
+    }
+
+    /**
+     * 거리 계산
+     */
+    private getDistance(pos1: Position, pos2: Position): number {
+        const dx = pos1.x - pos2.x;
+        const dy = pos1.y - pos2.y;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    /**
+     * 데미지 숫자 표시
+     */
+    private showDamageNumber(position: THREE.Vector3, damage: number, target: 'player' | 'monster'): void {
+        const container = document.getElementById('game-container');
+        if (!container) return;
+
+        const damageId = `damage-${Date.now()}-${Math.random()}`;
+        const color = target === 'player' ? '#e74c3c' : '#f39c12';
+
+        const damageHtml = `
+            <div id="${damageId}" style="
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                color: ${color};
+                font-size: 24px;
+                font-weight: bold;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+                pointer-events: none;
+                z-index: 3000;
+                animation: damageFloat 1s ease-out forwards;
+            ">-${damage}</div>
+            <style>
+                @keyframes damageFloat {
+                    0% {
+                        opacity: 1;
+                        transform: translate(-50%, -50%) translateY(0) scale(1);
+                    }
+                    100% {
+                        opacity: 0;
+                        transform: translate(-50%, -100%) translateY(-50px) scale(1.2);
+                    }
+                }
+            </style>
+        `;
+
+        container.insertAdjacentHTML('beforeend', damageHtml);
+
+        // 1초 후 제거
+        setTimeout(() => {
+            const el = document.getElementById(damageId);
+            if (el) el.remove();
+        }, 1000);
+    }
+
+    /**
+     * 경험치 획득 알림
+     */
+    private showExpNotification(exp: number): void {
+        const container = document.getElementById('game-container');
+        if (!container) return;
+
+        const expId = `exp-${Date.now()}`;
+        const expHtml = `
+            <div id="${expId}" style="
+                position: absolute;
+                top: 30%;
+                left: 50%;
+                transform: translateX(-50%);
+                color: #f39c12;
+                font-size: 18px;
+                font-weight: bold;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+                pointer-events: none;
+                z-index: 3000;
+                animation: expFloat 2s ease-out forwards;
+            ">+${exp} EXP</div>
+            <style>
+                @keyframes expFloat {
+                    0% {
+                        opacity: 1;
+                        transform: translateX(-50%) translateY(0);
+                    }
+                    100% {
+                        opacity: 0;
+                        transform: translateX(-50%) translateY(-80px);
+                    }
+                }
+            </style>
+        `;
+
+        container.insertAdjacentHTML('beforeend', expHtml);
+
+        setTimeout(() => {
+            const el = document.getElementById(expId);
+            if (el) el.remove();
+        }, 2000);
+    }
+
+    /**
+     * 골드 획득 알림
+     */
+    private showGoldNotification(gold: number): void {
+        const container = document.getElementById('game-container');
+        if (!container) return;
+
+        const goldId = `gold-${Date.now()}`;
+        const goldHtml = `
+            <div id="${goldId}" style="
+                position: absolute;
+                top: 35%;
+                left: 50%;
+                transform: translateX(-50%);
+                color: #f1c40f;
+                font-size: 18px;
+                font-weight: bold;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+                pointer-events: none;
+                z-index: 3000;
+                animation: goldFloat 2s ease-out forwards;
+            ">+${gold} G</div>
+            <style>
+                @keyframes goldFloat {
+                    0% {
+                        opacity: 1;
+                        transform: translateX(-50%) translateY(0);
+                    }
+                    100% {
+                        opacity: 0;
+                        transform: translateX(-50%) translateY(-60px);
+                    }
+                }
+            </style>
+        `;
+
+        container.insertAdjacentHTML('beforeend', goldHtml);
+
+        setTimeout(() => {
+            const el = document.getElementById(goldId);
+            if (el) el.remove();
+        }, 2000);
     }
 
     /**
@@ -700,7 +909,7 @@ export class GameScene implements BaseScene {
                 this.startDialogue(this.activeNPC);
             } else if (this.player) {
                 // 공격
-                this.player.playAttackAnimation();
+                this.handlePlayerAttack();
             }
         }
     }

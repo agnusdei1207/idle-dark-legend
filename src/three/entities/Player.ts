@@ -144,6 +144,13 @@ export class Player {
     }
 
     /**
+     * 스탯 가져오기
+     */
+    public getStats() {
+        return this.stats;
+    }
+
+    /**
      * 이동 처리
      */
     public move(deltaTime: number, direction: { x: number; y: number }): void {
