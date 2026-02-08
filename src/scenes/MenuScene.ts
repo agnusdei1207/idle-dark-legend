@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 
 /**
  * 메인 메뉴 씬
+ * 어둠의전설 클래식
  */
 export class MenuScene extends Phaser.Scene {
     constructor() {
@@ -17,22 +18,33 @@ export class MenuScene extends Phaser.Scene {
         bg.fillRect(0, 0, width, height);
 
         // 타이틀
-        const title = this.add.text(width / 2, height * 0.3, 'Shadow Realm', {
+        const title = this.add.text(width / 2, height * 0.25, '어둠의전설', {
             fontFamily: 'Georgia, serif',
-            fontSize: '64px',
+            fontSize: '72px',
             color: '#e94560',
             stroke: '#0f3460',
-            strokeThickness: 6
+            strokeThickness: 6,
+            fontStyle: 'bold'
         });
         title.setOrigin(0.5);
 
         // 부제
-        const subtitle = this.add.text(width / 2, height * 0.4, 'A Tribute to Classic Korean MMORPGs', {
+        const subtitle = this.add.text(width / 2, height * 0.35, '클래식', {
             fontFamily: 'Georgia, serif',
-            fontSize: '18px',
-            color: '#aaa'
+            fontSize: '36px',
+            color: '#ffd700',
+            stroke: '#0f3460',
+            strokeThickness: 3
         });
         subtitle.setOrigin(0.5);
+
+        // 설명
+        const description = this.add.text(width / 2, height * 0.45, '방치형 RPG - 클래식의 향취', {
+            fontFamily: 'Georgia, serif',
+            fontSize: '16px',
+            color: '#aaa'
+        });
+        description.setOrigin(0.5);
 
         // 시작 버튼
         const startBtn = this.add.text(width / 2, height * 0.6, '[ 게임 시작 ]', {
@@ -40,7 +52,7 @@ export class MenuScene extends Phaser.Scene {
             fontSize: '28px',
             color: '#fff',
             backgroundColor: '#e94560',
-            padding: { x: 30, y: 15 }
+            padding: { x: 40, y: 15 }
         });
         startBtn.setOrigin(0.5);
         startBtn.setInteractive({ useHandCursor: true });
@@ -72,17 +84,24 @@ export class MenuScene extends Phaser.Scene {
         });
 
         // 버전 정보
-        this.add.text(10, height - 30, 'v0.1.0 - Fan Project', {
+        this.add.text(10, height - 30, 'v0.2.0 - 팬 프로젝트', {
             fontFamily: 'monospace',
             fontSize: '12px',
             color: '#555'
         });
 
         // 법적 고지
-        this.add.text(width - 10, height - 30, 'Not affiliated with any game company', {
+        this.add.text(width - 10, height - 30, '어둠의전설은 넥슨의 등록상표입니다', {
             fontFamily: 'monospace',
-            fontSize: '12px',
+            fontSize: '11px',
             color: '#555'
+        }).setOrigin(1, 0);
+
+        // 크레딧
+        this.add.text(width - 10, height - 50, '본 게임은 팬 프로젝트로 제작되었습니다', {
+            fontFamily: 'monospace',
+            fontSize: '11px',
+            color: '#666'
         }).setOrigin(1, 0);
 
         // 페이드 인

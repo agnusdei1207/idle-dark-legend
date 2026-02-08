@@ -7,6 +7,32 @@
 import type { SkillDefinition } from '../types/game.types';
 
 // ============================================================
+// 기본 스킬 (모든 직업 공통)
+// ============================================================
+
+export const BASIC_SKILLS: SkillDefinition[] = [
+    {
+        id: 'skill_basic_attack',
+        name: 'Basic Attack',
+        nameKo: '기본 공격',
+        description: '기본적인 공격을 수행합니다.',
+        type: 'active',
+        target: 'single',
+        element: 'none',
+        iconKey: 'skill-icons',
+        iconFrame: 0,
+        effectKey: 'effect-basic',
+        mpCost: 0,
+        cooldown: 1000,
+        castTime: 0,
+        range: 1,
+        basePower: 100,
+        scaling: [{ stat: 'str', ratio: 1.0 }],
+        requiredLevel: 1
+    }
+];
+
+// ============================================================
 // 전사 스킬
 // ============================================================
 
@@ -360,6 +386,7 @@ export const MONK_SKILLS: SkillDefinition[] = [
 // ============================================================
 
 export const ALL_SKILLS: SkillDefinition[] = [
+    ...BASIC_SKILLS,
     ...WARRIOR_SKILLS,
     ...MAGE_SKILLS,
     ...ROGUE_SKILLS,

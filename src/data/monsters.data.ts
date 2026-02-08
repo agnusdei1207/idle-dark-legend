@@ -1,6 +1,11 @@
 /**
  * ============================================================
- * 어둠의전설 몬스터 데이터 - Idle RPG 버전
+ * 어둠의전설(Legend of Darkness) 몬스터 데이터베이스
+ * ============================================================
+ * 넥슨 어둠의전설 (1998/2005) 최초 출시 버전 기준
+ *
+ * 참고: 본 데이터는 팬 프로젝트로, 원본 게임의 몬스터와 사냥터를
+ * 최대한 재현하기 위해 작성되었습니다.
  * ============================================================
  */
 
@@ -26,104 +31,108 @@ function createCombatStats(level: number, hp: number, attack: number, defense: n
     };
 }
 
-// ========== 1써클 몬스터 (Lv 1~10) ==========
+// ============================================================
+// 1서클 몬스터 (Lv 1~10) - 노비스 마을 주변, 우드랜드
+// ============================================================
+
 export const MONSTERS_CIRCLE_1: MonsterDefinition[] = [
+    // 노비스 마을 주변 몬스터
     {
-        id: 'rat',
-        name: 'Rat',
-        nameKo: '쥐',
-        spriteKey: 'monster_rat',
+        id: 'mon_pampat',
+        name: 'Pampat',
+        nameKo: '팜팻',
+        spriteKey: 'monster_pampat',
         level: 1,
-        element: 'none',
-        stats: createCombatStats(1, 10, 2, 0),
+        element: 'earth',
+        stats: createCombatStats(1, 15, 2, 0),
         attackPattern: 'melee',
         attackRange: 1,
         aggroRange: 3,
         drops: [
-            { itemId: 'rat_tail', chance: 30, minQuantity: 1, maxQuantity: 1 },
-            { itemId: 'cheese', chance: 10, minQuantity: 1, maxQuantity: 1 }
-        ],
-        exp: 3,
-        gold: { min: 1, max: 2 },
-        aiType: 'passive'
-    },
-    {
-        id: 'bat',
-        name: 'Bat',
-        nameKo: '박쥐',
-        spriteKey: 'monster_bat',
-        level: 2,
-        element: 'dark',
-        stats: createCombatStats(2, 15, 3, 0),
-        attackPattern: 'melee',
-        attackRange: 1,
-        aggroRange: 4,
-        drops: [
-            { itemId: 'bat_wing', chance: 25, minQuantity: 1, maxQuantity: 2 }
+            { itemId: 'mat_plant_fiber', chance: 30, minQuantity: 1, maxQuantity: 2 }
         ],
         exp: 5,
         gold: { min: 1, max: 3 },
-        aiType: 'aggressive'
+        aiType: 'passive'
     },
     {
-        id: 'spider',
-        name: 'Spider',
-        nameKo: '거미',
-        spriteKey: 'monster_spider',
-        level: 3,
-        element: 'none',
-        stats: createCombatStats(3, 20, 4, 1),
+        id: 'mon_nie',
+        name: 'Nie',
+        nameKo: '니에',
+        spriteKey: 'monster_nie',
+        level: 2,
+        element: 'earth',
+        stats: createCombatStats(2, 20, 3, 1),
         attackPattern: 'melee',
         attackRange: 1,
         aggroRange: 4,
         drops: [
-            { itemId: 'spider_silk', chance: 20, minQuantity: 1, maxQuantity: 2 },
-            { itemId: 'poison_gland', chance: 10, minQuantity: 1, maxQuantity: 1 }
+            { itemId: 'mat_nie_feather', chance: 25, minQuantity: 1, maxQuantity: 2 },
+            { itemId: 'mat_tiny_bone', chance: 15, minQuantity: 1, maxQuantity: 1 }
         ],
-        exp: 7,
+        exp: 8,
         gold: { min: 2, max: 4 },
-        aiType: 'aggressive'
+        aiType: 'passive'
     },
     {
-        id: 'goblin',
-        name: 'Goblin',
-        nameKo: '고블린',
-        spriteKey: 'monster_goblin',
-        level: 5,
-        element: 'none',
-        stats: createCombatStats(5, 35, 6, 2),
-        attackPattern: 'melee',
-        attackRange: 1,
-        aggroRange: 5,
-        drops: [
-            { itemId: 'goblin_ear', chance: 25, minQuantity: 1, maxQuantity: 1 },
-            { itemId: 'rusty_dagger', chance: 5, minQuantity: 1, maxQuantity: 1 }
-        ],
-        exp: 12,
-        gold: { min: 3, max: 7 },
-        aiType: 'aggressive'
-    },
-    {
-        id: 'slime',
-        name: 'Slime',
-        nameKo: '슬라임',
-        spriteKey: 'monster_slime',
-        level: 4,
-        element: 'water',
-        stats: createCombatStats(4, 40, 4, 3),
+        id: 'mon_wandu',
+        name: 'Pea',
+        nameKo: '완두콩',
+        spriteKey: 'monster_pea',
+        level: 3,
+        element: 'earth',
+        stats: createCombatStats(3, 25, 4, 1),
         attackPattern: 'melee',
         attackRange: 1,
         aggroRange: 3,
         drops: [
-            { itemId: 'slime_jelly', chance: 35, minQuantity: 1, maxQuantity: 2 },
-            { itemId: 'slime_core', chance: 5, minQuantity: 1, maxQuantity: 1 }
+            { itemId: 'mat_pea_pod', chance: 30, minQuantity: 1, maxQuantity: 2 },
+            { itemId: 'mat_plant_seed', chance: 20, minQuantity: 1, maxQuantity: 2 }
         ],
         exp: 10,
         gold: { min: 2, max: 5 },
         aiType: 'passive'
     },
     {
-        id: 'wolf',
+        id: 'mon_mantis',
+        name: 'Mantis',
+        nameKo: '맨티스',
+        spriteKey: 'monster_mantis',
+        level: 4,
+        element: 'earth',
+        stats: createCombatStats(4, 35, 5, 2),
+        attackPattern: 'melee',
+        attackRange: 1,
+        aggroRange: 5,
+        drops: [
+            { itemId: 'mat_mantis_claw', chance: 25, minQuantity: 1, maxQuantity: 2 },
+            { itemId: 'mat_insect_wing', chance: 15, minQuantity: 1, maxQuantity: 1 }
+        ],
+        exp: 12,
+        gold: { min: 3, max: 6 },
+        aiType: 'aggressive'
+    },
+    {
+        id: 'mon_wasp',
+        name: 'Wasp',
+        nameKo: '말벌',
+        spriteKey: 'monster_wasp',
+        level: 5,
+        element: 'earth',
+        stats: createCombatStats(5, 30, 6, 1),
+        attackPattern: 'melee',
+        attackRange: 1,
+        aggroRange: 6,
+        drops: [
+            { itemId: 'mat_wasp_stinger', chance: 25, minQuantity: 1, maxQuantity: 2 },
+            { itemId: 'mat_honeycomb', chance: 10, minQuantity: 1, maxQuantity: 1 }
+        ],
+        exp: 15,
+        gold: { min: 3, max: 7 },
+        aiType: 'aggressive'
+    },
+    {
+        id: 'mon_wolf',
         name: 'Wolf',
         nameKo: '늑대',
         spriteKey: 'monster_wolf',
@@ -134,731 +143,535 @@ export const MONSTERS_CIRCLE_1: MonsterDefinition[] = [
         attackRange: 1,
         aggroRange: 6,
         drops: [
-            { itemId: 'wolf_pelt', chance: 20, minQuantity: 1, maxQuantity: 1 },
-            { itemId: 'wolf_fang', chance: 15, minQuantity: 1, maxQuantity: 2 }
+            { itemId: 'mat_wolf_pelt', chance: 20, minQuantity: 1, maxQuantity: 1 },
+            { itemId: 'mat_wolf_fang', chance: 15, minQuantity: 1, maxQuantity: 2 }
         ],
-        exp: 15,
+        exp: 18,
         gold: { min: 4, max: 8 },
         aiType: 'aggressive'
     },
     {
-        id: 'orc',
-        name: 'Orc',
-        nameKo: '오크',
-        spriteKey: 'monster_orc',
+        id: 'mon_spider',
+        name: 'Spider',
+        nameKo: '거미',
+        spriteKey: 'monster_spider',
+        level: 7,
+        element: 'none',
+        stats: createCombatStats(7, 40, 7, 2),
+        attackPattern: 'melee',
+        attackRange: 1,
+        aggroRange: 5,
+        drops: [
+            { itemId: 'mat_spider_silk', chance: 25, minQuantity: 1, maxQuantity: 2 },
+            { itemId: 'mat_poison_sac', chance: 12, minQuantity: 1, maxQuantity: 1 }
+        ],
+        exp: 20,
+        gold: { min: 4, max: 9 },
+        aiType: 'aggressive'
+    },
+    {
+        id: 'mon_centipede',
+        name: 'Centipede',
+        nameKo: '지네',
+        spriteKey: 'monster_centipede',
         level: 8,
         element: 'earth',
-        stats: createCombatStats(8, 70, 10, 4),
+        stats: createCombatStats(8, 50, 9, 3),
         attackPattern: 'melee',
         attackRange: 1,
         aggroRange: 5,
         drops: [
-            { itemId: 'orc_tooth', chance: 20, minQuantity: 1, maxQuantity: 1 },
-            { itemId: 'leather_armor_piece', chance: 8, minQuantity: 1, maxQuantity: 1 }
+            { itemId: 'mat_centipede_leg', chance: 20, minQuantity: 1, maxQuantity: 2 },
+            { itemId: 'mat_venom_fang', chance: 10, minQuantity: 1, maxQuantity: 1 }
         ],
         exp: 22,
-        gold: { min: 6, max: 12 },
+        gold: { min: 5, max: 10 },
         aiType: 'aggressive'
     },
+    // 주황색 쥐 (노비스 던전)
     {
-        id: 'troll',
-        name: 'Troll',
-        nameKo: '트롤',
-        spriteKey: 'monster_troll',
+        id: 'mon_orange_rat',
+        name: 'Orange Rat',
+        nameKo: '주황쥐',
+        spriteKey: 'monster_orange_rat',
         level: 9,
-        element: 'earth',
-        stats: createCombatStats(9, 90, 12, 5),
-        attackPattern: 'melee',
-        attackRange: 1,
-        aggroRange: 5,
-        drops: [
-            { itemId: 'troll_blood', chance: 15, minQuantity: 1, maxQuantity: 1 },
-            { itemId: 'troll_club', chance: 5, minQuantity: 1, maxQuantity: 1 }
-        ],
-        exp: 28,
-        gold: { min: 8, max: 15 },
-        aiType: 'aggressive'
-    },
-    {
-        id: 'bear',
-        name: 'Wild Bear',
-        nameKo: '야생곰',
-        spriteKey: 'monster_bear',
-        level: 10,
         element: 'none',
-        stats: createCombatStats(10, 100, 14, 6),
+        stats: createCombatStats(9, 60, 10, 4),
         attackPattern: 'melee',
         attackRange: 1,
         aggroRange: 4,
         drops: [
-            { itemId: 'bear_pelt', chance: 15, minQuantity: 1, maxQuantity: 1 },
-            { itemId: 'bear_claw', chance: 20, minQuantity: 1, maxQuantity: 2 },
-            { itemId: 'raw_meat', chance: 30, minQuantity: 1, maxQuantity: 2 }
+            { itemId: 'mat_rat_tail', chance: 30, minQuantity: 1, maxQuantity: 1 },
+            { itemId: 'mat_orange_fur', chance: 20, minQuantity: 1, maxQuantity: 1 }
+        ],
+        exp: 25,
+        gold: { min: 6, max: 12 },
+        aiType: 'passive'
+    },
+    // 큐르페이 (우드랜드 보스)
+    {
+        id: 'mon_curupay',
+        name: 'Curupay',
+        nameKo: '큐르페이',
+        spriteKey: 'monster_curupay',
+        level: 10,
+        element: 'earth',
+        stats: createCombatStats(10, 80, 12, 5),
+        attackPattern: 'melee',
+        attackRange: 1,
+        aggroRange: 5,
+        drops: [
+            { itemId: 'mat_curupay_root', chance: 15, minQuantity: 1, maxQuantity: 1 },
+            { itemId: 'mat_ancient_seed', chance: 8, minQuantity: 1, maxQuantity: 1 }
         ],
         exp: 35,
         gold: { min: 10, max: 18 },
-        aiType: 'passive'
+        aiType: 'aggressive'
     }
 ];
 
-// ========== 2써클 몬스터 (Lv 11~40) ==========
+// ============================================================
+// 2서클 몬스터 (Lv 11~40) - 포테의 숲, 피에트 마을
+// ============================================================
+
 export const MONSTERS_CIRCLE_2: MonsterDefinition[] = [
     {
-        id: 'mushroom_fairy',
-        name: 'Mushroom Fairy',
-        nameKo: '버섯요정',
-        spriteKey: 'monster_mushroom',
-        level: 15,
-        element: 'earth',
-        stats: createCombatStats(15, 120, 18, 8),
-        attackPattern: 'magic',
-        attackRange: 3,
+        id: 'mon_goblin_soldier',
+        name: 'Goblin Soldier',
+        nameKo: '고블린병사',
+        spriteKey: 'monster_goblin_soldier',
+        level: 12,
+        element: 'none',
+        stats: createCombatStats(12, 100, 15, 6),
+        attackPattern: 'melee',
+        attackRange: 1,
         aggroRange: 5,
         drops: [
-            { itemId: 'fairy_dust', chance: 20, minQuantity: 1, maxQuantity: 2 },
-            { itemId: 'magic_mushroom', chance: 15, minQuantity: 1, maxQuantity: 1 }
+            { itemId: 'mat_goblin_ear', chance: 25, minQuantity: 1, maxQuantity: 1 },
+            { itemId: 'weapon_rusty_dagger', chance: 5, minQuantity: 1, maxQuantity: 1 }
         ],
-        exp: 45,
-        gold: { min: 15, max: 25 },
+        exp: 40,
+        gold: { min: 10, max: 20 },
+        aiType: 'aggressive'
+    },
+    {
+        id: 'mon_goblin_warrior',
+        name: 'Goblin Warrior',
+        nameKo: '고블린전사',
+        spriteKey: 'monster_goblin_warrior',
+        level: 18,
+        element: 'none',
+        stats: createCombatStats(18, 150, 22, 10),
+        attackPattern: 'melee',
+        attackRange: 1,
+        aggroRange: 6,
+        drops: [
+            { itemId: 'mat_goblin_weapon', chance: 15, minQuantity: 1, maxQuantity: 1 },
+            { itemId: 'mat_goblin_armor', chance: 10, minQuantity: 1, maxQuantity: 1 }
+        ],
+        exp: 55,
+        gold: { min: 15, max: 28 },
+        aiType: 'aggressive'
+    },
+    {
+        id: 'mon_hobgoblin',
+        name: 'Hobgoblin',
+        nameKo: '홉고블린',
+        spriteKey: 'monster_hobgoblin',
+        level: 25,
+        element: 'none',
+        stats: createCombatStats(25, 250, 35, 15),
+        attackPattern: 'melee',
+        attackRange: 1,
+        aggroRange: 7,
+        drops: [
+            { itemId: 'mat_hobgoblin_club', chance: 12, minQuantity: 1, maxQuantity: 1 },
+            { itemId: 'mat_goblin_treasure', chance: 5, minQuantity: 1, maxQuantity: 1 }
+        ],
+        exp: 80,
+        gold: { min: 25, max: 45 },
+        aiType: 'aggressive'
+    },
+    {
+        id: 'mon_werewolf',
+        name: 'Werewolf',
+        nameKo: '늑대인간',
+        spriteKey: 'monster_werewolf',
+        level: 30,
+        element: 'dark',
+        stats: createCombatStats(30, 350, 45, 18),
+        attackPattern: 'melee',
+        attackRange: 1,
+        aggroRange: 8,
+        drops: [
+            { itemId: 'mat_werewolf_fang', chance: 15, minQuantity: 1, maxQuantity: 1 },
+            { itemId: 'mat_werewolf_pelt', chance: 12, minQuantity: 1, maxQuantity: 1 }
+        ],
+        exp: 100,
+        gold: { min: 32, max: 55 },
+        aiType: 'aggressive'
+    },
+    {
+        id: 'mon_shrieker',
+        name: 'Shrieker',
+        nameKo: '슈리커',
+        spriteKey: 'monster_shrieker',
+        level: 35,
+        element: 'earth',
+        stats: createCombatStats(35, 400, 50, 25),
+        attackPattern: 'magic',
+        attackRange: 4,
+        aggroRange: 6,
+        drops: [
+            { itemId: 'mat_shrieker_spore', chance: 20, minQuantity: 1, maxQuantity: 2 },
+            { itemId: 'mat_magic_mushroom', chance: 10, minQuantity: 1, maxQuantity: 1 }
+        ],
+        exp: 130,
+        gold: { min: 40, max: 68 },
         aiType: 'defensive'
     },
     {
-        id: 'treant',
-        name: 'Treant',
-        nameKo: '트렌트',
-        spriteKey: 'monster_treant',
-        level: 18,
-        element: 'earth',
-        stats: createCombatStats(18, 200, 22, 15),
-        attackPattern: 'melee',
-        attackRange: 1,
-        aggroRange: 4,
-        drops: [
-            { itemId: 'treant_bark', chance: 20, minQuantity: 1, maxQuantity: 2 },
-            { itemId: 'ancient_wood', chance: 8, minQuantity: 1, maxQuantity: 1 }
-        ],
-        exp: 60,
-        gold: { min: 18, max: 30 },
-        aiType: 'passive'
-    },
-    {
-        id: 'skeleton',
-        name: 'Skeleton',
-        nameKo: '스켈레톤',
-        spriteKey: 'monster_skeleton',
-        level: 22,
-        element: 'dark',
-        stats: createCombatStats(22, 150, 28, 10),
-        attackPattern: 'melee',
-        attackRange: 1,
-        aggroRange: 6,
-        drops: [
-            { itemId: 'bone', chance: 35, minQuantity: 1, maxQuantity: 3 },
-            { itemId: 'bone_sword', chance: 5, minQuantity: 1, maxQuantity: 1 }
-        ],
-        exp: 70,
-        gold: { min: 22, max: 38 },
-        aiType: 'aggressive'
-    },
-    {
-        id: 'zombie',
-        name: 'Zombie',
-        nameKo: '좀비',
-        spriteKey: 'monster_zombie',
-        level: 25,
-        element: 'dark',
-        stats: createCombatStats(25, 250, 30, 12),
-        attackPattern: 'melee',
-        attackRange: 1,
-        aggroRange: 4,
-        drops: [
-            { itemId: 'rotten_flesh', chance: 40, minQuantity: 1, maxQuantity: 2 },
-            { itemId: 'zombie_heart', chance: 8, minQuantity: 1, maxQuantity: 1 }
-        ],
-        exp: 85,
-        gold: { min: 28, max: 45 },
-        aiType: 'aggressive'
-    },
-    {
-        id: 'ghoul',
-        name: 'Ghoul',
-        nameKo: '구울',
-        spriteKey: 'monster_ghoul',
-        level: 28,
-        element: 'dark',
-        stats: createCombatStats(28, 280, 35, 14),
-        attackPattern: 'melee',
-        attackRange: 1,
-        aggroRange: 6,
-        drops: [
-            { itemId: 'ghoul_claw', chance: 20, minQuantity: 1, maxQuantity: 2 },
-            { itemId: 'cursed_essence', chance: 10, minQuantity: 1, maxQuantity: 1 }
-        ],
-        exp: 100,
-        gold: { min: 32, max: 52 },
-        aiType: 'aggressive'
-    },
-    {
-        id: 'zombie_knight',
-        name: 'Zombie Knight',
-        nameKo: '좀비나이트',
-        spriteKey: 'monster_zombie_knight',
-        level: 32,
-        element: 'dark',
-        stats: createCombatStats(32, 400, 45, 25),
-        attackPattern: 'melee',
-        attackRange: 1,
-        aggroRange: 6,
-        drops: [
-            { itemId: 'cursed_armor_piece', chance: 10, minQuantity: 1, maxQuantity: 1 },
-            { itemId: 'zombie_knight_sword', chance: 3, minQuantity: 1, maxQuantity: 1 }
-        ],
-        exp: 130,
-        gold: { min: 42, max: 68 },
-        aiType: 'aggressive'
-    },
-    {
-        id: 'wraith',
-        name: 'Wraith',
-        nameKo: '레이스',
-        spriteKey: 'monster_wraith',
-        level: 35,
-        element: 'dark',
-        stats: createCombatStats(35, 350, 55, 15),
-        attackPattern: 'magic',
-        attackRange: 4,
-        aggroRange: 7,
-        drops: [
-            { itemId: 'ectoplasm', chance: 25, minQuantity: 1, maxQuantity: 2 },
-            { itemId: 'wraith_robe', chance: 5, minQuantity: 1, maxQuantity: 1 }
-        ],
-        exp: 150,
-        gold: { min: 48, max: 75 },
-        aiType: 'aggressive'
-    },
-    {
-        id: 'vampire_bat',
-        name: 'Vampire Bat',
-        nameKo: '뱀파이어배트',
-        spriteKey: 'monster_vampire_bat',
+        id: 'mon_wisp',
+        name: 'Wisp',
+        nameKo: '위스프',
+        spriteKey: 'monster_wisp',
         level: 38,
         element: 'dark',
-        stats: createCombatStats(38, 300, 50, 12),
-        attackPattern: 'melee',
-        attackRange: 1,
+        stats: createCombatStats(38, 320, 55, 15),
+        attackPattern: 'magic',
+        attackRange: 5,
         aggroRange: 7,
         drops: [
-            { itemId: 'vampire_fang', chance: 15, minQuantity: 1, maxQuantity: 1 },
-            { itemId: 'blood_vial', chance: 20, minQuantity: 1, maxQuantity: 2 }
+            { itemId: 'mat_wisp_essence', chance: 18, minQuantity: 1, maxQuantity: 1 },
+            { itemId: 'mat_ghost_light', chance: 8, minQuantity: 1, maxQuantity: 1 }
         ],
-        exp: 140,
-        gold: { min: 45, max: 70 },
+        exp: 150,
+        gold: { min: 48, max: 78 },
         aiType: 'aggressive'
+    },
+    {
+        id: 'mon_ent',
+        name: 'Ent',
+        nameKo: '에인트',
+        spriteKey: 'monster_ent',
+        level: 40,
+        element: 'earth',
+        stats: createCombatStats(40, 500, 60, 30),
+        attackPattern: 'melee',
+        attackRange: 1,
+        aggroRange: 5,
+        drops: [
+            { itemId: 'mat_ancient_wood', chance: 20, minQuantity: 1, maxQuantity: 2 },
+            { itemId: 'mat_ent_root', chance: 10, minQuantity: 1, maxQuantity: 1 }
+        ],
+        exp: 180,
+        gold: { min: 55, max: 90 },
+        aiType: 'passive'
     }
 ];
 
-// ========== 3써클 몬스터 (Lv 41~70) ==========
+// ============================================================
+// 3서클 몬스터 (Lv 41~70) - 아벨 던전, 아벨 해안
+// ============================================================
+
 export const MONSTERS_CIRCLE_3: MonsterDefinition[] = [
     {
-        id: 'crab',
+        id: 'mon_abel_crab',
         name: 'Giant Crab',
         nameKo: '대게',
-        spriteKey: 'monster_crab',
-        level: 43,
+        spriteKey: 'monster_giant_crab',
+        level: 45,
         element: 'water',
-        stats: createCombatStats(43, 500, 60, 40),
-        attackPattern: 'melee',
-        attackRange: 1,
-        aggroRange: 4,
-        drops: [
-            { itemId: 'crab_shell', chance: 20, minQuantity: 1, maxQuantity: 2 },
-            { itemId: 'crab_claw', chance: 15, minQuantity: 1, maxQuantity: 1 }
-        ],
-        exp: 180,
-        gold: { min: 55, max: 88 },
-        aiType: 'passive'
-    },
-    {
-        id: 'pirate',
-        name: 'Pirate Rogue',
-        nameKo: '해적도적',
-        spriteKey: 'monster_pirate',
-        level: 46,
-        element: 'none',
-        stats: createCombatStats(46, 450, 70, 30),
-        attackPattern: 'melee',
-        attackRange: 1,
-        aggroRange: 6,
-        drops: [
-            { itemId: 'pirate_coin', chance: 30, minQuantity: 1, maxQuantity: 5 },
-            { itemId: 'pirate_cutlass', chance: 5, minQuantity: 1, maxQuantity: 1 }
-        ],
-        exp: 200,
-        gold: { min: 68, max: 110 },
-        aiType: 'aggressive'
-    },
-    {
-        id: 'merman',
-        name: 'Merman',
-        nameKo: '머맨',
-        spriteKey: 'monster_merman',
-        level: 48,
-        element: 'water',
-        stats: createCombatStats(48, 520, 75, 35),
-        attackPattern: 'ranged',
-        attackRange: 3,
-        aggroRange: 6,
-        drops: [
-            { itemId: 'merman_scale', chance: 20, minQuantity: 1, maxQuantity: 2 },
-            { itemId: 'trident_piece', chance: 8, minQuantity: 1, maxQuantity: 1 }
-        ],
-        exp: 220,
-        gold: { min: 72, max: 115 },
-        aiType: 'aggressive'
-    },
-    {
-        id: 'gargoyle',
-        name: 'Gargoyle',
-        nameKo: '가고일',
-        spriteKey: 'monster_gargoyle',
-        level: 52,
-        element: 'earth',
-        stats: createCombatStats(52, 600, 85, 50),
+        stats: createCombatStats(45, 600, 80, 40),
         attackPattern: 'melee',
         attackRange: 1,
         aggroRange: 5,
         drops: [
-            { itemId: 'gargoyle_stone', chance: 20, minQuantity: 1, maxQuantity: 1 },
-            { itemId: 'stone_heart', chance: 5, minQuantity: 1, maxQuantity: 1 }
+            { itemId: 'mat_crab_shell', chance: 22, minQuantity: 1, maxQuantity: 2 },
+            { itemId: 'mat_crab_claw', chance: 15, minQuantity: 1, maxQuantity: 1 }
         ],
-        exp: 260,
-        gold: { min: 80, max: 128 },
-        aiType: 'defensive'
-    },
-    {
-        id: 'mimic',
-        name: 'Mimic',
-        nameKo: '미믹',
-        spriteKey: 'monster_mimic',
-        level: 55,
-        element: 'none',
-        stats: createCombatStats(55, 550, 95, 45),
-        attackPattern: 'melee',
-        attackRange: 1,
-        aggroRange: 2,
-        drops: [
-            { itemId: 'mimic_tongue', chance: 15, minQuantity: 1, maxQuantity: 1 },
-            { itemId: 'treasure_piece', chance: 25, minQuantity: 1, maxQuantity: 3 }
-        ],
-        exp: 290,
-        gold: { min: 120, max: 200 },
+        exp: 200,
+        gold: { min: 65, max: 105 },
         aiType: 'passive'
     },
     {
-        id: 'death_eye',
-        name: 'Death Eye',
-        nameKo: '데스아이',
-        spriteKey: 'monster_death_eye',
-        level: 58,
-        element: 'dark',
-        stats: createCombatStats(58, 480, 100, 35),
+        id: 'mon_sea_witch',
+        name: 'Sea Witch',
+        nameKo: '바다마녀',
+        spriteKey: 'monster_sea_witch',
+        level: 50,
+        element: 'water',
+        stats: createCombatStats(50, 550, 95, 35),
         attackPattern: 'magic',
         attackRange: 5,
-        aggroRange: 8,
+        aggroRange: 7,
         drops: [
-            { itemId: 'evil_eye', chance: 12, minQuantity: 1, maxQuantity: 1 },
-            { itemId: 'dark_crystal', chance: 8, minQuantity: 1, maxQuantity: 1 }
+            { itemId: 'mat_sea_wand', chance: 10, minQuantity: 1, maxQuantity: 1 },
+            { itemId: 'mat_water_essence', chance: 18, minQuantity: 1, maxQuantity: 2 }
         ],
-        exp: 320,
+        exp: 250,
+        gold: { min: 78, max: 125 },
+        aiType: 'aggressive'
+    },
+    {
+        id: 'mon_skeleton_warrior',
+        name: 'Skeleton Warrior',
+        nameKo: '스켈레톤워리어',
+        spriteKey: 'monster_skeleton_warrior',
+        level: 55,
+        element: 'dark',
+        stats: createCombatStats(55, 700, 110, 45),
+        attackPattern: 'melee',
+        attackRange: 1,
+        aggroRange: 6,
+        drops: [
+            { itemId: 'mat_bone_fragment', chance: 35, minQuantity: 1, maxQuantity: 3 },
+            { itemId: 'weapon_bone_sword', chance: 5, minQuantity: 1, maxQuantity: 1 }
+        ],
+        exp: 300,
         gold: { min: 95, max: 155 },
         aiType: 'aggressive'
     },
     {
-        id: 'lich',
-        name: 'Lich',
-        nameKo: '리치',
-        spriteKey: 'monster_lich',
-        level: 62,
+        id: 'mon_ghoul',
+        name: 'Ghoul',
+        nameKo: '구울',
+        spriteKey: 'monster_ghoul',
+        level: 60,
         element: 'dark',
-        stats: createCombatStats(62, 650, 120, 40),
-        attackPattern: 'magic',
-        attackRange: 6,
-        aggroRange: 8,
+        stats: createCombatStats(60, 800, 130, 50),
+        attackPattern: 'melee',
+        attackRange: 1,
+        aggroRange: 7,
         drops: [
-            { itemId: 'lich_skull', chance: 10, minQuantity: 1, maxQuantity: 1 },
-            { itemId: 'dark_grimoire', chance: 3, minQuantity: 1, maxQuantity: 1 }
+            { itemId: 'mat_ghoul_claw', chance: 20, minQuantity: 1, maxQuantity: 2 },
+            { itemId: 'mat_cursed_essence', chance: 12, minQuantity: 1, maxQuantity: 1 }
         ],
-        exp: 380,
+        exp: 350,
         gold: { min: 115, max: 185 },
         aiType: 'aggressive'
     },
     {
-        id: 'dullahan',
-        name: 'Dullahan',
-        nameKo: '듈라한',
-        spriteKey: 'monster_dullahan',
+        id: 'mon_zombie_knight',
+        name: 'Zombie Knight',
+        nameKo: '좀비나이트',
+        spriteKey: 'monster_zombie_knight',
         level: 65,
         element: 'dark',
-        stats: createCombatStats(65, 750, 130, 55),
+        stats: createCombatStats(65, 950, 150, 60),
         attackPattern: 'melee',
-        attackRange: 2,
+        attackRange: 1,
         aggroRange: 7,
         drops: [
-            { itemId: 'dullahan_head', chance: 8, minQuantity: 1, maxQuantity: 1 },
-            { itemId: 'cursed_sword', chance: 4, minQuantity: 1, maxQuantity: 1 }
+            { itemId: 'mat_cursed_armor', chance: 10, minQuantity: 1, maxQuantity: 1 },
+            { itemId: 'weapon_zombie_sword', chance: 3, minQuantity: 1, maxQuantity: 1 }
         ],
-        exp: 420,
-        gold: { min: 135, max: 215 },
+        exp: 400,
+        gold: { min: 135, max: 218 },
         aiType: 'aggressive'
     },
     {
-        id: 'demon_archer',
-        name: 'Demon Archer',
-        nameKo: '데몬아처',
-        spriteKey: 'monster_demon_archer',
-        level: 68,
-        element: 'fire',
-        stats: createCombatStats(68, 680, 140, 45),
-        attackPattern: 'ranged',
-        attackRange: 7,
-        aggroRange: 9,
+        id: 'mon_vampire',
+        name: 'Vampire',
+        nameKo: '뱀파이어',
+        spriteKey: 'monster_vampire',
+        level: 70,
+        element: 'dark',
+        stats: createCombatStats(70, 850, 170, 55),
+        attackPattern: 'magic',
+        attackRange: 4,
+        aggroRange: 8,
         drops: [
-            { itemId: 'demon_arrow', chance: 25, minQuantity: 2, maxQuantity: 5 },
-            { itemId: 'demon_bow', chance: 3, minQuantity: 1, maxQuantity: 1 }
+            { itemId: 'mat_vampire_fang', chance: 15, minQuantity: 1, maxQuantity: 1 },
+            { itemId: 'mat_blood_vial', chance: 20, minQuantity: 1, maxQuantity: 2 }
         ],
-        exp: 450,
-        gold: { min: 145, max: 230 },
+        exp: 480,
+        gold: { min: 158, max: 255 },
         aiType: 'aggressive'
     }
 ];
 
-// ========== 4써클 몬스터 (Lv 71~98) ==========
+// ============================================================
+// 4서클 몬스터 (Lv 71~98) - 뤼케시온 해안, 솔던
+// ============================================================
+
 export const MONSTERS_CIRCLE_4: MonsterDefinition[] = [
     {
-        id: 'kraken_tentacle',
+        id: 'mon_kraken',
         name: 'Kraken Tentacle',
         nameKo: '크라켄촉수',
-        spriteKey: 'monster_kraken_tentacle',
-        level: 73,
+        spriteKey: 'monster_kraken',
+        level: 75,
         element: 'water',
-        stats: createCombatStats(73, 900, 160, 60),
+        stats: createCombatStats(75, 1200, 200, 80),
         attackPattern: 'melee',
         attackRange: 2,
-        aggroRange: 5,
+        aggroRange: 6,
         drops: [
-            { itemId: 'kraken_sucker', chance: 20, minQuantity: 1, maxQuantity: 2 },
-            { itemId: 'kraken_ink', chance: 15, minQuantity: 1, maxQuantity: 1 }
-        ],
-        exp: 550,
-        gold: { min: 175, max: 280 },
-        aiType: 'aggressive'
-    },
-    {
-        id: 'sea_pirate',
-        name: 'Sea Pirate Captain',
-        nameKo: '시파이라테',
-        spriteKey: 'monster_sea_pirate',
-        level: 76,
-        element: 'none',
-        stats: createCombatStats(76, 850, 175, 55),
-        attackPattern: 'ranged',
-        attackRange: 4,
-        aggroRange: 7,
-        drops: [
-            { itemId: 'captains_medal', chance: 10, minQuantity: 1, maxQuantity: 1 },
-            { itemId: 'treasure_map_piece', chance: 5, minQuantity: 1, maxQuantity: 1 }
+            { itemId: 'mat_kraken_sucker', chance: 22, minQuantity: 1, maxQuantity: 2 },
+            { itemId: 'mat_kraken_ink', chance: 15, minQuantity: 1, maxQuantity: 1 }
         ],
         exp: 600,
-        gold: { min: 220, max: 360 },
+        gold: { min: 195, max: 315 },
         aiType: 'aggressive'
     },
     {
-        id: 'deep_one',
-        name: 'Deep One',
-        nameKo: '딥원',
-        spriteKey: 'monster_deep_one',
-        level: 79,
+        id: 'mon_sea_serpent',
+        name: 'Sea Serpent',
+        nameKo: '씨서펀트',
+        spriteKey: 'monster_sea_serpent',
+        level: 82,
         element: 'water',
-        stats: createCombatStats(79, 1000, 185, 65),
-        attackPattern: 'magic',
-        attackRange: 5,
-        aggroRange: 7,
-        drops: [
-            { itemId: 'deep_one_scale', chance: 15, minQuantity: 1, maxQuantity: 2 },
-            { itemId: 'abyssal_pearl', chance: 5, minQuantity: 1, maxQuantity: 1 }
-        ],
-        exp: 680,
-        gold: { min: 240, max: 385 },
-        aiType: 'aggressive'
-    },
-    {
-        id: 'mermaid_warrior',
-        name: 'Mermaid Warrior',
-        nameKo: '머메이드워리어',
-        spriteKey: 'monster_mermaid_warrior',
-        level: 83,
-        element: 'water',
-        stats: createCombatStats(83, 1100, 200, 70),
-        attackPattern: 'ranged',
-        attackRange: 4,
-        aggroRange: 7,
-        drops: [
-            { itemId: 'mermaid_tear', chance: 10, minQuantity: 1, maxQuantity: 1 },
-            { itemId: 'coral_spear', chance: 4, minQuantity: 1, maxQuantity: 1 }
-        ],
-        exp: 780,
-        gold: { min: 280, max: 450 },
-        aiType: 'defensive'
-    },
-    {
-        id: 'sea_dragon',
-        name: 'Sea Dragon',
-        nameKo: '씨드래곤',
-        spriteKey: 'monster_sea_dragon',
-        level: 87,
-        element: 'water',
-        stats: createCombatStats(87, 1400, 230, 85),
-        attackPattern: 'magic',
-        attackRange: 6,
-        aggroRange: 8,
-        drops: [
-            { itemId: 'sea_dragon_scale', chance: 10, minQuantity: 1, maxQuantity: 2 },
-            { itemId: 'dragon_pearl', chance: 3, minQuantity: 1, maxQuantity: 1 }
-        ],
-        exp: 900,
-        gold: { min: 320, max: 520 },
-        aiType: 'aggressive'
-    },
-    {
-        id: 'ghost_captain',
-        name: 'Ghost Captain',
-        nameKo: '고스트캡틴',
-        spriteKey: 'monster_ghost_captain',
-        level: 92,
-        element: 'dark',
-        stats: createCombatStats(92, 1200, 250, 75),
+        stats: createCombatStats(82, 1400, 230, 95),
         attackPattern: 'magic',
         attackRange: 5,
         aggroRange: 8,
         drops: [
-            { itemId: 'ghost_compass', chance: 8, minQuantity: 1, maxQuantity: 1 },
-            { itemId: 'captains_soul', chance: 5, minQuantity: 1, maxQuantity: 1 }
+            { itemId: 'mat_serpent_scale', chance: 18, minQuantity: 1, maxQuantity: 2 },
+            { itemId: 'mat_sea_pearl', chance: 6, minQuantity: 1, maxQuantity: 1 }
         ],
-        exp: 1000,
-        gold: { min: 360, max: 580 },
+        exp: 750,
+        gold: { min: 245, max: 395 },
         aiType: 'aggressive'
     },
     {
-        id: 'cursed_sailor',
-        name: 'Cursed Sailor',
-        nameKo: '커스드세일러',
-        spriteKey: 'monster_cursed_sailor',
-        level: 95,
-        element: 'dark',
-        stats: createCombatStats(95, 1350, 265, 80),
+        id: 'mon_gargoyle',
+        name: 'Gargoyle',
+        nameKo: '가고일',
+        spriteKey: 'monster_gargoyle',
+        level: 88,
+        element: 'earth',
+        stats: createCombatStats(88, 1600, 260, 110),
         attackPattern: 'melee',
         attackRange: 1,
         aggroRange: 6,
         drops: [
-            { itemId: 'cursed_anchor', chance: 10, minQuantity: 1, maxQuantity: 1 },
-            { itemId: 'sailors_lament', chance: 4, minQuantity: 1, maxQuantity: 1 }
+            { itemId: 'mat_gargoyle_stone', chance: 20, minQuantity: 1, maxQuantity: 1 },
+            { itemId: 'mat_stone_heart', chance: 6, minQuantity: 1, maxQuantity: 1 }
         ],
-        exp: 1100,
-        gold: { min: 385, max: 620 },
-        aiType: 'aggressive'
+        exp: 900,
+        gold: { min: 295, max: 475 },
+        aiType: 'defensive'
     },
     {
-        id: 'leviathan_spawn',
-        name: 'Leviathan Spawn',
-        nameKo: '레비아탄스폰',
-        spriteKey: 'monster_leviathan_spawn',
-        level: 98,
-        element: 'water',
-        stats: createCombatStats(98, 1600, 290, 90),
-        attackPattern: 'magic',
-        attackRange: 6,
-        aggroRange: 9,
-        drops: [
-            { itemId: 'leviathan_scale', chance: 8, minQuantity: 1, maxQuantity: 2 },
-            { itemId: 'abyssal_core', chance: 3, minQuantity: 1, maxQuantity: 1 }
-        ],
-        exp: 1250,
-        gold: { min: 440, max: 710 },
-        aiType: 'aggressive'
-    }
-];
-
-// ========== 5써클 몬스터 (Lv 99+) ==========
-export const MONSTERS_CIRCLE_5: MonsterDefinition[] = [
-    {
-        id: 'dracula',
-        name: 'Dracula Spawn',
-        nameKo: '드라큘라',
-        spriteKey: 'monster_dracula',
-        level: 102,
+        id: 'mon_lich',
+        name: 'Lich',
+        nameKo: '리치',
+        spriteKey: 'monster_lich',
+        level: 95,
         element: 'dark',
-        stats: createCombatStats(102, 2000, 350, 100),
-        attackPattern: 'magic',
-        attackRange: 4,
-        aggroRange: 8,
-        drops: [
-            { itemId: 'vampire_fang_elite', chance: 15, minQuantity: 1, maxQuantity: 1 },
-            { itemId: 'blood_gem', chance: 5, minQuantity: 1, maxQuantity: 1 }
-        ],
-        exp: 1800,
-        gold: { min: 560, max: 900 },
-        aiType: 'aggressive'
-    },
-    {
-        id: 'werewolf',
-        name: 'Werewolf Alpha',
-        nameKo: '웨어울프',
-        spriteKey: 'monster_werewolf',
-        level: 105,
-        element: 'dark',
-        stats: createCombatStats(105, 2200, 380, 95),
-        attackPattern: 'melee',
-        attackRange: 1,
-        aggroRange: 9,
-        drops: [
-            { itemId: 'werewolf_pelt', chance: 12, minQuantity: 1, maxQuantity: 1 },
-            { itemId: 'moon_crystal', chance: 4, minQuantity: 1, maxQuantity: 1 }
-        ],
-        exp: 2000,
-        gold: { min: 640, max: 1030 },
-        aiType: 'aggressive'
-    },
-    {
-        id: 'frankenstein',
-        name: 'Frankenstein',
-        nameKo: '프랑켄',
-        spriteKey: 'monster_frankenstein',
-        level: 108,
-        element: 'none',
-        stats: createCombatStats(108, 2800, 400, 120),
-        attackPattern: 'melee',
-        attackRange: 1,
-        aggroRange: 5,
-        drops: [
-            { itemId: 'machine_part', chance: 20, minQuantity: 1, maxQuantity: 2 },
-            { itemId: 'lightning_core', chance: 5, minQuantity: 1, maxQuantity: 1 }
-        ],
-        exp: 2300,
-        gold: { min: 720, max: 1160 },
-        aiType: 'aggressive'
-    },
-    {
-        id: 'maid_ghost',
-        name: 'Maid Ghost',
-        nameKo: '메이드고스트',
-        spriteKey: 'monster_maid_ghost',
-        level: 110,
-        element: 'dark',
-        stats: createCombatStats(110, 1800, 420, 90),
-        attackPattern: 'magic',
-        attackRange: 5,
-        aggroRange: 7,
-        drops: [
-            { itemId: 'ghost_dress', chance: 10, minQuantity: 1, maxQuantity: 1 },
-            { itemId: 'soul_fragment', chance: 15, minQuantity: 1, maxQuantity: 2 }
-        ],
-        exp: 2500,
-        gold: { min: 800, max: 1290 },
-        aiType: 'aggressive'
-    },
-    {
-        id: 'iron_maiden',
-        name: 'Iron Maiden',
-        nameKo: '아이언메이든',
-        spriteKey: 'monster_iron_maiden',
-        level: 115,
-        element: 'earth',
-        stats: createCombatStats(115, 3200, 450, 150),
-        attackPattern: 'melee',
-        attackRange: 1,
-        aggroRange: 3,
-        drops: [
-            { itemId: 'iron_spike', chance: 20, minQuantity: 1, maxQuantity: 3 },
-            { itemId: 'torture_device', chance: 3, minQuantity: 1, maxQuantity: 1 }
-        ],
-        exp: 2800,
-        gold: { min: 880, max: 1420 },
-        aiType: 'passive'
-    },
-    {
-        id: 'blood_countess',
-        name: 'Blood Maiden',
-        nameKo: '블러드카운테스',
-        spriteKey: 'monster_blood_countess',
-        level: 120,
-        element: 'dark',
-        stats: createCombatStats(120, 2500, 480, 110),
-        attackPattern: 'magic',
-        attackRange: 5,
-        aggroRange: 8,
-        drops: [
-            { itemId: 'blood_dress', chance: 8, minQuantity: 1, maxQuantity: 1 },
-            { itemId: 'crimson_tear', chance: 5, minQuantity: 1, maxQuantity: 1 }
-        ],
-        exp: 3200,
-        gold: { min: 1040, max: 1680 },
-        aiType: 'aggressive'
-    },
-    {
-        id: 'dark_witch',
-        name: 'Dark Witch',
-        nameKo: '다크위차스',
-        spriteKey: 'monster_dark_witch',
-        level: 125,
-        element: 'dark',
-        stats: createCombatStats(125, 2200, 520, 100),
+        stats: createCombatStats(95, 1800, 300, 100),
         attackPattern: 'magic',
         attackRange: 7,
         aggroRange: 10,
         drops: [
-            { itemId: 'witch_hat', chance: 10, minQuantity: 1, maxQuantity: 1 },
-            { itemId: 'dark_tome', chance: 4, minQuantity: 1, maxQuantity: 1 }
+            { itemId: 'mat_lich_skull', chance: 10, minQuantity: 1, maxQuantity: 1 },
+            { itemId: 'mat_dark_grimoire', chance: 4, minQuantity: 1, maxQuantity: 1 }
+        ],
+        exp: 1100,
+        gold: { min: 365, max: 590 },
+        aiType: 'aggressive'
+    },
+    {
+        id: 'mon_dullahan',
+        name: 'Dullahan',
+        nameKo: '듈라한',
+        spriteKey: 'monster_dullahan',
+        level: 98,
+        element: 'dark',
+        stats: createCombatStats(98, 2200, 330, 130),
+        attackPattern: 'melee',
+        attackRange: 2,
+        aggroRange: 8,
+        drops: [
+            { itemId: 'mat_dullahan_head', chance: 8, minQuantity: 1, maxQuantity: 1 },
+            { itemId: 'weapon_cursed_sword', chance: 3, minQuantity: 1, maxQuantity: 1 }
+        ],
+        exp: 1300,
+        gold: { min: 425, max: 685 },
+        aiType: 'aggressive'
+    }
+];
+
+// ============================================================
+// 5서클 몬스터 (Lv 99+) - 호러케슬, 지존
+// ============================================================
+
+export const MONSTERS_CIRCLE_5: MonsterDefinition[] = [
+    {
+        id: 'mon_horror_knight',
+        name: 'Horror Knight',
+        nameKo: '호랑나이트',
+        spriteKey: 'monster_horror_knight',
+        level: 102,
+        element: 'dark',
+        stats: createCombatStats(102, 2500, 380, 150),
+        attackPattern: 'melee',
+        attackRange: 1,
+        aggroRange: 8,
+        drops: [
+            { itemId: 'mat_horror_essence', chance: 12, minQuantity: 1, maxQuantity: 1 },
+            { itemId: 'mat_dark_crystal', chance: 6, minQuantity: 1, maxQuantity: 1 }
+        ],
+        exp: 1500,
+        gold: { min: 520, max: 840 },
+        aiType: 'aggressive'
+    },
+    {
+        id: 'mon_blood_countess',
+        name: 'Blood Countess',
+        nameKo: '블러드카운테스',
+        spriteKey: 'monster_blood_countess',
+        level: 110,
+        element: 'dark',
+        stats: createCombatStats(110, 2800, 450, 130),
+        attackPattern: 'magic',
+        attackRange: 6,
+        aggroRange: 10,
+        drops: [
+            { itemId: 'mat_blood_dress', chance: 8, minQuantity: 1, maxQuantity: 1 },
+            { itemId: 'mat_crimson_tear', chance: 5, minQuantity: 1, maxQuantity: 1 }
+        ],
+        exp: 2000,
+        gold: { min: 680, max: 1100 },
+        aiType: 'aggressive'
+    },
+    {
+        id: 'mon_dark_archmage',
+        name: 'Dark Archmage',
+        nameKo: '대마법사',
+        spriteKey: 'monster_dark_archmage',
+        level: 120,
+        element: 'dark',
+        stats: createCombatStats(120, 3200, 520, 150),
+        attackPattern: 'magic',
+        attackRange: 8,
+        aggroRange: 12,
+        drops: [
+            { itemId: 'weapon_archmage_staff', chance: 4, minQuantity: 1, maxQuantity: 1 },
+            { itemId: 'mat_ancient_scroll', chance: 10, minQuantity: 1, maxQuantity: 1 }
+        ],
+        exp: 2800,
+        gold: { min: 880, max: 1420 },
+        aiType: 'aggressive'
+    },
+    {
+        id: 'mon_dracula',
+        name: 'Dracula',
+        nameKo: '드라큘라',
+        spriteKey: 'monster_dracula',
+        level: 130,
+        element: 'dark',
+        stats: createCombatStats(130, 4000, 620, 180),
+        attackPattern: 'magic',
+        attackRange: 5,
+        aggroRange: 10,
+        drops: [
+            { itemId: 'mat_vampire_fang_elite', chance: 10, minQuantity: 1, maxQuantity: 1 },
+            { itemId: 'mat_blood_gem', chance: 4, minQuantity: 1, maxQuantity: 1 }
         ],
         exp: 3500,
         gold: { min: 1120, max: 1800 },
-        aiType: 'aggressive'
-    },
-    {
-        id: 'vecna_servant',
-        name: 'Vecna Servant',
-        nameKo: '베크나졸',
-        spriteKey: 'monster_vecna_servant',
-        level: 130,
-        element: 'dark',
-        stats: createCombatStats(130, 2800, 550, 120),
-        attackPattern: 'magic',
-        attackRange: 6,
-        aggroRange: 9,
-        drops: [
-            { itemId: 'vecna_robe', chance: 8, minQuantity: 1, maxQuantity: 1 },
-            { itemId: 'arcane_crystal', chance: 5, minQuantity: 1, maxQuantity: 1 }
-        ],
-        exp: 4000,
-        gold: { min: 1280, max: 2060 },
-        aiType: 'aggressive'
-    },
-    {
-        id: 'archmage',
-        name: 'Dark Archmage',
-        nameKo: '대마법사',
-        spriteKey: 'monster_archmage',
-        level: 135,
-        element: 'dark',
-        stats: createCombatStats(135, 2600, 600, 110),
-        attackPattern: 'magic',
-        attackRange: 8,
-        aggroRange: 10,
-        drops: [
-            { itemId: 'archmage_staff', chance: 4, minQuantity: 1, maxQuantity: 1 },
-            { itemId: 'ancient_scroll', chance: 10, minQuantity: 1, maxQuantity: 1 }
-        ],
-        exp: 4500,
-        gold: { min: 1440, max: 2320 },
         aiType: 'aggressive'
     }
 ];

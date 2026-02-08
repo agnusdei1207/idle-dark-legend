@@ -1,43 +1,74 @@
-# 🎮 Idle 어둠의전설 클래식
+# 🎮 어둠의전설 클래식 (Dark Legend Classic)
 
-> **방치형 RPG** - 어둠의전설 향수 + 현대 Idle 게임  
+> **방치형 RPG** - 넥슨 어둠의전설 (1998/2005) 팬 트리뷰트
 > Phaser 3 + TypeScript + Vite
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Assets: CC0](https://img.shields.io/badge/Assets-CC0-green.svg)](https://creativecommons.org/publicdomain/zero/1.0/)
+[![Version](https://img.shields.io/badge/Version-0.3.0-blue.svg)](https://github.com/agnusdei1207/dark-legend-classic)
 
 ---
 
 ## ✨ 특징
 
-### 🎯 Idle/방치형 RPG
-- **자동 사냥**: 클릭 없이 자동으로 몬스터 사냥
-- **오프라인 보상**: 최대 8시간 오프라인 사냥 보상
-- **효율적 성장**: 사냥터별 최적 레벨 추천
+### 🎯 어둠의전설 재현
+- **원작 사냥터 복원**: 노비스~호러케슬까지 전 서클 구현
+- **오리지널 몬스터**: 팜팻, 니에, 완두콩, 맨티스, 말벌, 늑대인간 등
+- **직업 시스템**: 전사, 마법사, 도적, 성직자, 무도가
+- **스킬 시스템**: 플라메라, 테라미에라, 프라보, 하이드 등 원작 스킬
 
-### 🗺️ 어둠의전설 원작 사냥터
+### 🗺️ 어둠의전설 사냥터 (원작 기준)
 
-| 써클 | 레벨 | 대표 사냥터 |
-|------|------|------------|
-| 1써클 | 1~10 | 노비스 던전, 우드랜드 |
-| 2써클 | 11~40 | 포테의 숲, 피에트 던전 |
-| 3써클 | 41~70 | 아벨 해안던전, 아벨 던전 |
-| 4써클 | 71~98 | 뤼케시온 해안, 난파선 |
-| 5써클 | 99+ | 호러캐슬, 베크나 탑 |
+| 써클 | 레벨 | 마을 | 사냥터 | 좌표 |
+|------|------|------|--------|------|
+| **1서클** | 1~10 | 노비스 마을 | 우드랜드 1~20존, 노비스 던전 | 시작점 |
+| **2서클** | 11~40 | 피에트 마을 | 포테의 숲 | (0, 50) |
+| **3서클** | 41~70 | 아벨 마을 | 아벨 던전, 아벨 해안던전 | (56, 7) → (60, 116) |
+| **4서클** | 71~98 | 뤼케시온 마을 | 솔던 뤼케시온, 뤼케시온 해안 | (78, 10) |
+| **5서클** | 99+ | 마인 마을 | 호러케슬 (백원만 NPC) | (7, 6) |
 
-### ⚔️ 직업 시스템
-- **4대 기본 직업**: 전사, 마법사, 궁수, 도적
-- **8개 전직**: 버서커, 팔라딘, 아크메이지, 네크로맨서 등
-- **스킬 트리**: 독자적 스킬 성장
+### 👹 원작 몬스터 (1서클 예시)
 
-### 👥 소셜 시스템
-- **파티**: 최대 6인 파티
-- **서클(길드)**: 생성, 가입, 등급, 버프
+| 몬스터 | 한글명 | 레벨 | 특징 |
+|--------|--------|------|------|
+| Pampat | 팜팻 | 1 | 풍차 돌리기, 풀 먹고 회복 |
+| Nie | 니에 | 2 | 숲 기본 몬스터 |
+| Pea (Wandu) | 완두콩 | 3 | 숲 기본 몬스터 |
+| Mantis | 맨티스 | 4 | 공격적 |
+| Wasp | 말벌 | 5 | 공격적 |
+| Wolf | 늑대 | 6 | 공격적 |
+| Spider | 거미 | 7 | 독 공격 |
+| Centipede | 지네 | 8 | 독 공격 |
+| Orange Rat | 주황쥐 | 9 | 노비스 던전 |
+| Curupay | 큐르페이 | 10 | 우드랜드 보스 |
 
-### 🎨 클래식 UI
-- 어둠의전설 스타일 다크 테마
-- 클래식 HUD (초상화, HP/MP바, 미니맵)
-- 레트로 감성 + 현대적 UX
+### ⚔️ 직업별 스킬
+
+#### 전사 (Warrior)
+- 베기, 더블어택, 트리플어택, 메가어택
+- 돌진 (Charge), 집중 (Focus), 크래셔 (Crasher), 레스큐 (Rescue)
+
+#### 마법사 (Mage)
+- **화염**: 플라메라 (Flamera) → 플레어 (Flare)
+- **빙결**: 테라미에라 (Teramiera) → 아이스블러스트 (Ice Blast)
+- **저주**: 프라보 (Pravo) → 프라베라 (Pravera)
+- **광역**: 라그나로크 (Ragnarok), 메테오 (Meteor)
+- **보조**: 매직프로텍션 (Magic Protection), 이모탈 (Immortal)
+
+#### 도적 (Rogue)
+- 하이드 (Hide), 백스텝 (Backstep), 습격 (Assault)
+- 아무네지아 (Amnesia), 슬래쉬 (Stab)
+
+#### 성직자 (Cleric)
+- **힐**: 쿠로 (Kuro) → 쿠라노 (Kurano) → 쿠라노소 (Kuranoso)
+- **그룹힐**: 쿠러스 (Kurus)
+- **디버프**: 디스펠라 (Dispella), 디베노모 (Divenomo)
+- **공격**: 홀리볼트 (Holy Bolt)
+- **보호**: 이모탈 (Immortal)
+
+#### 무도가 (Monk)
+- 정권 (Jeongkwon), 단각 (Dangak), 양의신권 (Yangui)
+- 이형환위 (Ihyeong), 금강불괴 (Geumgang), 장풍 (Jangpung)
+- 달마신공 (Dalma), 쿠라노토 (Kuranoto)
 
 ---
 
@@ -51,8 +82,8 @@
 
 ```bash
 # 저장소 클론
-git clone https://github.com/agnusdei1207/idle-dark-legend.git
-cd idle-dark-legend
+git clone https://github.com/agnusdei1207/dark-legend-classic.git
+cd dark-legend-classic
 
 # 의존성 설치
 npm install
@@ -79,6 +110,7 @@ npm run preview
 
 | 키 | 기능 |
 |----|------|
+| `WASD` 또는 방향키 | 이동 |
 | `I` | 인벤토리 |
 | `C` | 캐릭터 정보 |
 | `K` | 스킬 트리 |
@@ -86,60 +118,8 @@ npm run preview
 | `G` | 서클 (길드) |
 | `H` | 사냥터 선택 |
 | `Space` | NPC 대화 |
+| `1-8` | 스킬바 |
 | `ESC` | 창 닫기/메뉴 |
-
----
-
-## 🎨 에셋
-
-### 사용 에셋 팩
-
-#### Ninja Adventure Asset Pack ⭐ (메인)
-
-| 항목 | 정보 |
-|------|------|
-| **제작자** | pixel-boy (Antoine Duroisin) |
-| **라이선스** | CC0 (완전 무료, 상업용 가능) |
-| **URL** | https://pixel-boy.itch.io/ninja-adventure-asset-pack |
-
-**포함 내용:**
-- 캐릭터 50종+ (애니메이션)
-- 몬스터 30종+ (애니메이션)
-- 보스 9종
-- 타일셋, UI, BGM 37곡, SFX 100+, 이펙트 30+
-
-#### OpenGameArt CC0 RPG SFX (보조)
-
-| 항목 | 정보 |
-|------|------|
-| **라이선스** | CC0 |
-| **URL** | https://opengameart.org/content/80-cc0-rpg-sfx |
-
-**포함 내용:**
-- 스킬 효과음 80종+
-
-### 에셋 다운로드 및 설정
-
-자세한 내용은 [ASSET_GUIDE.md](docs/ASSET_GUIDE.md) 참조
-
----
-
-## 📁 프로젝트 구조
-
-```
-src/
-├── config/         # 게임 설정
-├── data/           # 게임 데이터 (아이템, 스킬, 몬스터)
-├── entities/       # 게임 엔티티 (플레이어, 몬스터, NPC)
-├── scenes/         # Phaser 씬
-├── systems/        # 게임 시스템 (인벤토리, 전투, Idle)
-├── ui/             # UI 컴포넌트
-├── types/          # TypeScript 타입
-└── utils/          # 유틸리티
-
-public/assets/      # 게임 에셋 (이미지, 오디오)
-docs/               # 문서
-```
 
 ---
 
@@ -148,13 +128,14 @@ docs/               # 문서
 | 기능 | 상태 |
 |------|------|
 | 코어 시스템 | ✅ 100% |
-| Idle 시스템 | ✅ 100% |
-| 직업 시스템 | ✅ 100% |
+| Idle/방치 시스템 | ✅ 100% |
+| 직업 시스템 (5종) | ✅ 100% |
+| 스킬 시스템 (원작) | ✅ 100% |
+| 몬스터 데이터 (원작) | ✅ 100% |
+| 맵 데이터 (원작) | ✅ 100% |
 | 소셜 시스템 | ✅ 100% |
 | UI 시스템 | ✅ 100% |
-| 에셋 통합 | ⏳ 0% |
-
-상세 진행 상황은 [PROGRESS.md](docs/PROGRESS.md) 참조
+| 에셋 통합 | ⏳ 0% (플레이스홀더 사용 중) |
 
 ---
 
@@ -170,12 +151,17 @@ docs/               # 문서
 - [x] 오프라인 보상 (8시간)
 - [x] 사냥터 선택 UI
 
-### v0.3.0 - 에셋 통합 (🔄 진행중)
+### v0.3.0 - 원작 데이터 구현 (✅ 완료)
+- [x] 어둠의전설 몬스터 데이터 (1~5서클)
+- [x] 어둠의전설 맵 데이터 (노비스~호러케슬)
+- [x] 어둠의전설 스킬 데이터
+
+### v0.4.0 - 에셋 통합 (🔄 진행중)
 - [ ] Ninja Adventure Pack 다운로드
 - [ ] 캐릭터/몬스터 스프라이트
 - [ ] BGM/SFX
 
-### v0.4.0 - 콘텐츠 확장
+### v0.5.0 - 콘텐츠 확장
 - [ ] 보스 레이드
 - [ ] PvP
 - [ ] 거래 시스템
@@ -186,9 +172,8 @@ docs/               # 문서
 
 | 문서 | 설명 |
 |------|------|
-| [PROGRESS.md](docs/PROGRESS.md) | 개발 진행 상황 |
-| [ASSET_GUIDE.md](docs/ASSET_GUIDE.md) | 에셋 규격 및 출처 |
-| [IDLE_SYSTEM.md](docs/IDLE_SYSTEM.md) | Idle 시스템 설계 |
+| [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) | 개발 계획 |
+| [README.md](README.md) | 프로젝트 소개 |
 | [CREDITS.md](CREDITS.md) | 에셋 크레딧 |
 
 ---
@@ -208,25 +193,22 @@ docs/               # 문서
 - **코드**: MIT License
 - **에셋**: CC0 (별도 명시된 경우 제외)
 
-자세한 내용은 [LICENSE](LICENSE) 및 [CREDITS.md](CREDITS.md) 참조
-
 ---
 
 ## 🙏 크레딧
 
-### 에셋
+### 원작
+- **어둠의전설 (Legend of Darkness)** - 넥슨 (1998/2005)
+  - 본 게임은 넥슨 어둠의전설의 팬 트리뷰트 프로젝트입니다.
+  - 상표권은 넥슨에 귀속됩니다.
 
-| 에셋 | 제작자 | 라이선스 |
-|------|--------|----------|
-| Ninja Adventure Pack | pixel-boy | CC0 |
-| RPG SFX | OpenGameArt | CC0 |
-
-### 영감
-
-- **어둠의전설** (넥슨) - 게임 컨셉, 사냥터/몬스터 이름
+### 참고 자료
+- [어둠의전설 공식 게시판](https://lod.nexon.com)
+- [나무위키: 어둠의 전설](https://namu.wiki/wiki/어둠의_전설)
+- [사냥터 정보](https://lod.nexon.com/board/1493172227/1209)
+- [2~5써클 사냥터 위치](https://lod.nexon.com/board/1493172227/6227)
 
 ### 기술
-
 | 라이브러리 | 라이선스 |
 |-----------|----------|
 | Phaser 3 | MIT |
@@ -236,3 +218,5 @@ docs/               # 문서
 ---
 
 *어둠의전설을 추억하며... ⚔️*
+*Dark Legend Classic - A Fan Tribute*
+*1998-2005 Nexon Co., Ltd. All Rights Reserved.*
