@@ -498,22 +498,23 @@ export class GameScene implements BaseScene {
      * 몬스터 AI 업데이트
      */
     private updateMonsters(deltaTime: number): void {
-        if (!this.player) return;
+        const player = this.player;
+        if (!player) return;
 
-        const playerPosition = this.player.getPosition();
+        const playerPosition = player.getPosition();
 
         this.monsters.forEach((monster) => {
             if (!monster.isDead()) {
-                monster.updateAI(deltaTime, playerPosition, this.player);
+                monster.updateAI(deltaTime, playerPosition, player);
 
                 // 플레이어 공격 범위 확인
-                const distance = this.getDistance(this.player.getPosition(), monster.getPosition());
+                const distance = this.getDistance(player.getPosition(), monster.getPosition());
                 if (distance <= 60 && monster.data.ai !== 'passive') {
                     // 몬스터가 플레이어를 공격
                     if (monster.canAttack()) {
                         const damage = monster.data.stats.attack || 10;
-                        this.player.takeDamage(damage);
-                        this.showDamageNumber(this.player.mesh.position, damage, 'player');
+                        player.takeDamage(damage);
+                        this.showDamageNumber(player.mesh.position, damage, 'player');
                         monster.resetAttackCooldown();
                     }
                 }
@@ -551,15 +552,17 @@ export class GameScene implements BaseScene {
      * 플레이어 공격 처리
      */
     private handlePlayerAttack(): void {
-        if (!this.player) return;
+        const player = this.player;
+        if (!player) return;
 
-        const playerPosition = this.player.getPosition();
+        const playerPosition = player.getPosition();
 
         // 근처 몬스터 찾기
         let nearestMonster: Monster | null = null;
         let nearestDistance = Infinity;
 
-        this.monsters.forEach((monster) => {
+        // for...of 루프로 변경하여 타입 추론 개선
+        for (const [id, monster] of this.monsters) {
             if (!monster.isDead()) {
                 const distance = this.getDistance(playerPosition, monster.getPosition());
                 if (distance <= 80 && distance < nearestDistance) {
@@ -567,15 +570,15 @@ export class GameScene implements BaseScene {
                     nearestMonster = monster;
                 }
             }
-        });
+        }
 
         // 공격
         if (nearestMonster) {
-            const playerStats = this.player.getStats();
+            const playerStats = player.getStats();
             const damage = playerStats?.str || 10; // 기본 공격력
-            nearestMonster.takeDamage(damage, this.player);
+            nearestMonster.takeDamage(damage, player);
             this.showDamageNumber(nearestMonster.mesh.position, damage, 'monster');
-            this.player.playAttackAnimation();
+            player.playAttackAnimation();
 
             // 반격 체크
             if (nearestMonster.isDead()) {

@@ -2,7 +2,7 @@
  * ============================================================
  * BootScene - 부트 Scene
  * ============================================================
- * 게임 시작 시 에셋을 로딩하고 초기화하는 Scene
+ * 게임 시작 시 초기화하는 Scene (에셋 로딩 없이 박스 기반)
  * ============================================================
  */
 
@@ -36,15 +36,15 @@ export class BootScene implements BaseScene {
      * Scene 생성
      */
     public async create(): Promise<void> {
-        console.log('BootScene: Loading assets...');
+        console.log('BootScene: Initializing game...');
 
         // 로딩 UI 표시
         this.showLoadingScreen();
 
-        // 에셋 로딩
-        await this.loadAssets();
+        // 게임 초기화 (에셋 로딩 없이 바로 진행)
+        await this.initializeGame();
 
-        // 메뉴 Scene으로 전환
+        // 로딩 완료 후 메뉴 Scene으로 전환
         setTimeout(async () => {
             this.hideLoadingScreen();
             try {
@@ -56,64 +56,17 @@ export class BootScene implements BaseScene {
     }
 
     /**
-     * 에셋 로딩
+     * 게임 초기화
      */
-    private async loadAssets(): Promise<void> {
-        const assetManager = this.game.assetManager;
-
-        // 플레이스홀더 텍스처 생성
-        await this.loadPlaceholderAssets(assetManager);
+    private async initializeGame(): Promise<void> {
+        // 박스 기반 렌더링이므로 에셋 로딩 불필요
+        // 향후 에셋 추가 시 여기서 로딩
 
         // 로딩 진행률 업데이트
         this.loadingProgress = 1;
         this.updateLoadingProgress(1);
-    }
 
-    /**
-     * 플레이스홀더 에셋 로딩
-     */
-    private async loadPlaceholderAssets(assetManager: any): Promise<void> {
-        // 플레이어 플레이스홀더 (파란색 사각형)
-        const playerTexture = this.createPlaceholderTexture('#3498db', 64, 64);
-        assetManager['player'] = playerTexture;
-
-        // 몬스터 플레이스홀더 (빨간색 사각형)
-        const monsterTexture = this.createPlaceholderTexture('#e74c3c', 64, 64);
-        assetManager['monster'] = monsterTexture;
-
-        // NPC 플레이스홀더 (녹색 사각형)
-        const npcTexture = this.createPlaceholderTexture('#2ecc71', 64, 64);
-        assetManager['npc'] = npcTexture;
-
-        // 타일 플레이스홀더
-        const tileTexture = this.createPlaceholderTexture('#34495e', 64, 32);
-        assetManager['tile'] = tileTexture;
-    }
-
-    /**
-     * 플레이스홀더 텍스처 생성
-     */
-    private createPlaceholderTexture(color: string, width: number, height: number): THREE.CanvasTexture {
-        const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-
-        if (ctx) {
-            ctx.fillStyle = color;
-            ctx.fillRect(0, 0, width, height);
-
-            // 테두리
-            ctx.strokeStyle = '#ffffff';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(0, 0, width, height);
-        }
-
-        const texture = new THREE.CanvasTexture(canvas);
-        texture.magFilter = THREE.NearestFilter;
-        texture.minFilter = THREE.NearestFilter;
-
-        return texture;
+        console.log('BootScene: Game initialized (box-based rendering)');
     }
 
     /**

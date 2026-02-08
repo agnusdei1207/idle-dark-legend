@@ -39,7 +39,8 @@ export class SpriteUtils {
             opacity = 1
         } = options;
 
-        const sprite = new THREE.Sprite(texture);
+        const material = new THREE.SpriteMaterial({ map: texture });
+        const sprite = new THREE.Sprite(material);
         sprite.position.set(x, y, z);
         sprite.scale.set(scaleX, scaleY, 1);
         sprite.material.opacity = opacity;
@@ -60,7 +61,8 @@ export class SpriteUtils {
         play: (animation: string) => void;
         stop: () => void;
     } {
-        const sprite = new THREE.Sprite(textures[0]);
+        const material = new THREE.SpriteMaterial({ map: textures[0] });
+        const sprite = new THREE.Sprite(material);
         let currentFrame = 0;
         let frameTime = 0;
         let isPlaying = true;

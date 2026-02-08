@@ -30,10 +30,10 @@
     "src"
   ],
   "exclude": [
-    "src/scenes",
-    "src/entities",
-    "src/systems/index.ts",
-    "src/ui/CharacterUI.ts",
-    "src/ui/SkillTreeUI.ts"
+    "src/_phaser_scenes_backup",
+    "src/_phaser_entities_backup",
+    "src/_phaser_ui_backup",
+    "src/systems/_index_backup.ts",
+    "src/config/game.config.ts"
   ]
 }

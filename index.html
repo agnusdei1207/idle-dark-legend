@@ -2,9 +2,9 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/assets/ui/favicon.png" />
+    <!-- Favicon 제거 (에셋 로딩 없이 박스 기반 렌더링) -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta name="description" content="Classic isometric RPG inspired by 90s Korean online games" />
+    <meta name="description" content="Classic isometric RPG inspired by 90s Korean online games - Dark Legend Classic (Box-based rendering, no external assets required)" />
     <title>어둠의전설 클래식 - Dark Legend Classic</title>
     <style>
       * {
@@ -88,11 +88,11 @@
   </head>
   <body>
     <div id="loading">
-      <h1>Shadow Realm</h1>
+      <h1>어둠의전설 클래식</h1>
       <div id="loading-bar-container">
         <div id="loading-bar"></div>
       </div>
-      <p id="loading-text">Loading...</p>
+      <p id="loading-text">로딩 중...</p>
     </div>
     <div id="game-container"></div>
     <script type="module" src="/src/main.ts"></script>

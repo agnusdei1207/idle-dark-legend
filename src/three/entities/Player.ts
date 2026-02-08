@@ -2,14 +2,14 @@
  * ============================================================
  * Player - 플레이어 엔티티 (2.5D)
  * ============================================================
- * 3D 모델 기반 플레이어 캐릭터
+ * 3D 박스 모델 기반 플레이어 캐릭터
  * ============================================================
  */
 
 import * as THREE from 'three';
 import type { ThreeGame } from '../core/ThreeGame';
+import type { AnimationState } from '../systems/AnimationSystem';
 import { AnimationController } from '../systems/AnimationSystem';
-import { IsometricUtils } from '../utils/IsometricUtils';
 import type { BaseStats, Position } from '../../types/game.types';
 import { getClassById } from '../../data/classes.data';
 
@@ -34,6 +34,7 @@ export class Player {
     // 이동 관련
     private moveSpeed: number = 150;
     private targetPosition: THREE.Vector3 | null = null;
+    private isMoving: boolean = false;
 
     constructor(game: ThreeGame) {
         this.game = game;
@@ -48,18 +49,13 @@ export class Player {
         this.currentHp = 100;
         this.currentMp = 50;
 
-        // 3D 캐릭터 메시 생성 (2.5D 스타일)
+        // 3D 캐릭터 메시 생성 (박스 형태)
         this.createCharacterMesh();
 
-        // 애니메이션 컨트롤러 (더미 스프라이트)
-        const dummyTexture = new THREE.Texture();
-        const dummySprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: dummyTexture }));
-        dummySprite.visible = false;
-        this.mesh.add(dummySprite);
-        this.animationController = new AnimationController(dummySprite);
-
-        // 애니메이션 등록
-        this.registerAnimations();
+        // 애니메이션 컨트롤러 (메시 기반)
+        this.animationController = new AnimationController(this.mesh);
+        this.animationController.registerDefaultAnimations();
+        this.animationController.play('idle');
     }
 
     /**
@@ -70,6 +66,7 @@ export class Player {
         const bodyGeometry = new THREE.BoxGeometry(32, 48, 16);
         const bodyMaterial = new THREE.MeshLambertMaterial({ color: 0x3498db });
         const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+        body.name = 'body';
         body.position.y = 24;
         body.castShadow = true;
         this.mesh.add(body);
@@ -78,6 +75,7 @@ export class Player {
         const headGeometry = new THREE.BoxGeometry(24, 24, 24);
         const headMaterial = new THREE.MeshLambertMaterial({ color: 0xf39c12 });
         const head = new THREE.Mesh(headGeometry, headMaterial);
+        head.name = 'head';
         head.position.y = 60;
         head.castShadow = true;
         this.mesh.add(head);
@@ -87,10 +85,12 @@ export class Player {
         const armMaterial = new THREE.MeshLambertMaterial({ color: 0x3498db });
 
         const leftArm = new THREE.Mesh(armGeometry, armMaterial);
+        leftArm.name = 'leftArm';
         leftArm.position.set(-20, 50, 0);
         this.mesh.add(leftArm);
 
         const rightArm = new THREE.Mesh(armGeometry, armMaterial);
+        rightArm.name = 'rightArm';
         rightArm.position.set(20, 50, 0);
         this.mesh.add(rightArm);
 
@@ -99,10 +99,12 @@ export class Player {
         const legMaterial = new THREE.MeshLambertMaterial({ color: 0x2c3e50 });
 
         const leftLeg = new THREE.Mesh(legGeometry, legMaterial);
+        leftLeg.name = 'leftLeg';
         leftLeg.position.set(-8, 0, 0);
         this.mesh.add(leftLeg);
 
         const rightLeg = new THREE.Mesh(legGeometry, legMaterial);
+        rightLeg.name = 'rightLeg';
         rightLeg.position.set(8, 0, 0);
         this.mesh.add(rightLeg);
 
@@ -117,14 +119,6 @@ export class Player {
         shadow.rotation.x = -Math.PI / 2;
         shadow.position.y = -5;
         this.mesh.add(shadow);
-    }
-
-    /**
-     * 애니메이션 등록
-     */
-    private registerAnimations(): void {
-        // TODO: 실제 스프라이트 시트가 있으면 등록
-        // 현재는 기본 애니메이션만
     }
 
     /**
@@ -155,7 +149,18 @@ export class Player {
      * 이동 처리
      */
     public move(deltaTime: number, direction: { x: number; y: number }): void {
-        if (direction.x === 0 && direction.y === 0) return;
+        if (direction.x === 0 && direction.y === 0) {
+            if (this.isMoving) {
+                this.isMoving = false;
+                this.animationController.play('idle');
+            }
+            return;
+        }
+
+        if (!this.isMoving) {
+            this.isMoving = true;
+            this.animationController.play('walk');
+        }
 
         this.mesh.position.x += direction.x * this.moveSpeed * deltaTime;
         this.mesh.position.y += direction.y * this.moveSpeed * deltaTime;
@@ -168,8 +173,10 @@ export class Player {
      * 타일 좌표로 이동
      */
     public moveToTile(tileX: number, tileY: number): void {
-        const pos = IsometricUtils.tileToWorld(tileX, tileY, 64, 32);
-        this.targetPosition = new THREE.Vector3(pos.x, pos.y, 0);
+        // 아이소메트릭 좌표 변환
+        const x = (tileX - tileY) * 32;
+        const y = (tileX + tileY) * 16;
+        this.targetPosition = new THREE.Vector3(x, y, 0);
     }
 
     /**
@@ -186,7 +193,13 @@ export class Player {
             if (distance < speed) {
                 this.mesh.position.copy(this.targetPosition);
                 this.targetPosition = null;
+                this.isMoving = false;
+                this.animationController.play('idle');
             } else {
+                if (!this.isMoving) {
+                    this.isMoving = true;
+                    this.animationController.play('walk');
+                }
                 this.mesh.position.x += (dx / distance) * speed;
                 this.mesh.position.y += (dy / distance) * speed;
             }
@@ -197,25 +210,20 @@ export class Player {
 
         // 애니메이션 업데이트
         this.animationController.update(deltaTime);
-
-        // 그림자 위치 업데이트
-        // (자동으로 메시에 따라감)
     }
 
     /**
      * 공격 애니메이션
      */
     public playAttackAnimation(): void {
-        // TODO: 공격 애니메이션 구현
-        console.log('Player: Attack animation');
+        this.animationController.play('attack');
     }
 
     /**
      * 피격 애니메이션
      */
     public playHurtAnimation(): void {
-        // TODO: 피격 애니메이션 구현
-        console.log('Player: Hurt animation');
+        this.animationController.play('hurt');
     }
 
     /**
@@ -223,6 +231,8 @@ export class Player {
      */
     public takeDamage(damage: number): void {
         this.currentHp = Math.max(0, this.currentHp - damage);
+
+        this.playHurtAnimation();
 
         if (this.currentHp <= 0) {
             this.playDeathAnimation();
@@ -233,8 +243,7 @@ export class Player {
      * 사망 애니메이션
      */
     public playDeathAnimation(): void {
-        // TODO: 사망 애니메이션 구현
-        console.log('Player: Death animation');
+        this.animationController.play('death');
     }
 
     /**
@@ -408,6 +417,6 @@ export class Player {
      */
     public destroy(): void {
         this.animationController.destroy();
-        // 메시 정리
+        // 메시 정리는 호출자가 처리
     }
 }

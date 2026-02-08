@@ -129,7 +129,7 @@ export const DIALOGUES: DialogueDefinition[] = [
         id: 'dlg_potion_seller',
         nodes: [
             {
-                id: 'start', speaker: 'Potion Seller', nameKo: '포션 상인',
+                id: 'start', speaker: 'Potion Seller', speakerKo: '포션 상인',
                 text: '회복 포션이 필요하신가요? 모험에 꼭 필요하지요!',
                 choices: [
                     { text: '상점 열기', openShop: 'shop_potions' },

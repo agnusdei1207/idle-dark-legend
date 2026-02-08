@@ -2,7 +2,7 @@
  * ============================================================
  * Monster - 몬스터 엔티티 (2.5D)
  * ============================================================
- * 3D 모델 기반 몬스터 캐릭터
+ * 3D 박스 모델 기반 몬스터 캐릭터
  * ============================================================
  */
 
@@ -57,6 +57,9 @@ export class Monster {
     // 타겟 (주로 플레이어)
     private targetEntity: any = null;
 
+    // 원본 색상 저장
+    private originalColors: Map<THREE.Mesh, number> = new Map();
+
     constructor(game: ThreeGame, data: MonsterDefinition, tileX: number, tileY: number) {
         this.game = game;
         this.data = data;
@@ -83,15 +86,13 @@ export class Monster {
         // Z-index 정렬
         this.mesh.position.z = pos.x + pos.y;
 
-        // 애니메이션 컨트롤러 (더미 스프라이트)
-        const dummyTexture = new THREE.Texture();
-        const dummySprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: dummyTexture }));
-        dummySprite.visible = false;
-        this.mesh.add(dummySprite);
-        this.animationController = new AnimationController(dummySprite);
+        // 애니메이션 컨트롤러 (메시 기반)
+        this.animationController = new AnimationController(this.mesh);
+        this.animationController.registerDefaultAnimations();
+        this.animationController.play('idle');
 
-        // 애니메이션 등록
-        this.registerAnimations();
+        // 원본 색상 저장
+        this.saveOriginalColors();
     }
 
     /**
@@ -107,7 +108,13 @@ export class Monster {
             demon: { color: 0xc0392b, scale: 1.3, height: 52 },
             dragon: { color: 0xe74c3c, scale: 1.5, height: 64 },
             ghost: { color: 0x9b59b6, scale: 1.0, height: 40 },
-            wolf: { color: 0x7f8c8d, scale: 0.9, height: 28 }
+            wolf: { color: 0x7f8c8d, scale: 0.9, height: 28 },
+            pampat: { color: 0x27ae60, scale: 0.7, height: 24 },
+            nie: { color: 0x2ecc71, scale: 0.8, height: 28 },
+            wandu: { color: 0xf39c12, scale: 0.6, height: 20 },
+            mantis: { color: 0x16a085, scale: 0.9, height: 32 },
+            wasp: { color: 0xf1c40f, scale: 0.7, height: 24 },
+            spider: { color: 0x2c3e50, scale: 0.8, height: 20 }
         };
 
         const config = monsterConfigs[type] || { color: 0x95a5a6, scale: 1.0, height: 36 };
@@ -120,22 +127,24 @@ export class Monster {
         const bodyGeometry = new THREE.BoxGeometry(28 * finalScale, config.height * finalScale, 14 * finalScale);
         const bodyMaterial = new THREE.MeshLambertMaterial({ color: config.color });
         const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+        body.name = 'body';
         body.position.y = (config.height * finalScale) / 2;
         body.castShadow = true;
         this.mesh.add(body);
 
         // 머리 (대부분의 몬스터)
-        if (type !== 'slime') {
+        if (type !== 'slime' && type !== 'wandu') {
             const headGeometry = new THREE.BoxGeometry(20 * finalScale, 20 * finalScale, 20 * finalScale);
             const headMaterial = new THREE.MeshLambertMaterial({ color: this.getHeadColor(type) });
             const head = new THREE.Mesh(headGeometry, headMaterial);
+            head.name = 'head';
             head.position.y = config.height * finalScale;
             head.castShadow = true;
             this.mesh.add(head);
         }
 
         // 눈 (공격적인 몬스터)
-        if (['goblin', 'orc', 'demon', 'dragon'].includes(type)) {
+        if (['goblin', 'orc', 'demon', 'dragon', 'wolf'].includes(type)) {
             const eyeGeometry = new THREE.BoxGeometry(4 * finalScale, 4 * finalScale, 2 * finalScale);
             const eyeMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 
@@ -160,8 +169,8 @@ export class Monster {
         shadow.position.y = -4;
         this.mesh.add(shadow);
 
-        // HP 바
-        this.createHPBar();
+        // HP 바 (간단한 박스)
+        this.createHPBar(finalScale);
     }
 
     /**
@@ -176,39 +185,57 @@ export class Monster {
             demon: 0x8e44ad,
             dragon: 0xff6b6b,
             ghost: 0xecf0f1,
-            wolf: 0x34495e
+            wolf: 0x34495e,
+            pampat: 0x2ecc71,
+            nie: 0x27ae60,
+            wandu: 0xf39c12,
+            mantis: 0x16a085,
+            wasp: 0xf1c40f,
+            spider: 0x34495e
         };
         return headColors[type] || 0x95a5a6;
     }
 
     /**
-     * HP 바 생성
+     * 원본 색상 저장
      */
-    private createHPBar(): void {
-        // 배경
-        const bgGeometry = new THREE.PlaneGeometry(40, 6);
-        const bgMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
-        const bg = new THREE.Mesh(bgGeometry, bgMaterial);
-        bg.position.y = 80;
-        this.mesh.add(bg);
-
-        // HP (나중에 업데이트됨)
-        // TODO: 실제 HP 바 업데이트 구현
+    private saveOriginalColors(): void {
+        this.mesh.children.forEach((child) => {
+            if (child instanceof THREE.Mesh) {
+                const material = child.material as THREE.MeshLambertMaterial;
+                if (material.color) {
+                    this.originalColors.set(child, material.color.getHex());
+                }
+            }
+        });
     }
 
     /**
-     * 애니메이션 등록
+     * HP 바 생성
      */
-    private registerAnimations(): void {
-        // TODO: 실제 스프라이트 시트가 있으면 등록
-        // 현재는 기본 애니메이션만
+    private createHPBar(scale: number): void {
+        // 배경
+        const bgGeometry = new THREE.PlaneGeometry(40 * scale, 6);
+        const bgMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+        const bg = new THREE.Mesh(bgGeometry, bgMaterial);
+        bg.position.y = 80 * scale;
+        this.mesh.add(bg);
+
+        // HP (간단히 녹색 박스)
+        const hpGeometry = new THREE.PlaneGeometry(38 * scale, 4);
+        const hpMaterial = new THREE.MeshBasicMaterial({ color: 0x27ae60 });
+        const hp = new THREE.Mesh(hpGeometry, hpMaterial);
+        hp.position.y = 80 * scale;
+        hp.position.z = 0.1;
+        hp.name = 'hpBar';
+        this.mesh.add(hp);
     }
 
     /**
      * AI 업데이트
      */
     public updateAI(deltaTime: number, playerPosition: Position, player: any): void {
-        // 쿨다임 업데이트
+        // 쿨다운 업데이트
         if (this.attackCooldown > 0) {
             this.attackCooldown -= deltaTime;
         }
@@ -217,7 +244,6 @@ export class Monster {
         if (this.damageFlashTime > 0) {
             this.damageFlashTime -= deltaTime;
             if (this.damageFlashTime <= 0) {
-                // 원래 색상으로 복원
                 this.resetColor();
             }
         }
@@ -254,6 +280,32 @@ export class Monster {
 
         // Z-index 업데이트
         this.mesh.position.z = this.mesh.position.x + this.mesh.position.y;
+
+        // HP 바 업데이트 (항상 카메라를 바라봄)
+        this.updateHPBar();
+    }
+
+    /**
+     * HP 바 업데이트
+     */
+    private updateHPBar(): void {
+        const hpBar = this.mesh.children.find(c => c.name === 'hpBar') as THREE.Mesh;
+        if (hpBar) {
+            const hpPercent = this.currentHp / this.data.stats.maxHp;
+            const material = hpBar.material as THREE.MeshBasicMaterial;
+
+            // HP에 따른 색상 변경
+            if (hpPercent > 0.5) {
+                material.color.setHex(0x27ae60); // 녹색
+            } else if (hpPercent > 0.25) {
+                material.color.setHex(0xf39c12); // 주황색
+            } else {
+                material.color.setHex(0xe74c3c); // 빨간색
+            }
+
+            // 너비 조정
+            hpBar.scale.x = hpPercent;
+        }
     }
 
     /**
@@ -267,6 +319,7 @@ export class Monster {
         if (distance <= this.chaseRange && aiType !== 'passive') {
             this.state = MonsterState.CHASE;
             this.targetEntity = { getPosition: () => playerPosition };
+            this.animationController.play('walk');
             return;
         }
 
@@ -274,6 +327,7 @@ export class Monster {
         if (Math.random() < 0.005) {
             this.state = MonsterState.PATROL;
             this.setRandomPatrolTarget();
+            this.animationController.play('walk');
         }
     }
 
@@ -334,11 +388,13 @@ export class Monster {
     private updateAttack(deltaTime: number, player: any): void {
         if (this.attackCooldown > 0) {
             this.state = MonsterState.CHASE;
+            this.animationController.play('walk');
             return;
         }
 
         // 공격 실행
         this.performAttack(player);
+        this.animationController.play('attack');
         this.attackCooldown = this.data.stats.attackSpeed || 1.5;
         this.state = MonsterState.CHASE;
     }
@@ -352,8 +408,10 @@ export class Monster {
             const aiType = this.data.ai || 'passive';
             if (aiType !== 'passive') {
                 this.state = MonsterState.CHASE;
+                this.animationController.play('walk');
             } else {
                 this.state = MonsterState.IDLE;
+                this.animationController.play('idle');
             }
         }
     }
@@ -369,6 +427,7 @@ export class Monster {
             this.mesh.position.copy(this.spawnPosition);
             this.targetPosition = null;
             this.state = MonsterState.IDLE;
+            this.animationController.play('idle');
             return;
         }
 
@@ -381,7 +440,6 @@ export class Monster {
     private performAttack(target: any): void {
         if (!target || !this.data.stats.attack) return;
 
-        // TODO: CombatSystem을 통한 공격 처리
         const damage = this.data.stats.attack;
         target.takeDamage?.(damage);
 
@@ -403,24 +461,6 @@ export class Monster {
             this.mesh.position.x += (dx / distance) * speed;
             this.mesh.position.y += (dy / distance) * speed;
         }
-
-        // 방향에 따른 애니메이션 설정
-        this.setAnimationDirection(dx, dy);
-    }
-
-    /**
-     * 애니메이션 방향 설정
-     */
-    private setAnimationDirection(dx: number, dy: number): void {
-        let direction: 0 | 1 | 2 | 3 = 0; // 0: down, 1: up, 2: left, 3: right
-
-        if (Math.abs(dx) > Math.abs(dy)) {
-            direction = dx > 0 ? 3 : 2;
-        } else {
-            direction = dy > 0 ? 1 : 0;
-        }
-
-        this.animationController.setDirection(direction);
     }
 
     /**
@@ -466,6 +506,7 @@ export class Monster {
 
         // 피격 색상으로 변경
         this.flashDamage();
+        this.animationController.play('hurt');
 
         const aiType = this.data.ai || 'passive';
 
@@ -501,10 +542,12 @@ export class Monster {
      * 데미지 플래시 효과
      */
     private flashDamage(): void {
-        this.mesh.traverse((child) => {
-            if (child instanceof THREE.Mesh) {
+        this.mesh.children.forEach((child) => {
+            if (child instanceof THREE.Mesh && child.name !== 'hpBar') {
                 const material = child.material as THREE.MeshLambertMaterial;
-                material.color.setHex(0xffffff);
+                if (material.color) {
+                    material.color.setHex(0xffffff);
+                }
             }
         });
     }
@@ -513,12 +556,15 @@ export class Monster {
      * 색상 리셋
      */
     private resetColor(): void {
-        // TODO: 원래 색상으로 복원
-        // 현재는 간단히 처리
-        this.mesh.traverse((child) => {
-            if (child instanceof THREE.Mesh && child.geometry.type === 'BoxGeometry') {
-                const material = child.material as THREE.MeshLambertMaterial;
-                // 기본 색상으로 복원 (임시)
+        this.mesh.children.forEach((child) => {
+            if (child instanceof THREE.Mesh) {
+                const originalColor = this.originalColors.get(child);
+                if (originalColor !== undefined) {
+                    const material = child.material as THREE.MeshLambertMaterial;
+                    if (material.color) {
+                        material.color.setHex(originalColor);
+                    }
+                }
             }
         });
     }
@@ -528,9 +574,14 @@ export class Monster {
      */
     private die(): void {
         this.state = MonsterState.DEAD;
+        this.animationController.play('death');
         console.log(`Monster ${this.data.name} died`);
 
-        // TODO: 사망 애니메이션, 경험치 보상, 드롭 아이템 등
+        // HP 바 숨기기
+        const hpBar = this.mesh.children.find(c => c.name === 'hpBar');
+        if (hpBar) {
+            hpBar.visible = false;
+        }
     }
 
     /**
@@ -562,6 +613,6 @@ export class Monster {
      */
     public destroy(): void {
         this.animationController.destroy();
-        // 메시 정리
+        this.originalColors.clear();
     }
 }
