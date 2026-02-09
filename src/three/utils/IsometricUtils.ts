@@ -160,23 +160,26 @@ export class IsometricUtils {
     /**
      * 화면 방향을 아이소메트릭 방향으로 변환
      * 어둠의전설 스타일: 방향키가 아이소메트릭 다이아몬드 축을 따라 이동
+     *
+     * 매핑:
+     * - 위 화살표 (y=1) → 북동 (우상단) = tileX+
+     * - 아래 화살표 (y=-1) → 남서 (좌하단) = tileX-
+     * - 오른쪽 화살표 (x=1) → 남동 (우하단) = tileY+
+     * - 왼쪽 화살표 (x=-1) → 북서 (좌상단) = tileY-
      */
     public static screenDirectionToIsometric(
         screenDir: { x: number; y: number }
     ): { x: number; y: number } {
-        // 아이소메트릭 좌표계 변환
-        // 화면 상(y+) → 북동(x+, y-)
-        // 화면 하(y-) → 남서(x-, y+)
-        // 화면 우(x+) → 남동(x+, y+)
-        // 화면 좌(x-) → 북서(x-, y-)
+        // 화면 방향을 타일 방향으로 매핑
+        const tileDirX = screenDir.y;  // 위/아래 → tileX
+        const tileDirY = screenDir.x;  // 좌/우 → tileY
 
-        // 아이소메트릭 2:1 비율 적용
-        const isoX = screenDir.x - screenDir.y;
-        const isoY = (screenDir.x + screenDir.y) * 0.5;
-
+        // 타일 방향을 월드 좌표로 변환
+        // worldX = (tileX - tileY) * (width/2)
+        // worldY = (tileX + tileY) * (height/2)
         return {
-            x: isoX,
-            y: isoY
+            x: tileDirX - tileDirY,
+            y: (tileDirX + tileDirY) * 0.5
         };
     }
 

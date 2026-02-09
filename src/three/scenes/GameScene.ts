@@ -22,6 +22,7 @@ import { ParticleSystem } from '../systems/ObjectPool';
 import { InventoryUI } from '../ui/InventoryUI';
 import { SkillsUI } from '../ui/SkillsUI';
 import { QuestUI } from '../ui/QuestUI';
+import { MobileControls } from '../ui/MobileControls';
 
 /**
  * GameScene 클래스
@@ -45,6 +46,7 @@ export class GameScene implements BaseScene {
     private inventoryUI: InventoryUI;
     private skillsUI: SkillsUI;
     private questsUI: QuestUI;
+    private mobileControls: MobileControls;
     private saveData: any | null = null;
     private mapWidth: number = 30;
     private mapHeight: number = 30;
@@ -91,6 +93,7 @@ export class GameScene implements BaseScene {
         this.inventoryUI = new InventoryUI();
         this.skillsUI = new SkillsUI([], new Map());
         this.questsUI = new QuestUI();
+        this.mobileControls = new MobileControls();
 
         // 맵 데이터 설정 (임시)
         this.currentMap = {
@@ -137,7 +140,39 @@ export class GameScene implements BaseScene {
         // 조명 설정
         this.setupLighting();
 
+        // 모바일 UI 버튼 이벤트 설정
+        this.setupMobileUIEvents();
+
         console.log('GameScene: Ready!');
+    }
+
+    /**
+     * 모바일 UI 버튼 이벤트 설정
+     */
+    private setupMobileUIEvents(): void {
+        // 인벤토리 버튼
+        const inventoryBtn = document.getElementById('inventory-btn');
+        if (inventoryBtn) {
+            inventoryBtn.addEventListener('click', () => {
+                this.inventoryUI.toggle();
+            });
+        }
+
+        // 스킬 버튼
+        const skillsBtn = document.getElementById('skills-btn');
+        if (skillsBtn) {
+            skillsBtn.addEventListener('click', () => {
+                this.skillsUI.toggle();
+            });
+        }
+
+        // 퀘스트 버튼
+        const questsBtn = document.getElementById('quests-btn');
+        if (questsBtn) {
+            questsBtn.addEventListener('click', () => {
+                this.questsUI.toggle();
+            });
+        }
     }
 
     /**
@@ -541,25 +576,38 @@ export class GameScene implements BaseScene {
 
         const input = this.game.input;
         const oldPosition = this.player.mesh.position.clone();
+        let moved = false;
+
+        // 모바일 조이스틱 입력
+        const joyDir = this.mobileControls.getDirection();
+        if (joyDir.x !== 0 || joyDir.y !== 0) {
+            const isoDir = IsometricUtils.screenDirectionToIsometric(joyDir);
+            this.player.move(deltaTime, isoDir);
+            moved = true;
+        }
 
         // WASD 이동
-        const wasdDir = input.getWASDDirection();
-        if (wasdDir.x !== 0 || wasdDir.y !== 0) {
-            // 화면 방향을 아이소메트릭 방향으로 변환
-            const isoDir = IsometricUtils.screenDirectionToIsometric(wasdDir);
-            this.player.move(deltaTime, isoDir);
+        if (!moved) {
+            const wasdDir = input.getWASDDirection();
+            if (wasdDir.x !== 0 || wasdDir.y !== 0) {
+                const isoDir = IsometricUtils.screenDirectionToIsometric(wasdDir);
+                this.player.move(deltaTime, isoDir);
+                moved = true;
+            }
         }
 
         // 방향키 이동
-        const arrowDir = input.getArrowDirection();
-        if (arrowDir.x !== 0 || arrowDir.y !== 0) {
-            // 화면 방향을 아이소메트릭 방향으로 변환
-            const isoDir = IsometricUtils.screenDirectionToIsometric(arrowDir);
-            this.player.move(deltaTime, isoDir);
+        if (!moved) {
+            const arrowDir = input.getArrowDirection();
+            if (arrowDir.x !== 0 || arrowDir.y !== 0) {
+                const isoDir = IsometricUtils.screenDirectionToIsometric(arrowDir);
+                this.player.move(deltaTime, isoDir);
+                moved = true;
+            }
         }
 
         // 맵 경계 체크
-        if (!this.isWithinMapBounds(this.player.mesh.position)) {
+        if (moved && !this.isWithinMapBounds(this.player.mesh.position)) {
             // 경계를 벗어나면 이전 위치로 되돌림
             this.player.mesh.position.copy(oldPosition);
         }
@@ -1130,6 +1178,22 @@ export class GameScene implements BaseScene {
             } else if (this.player) {
                 // 공격
                 this.handlePlayerAttack();
+            }
+        }
+
+        // 모바일 공격 버튼
+        if (this.mobileControls.isAttackPressed() && this.player) {
+            if (this.activeNPC && !this.dialogueSystem.isDialogueActive()) {
+                this.startDialogue(this.activeNPC);
+            } else {
+                this.handlePlayerAttack();
+            }
+        }
+
+        // 모바일 스킬 버튼 (1-4)
+        for (let i = 0; i < 4; i++) {
+            if (this.mobileControls.isSkillPressed(i)) {
+                this.useSkill(i);
             }
         }
     }

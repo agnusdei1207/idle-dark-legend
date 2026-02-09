@@ -111,10 +111,11 @@ export class InputSystem {
 
     /**
      * WASD 입력 방향 계산
+     * 위(W) = 양의 Y, 아래(S) = 음의 Y (화면 좌표)
      */
     public getWASDDirection(): { x: number; y: number } {
         const x = (this.isDown('KeyD') ? 1 : 0) - (this.isDown('KeyA') ? 1 : 0);
-        const y = (this.isDown('KeyS') ? 1 : 0) - (this.isDown('KeyW') ? 1 : 0);
+        const y = (this.isDown('KeyW') ? 1 : 0) - (this.isDown('KeyS') ? 1 : 0);  // W가 +1 (위)
 
         // 대각선 이동 정규화
         const length = Math.sqrt(x * x + y * y);
@@ -127,10 +128,11 @@ export class InputSystem {
 
     /**
      * 방향키 입력 방향 계산
+     * 위(ArrowUp) = 양의 Y, 아래(ArrowDown) = 음의 Y (화면 좌표)
      */
     public getArrowDirection(): { x: number; y: number } {
         const x = (this.isDown('ArrowRight') ? 1 : 0) - (this.isDown('ArrowLeft') ? 1 : 0);
-        const y = (this.isDown('ArrowDown') ? 1 : 0) - (this.isDown('ArrowUp') ? 1 : 0);
+        const y = (this.isDown('ArrowUp') ? 1 : 0) - (this.isDown('ArrowDown') ? 1 : 0);  // ArrowUp이 +1 (위)
 
         const length = Math.sqrt(x * x + y * y);
         if (length > 0) {
