@@ -83,14 +83,13 @@ export class Monster {
         this.mesh.position.set(pos.x, pos.y, 0);
         this.spawnPosition = new THREE.Vector3(pos.x, pos.y, 0);
 
-        // Z-index 정렬 - 부모만 업데이트
+        // Z-index 정렬 - renderOrder만 사용 (2D 아이소메트릭)
         const depth = pos.x + pos.y;
-        this.mesh.position.z = depth;
+        this.mesh.renderOrder = Math.floor(depth);
 
-        // 자식 메시들의 Z를 부모와 동기화 (그림자는 제외)
+        // 자식 메시들도 renderOrder 설정
         this.mesh.children.forEach((child) => {
-            if (child instanceof THREE.Mesh && child.name !== 'shadow') {
-                child.position.z = depth;
+            if (child instanceof THREE.Mesh) {
                 child.renderOrder = Math.floor(depth);
             }
         });

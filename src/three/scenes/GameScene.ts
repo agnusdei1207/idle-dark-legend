@@ -180,7 +180,7 @@ export class GameScene implements BaseScene {
         for (let x = 0; x < width; x++) {
             const pos = IsometricUtils.tileToWorld(x, 0, 64, 32);
             const wall = SpriteUtils.createColorSprite(0x8b4513, 64, 32);
-            wall.position.set(pos.x, pos.y, 1);
+            wall.position.set(pos.x, pos.y, 0);
             this.mapGroup.add(wall);
         }
 
@@ -188,7 +188,7 @@ export class GameScene implements BaseScene {
         for (let x = 0; x < width; x++) {
             const pos = IsometricUtils.tileToWorld(x, height - 1, 64, 32);
             const wall = SpriteUtils.createColorSprite(0x8b4513, 64, 32);
-            wall.position.set(pos.x, pos.y, 1);
+            wall.position.set(pos.x, pos.y, 0);
             this.mapGroup.add(wall);
         }
 
@@ -196,7 +196,7 @@ export class GameScene implements BaseScene {
         for (let y = 0; y < height; y++) {
             const pos = IsometricUtils.tileToWorld(0, y, 64, 32);
             const wall = SpriteUtils.createColorSprite(0x8b4513, 64, 32);
-            wall.position.set(pos.x, pos.y, 1);
+            wall.position.set(pos.x, pos.y, 0);
             this.mapGroup.add(wall);
         }
 
@@ -204,7 +204,7 @@ export class GameScene implements BaseScene {
         for (let y = 0; y < height; y++) {
             const pos = IsometricUtils.tileToWorld(width - 1, y, 64, 32);
             const wall = SpriteUtils.createColorSprite(0x8b4513, 64, 32);
-            wall.position.set(pos.x, pos.y, 1);
+            wall.position.set(pos.x, pos.y, 0);
             this.mapGroup.add(wall);
         }
     }
@@ -228,21 +228,27 @@ export class GameScene implements BaseScene {
                     const trunkGeometry = new THREE.BoxGeometry(8, 20, 8);
                     const trunkMaterial = new THREE.MeshLambertMaterial({ color: 0x8B4513 });
                     const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
-                    trunk.position.set(pos.x, pos.y + 10, pos.x + pos.y);
+                    trunk.position.set(pos.x, pos.y + 10, 0); // Z=0
+                    trunk.renderOrder = Math.floor(pos.x + pos.y); // 깊이 정렬
+                    trunk.castShadow = true;
                     this.mapGroup.add(trunk);
 
                     // 나뭇잎
                     const leavesGeometry = new THREE.BoxGeometry(24, 24, 24);
                     const leavesMaterial = new THREE.MeshLambertMaterial({ color: 0x27ae60 });
                     const leaves = new THREE.Mesh(leavesGeometry, leavesMaterial);
-                    leaves.position.set(pos.x, pos.y + 32, pos.x + pos.y);
+                    leaves.position.set(pos.x, pos.y + 32, 0); // Z=0
+                    leaves.renderOrder = Math.floor(pos.x + pos.y); // 깊이 정렬
+                    leaves.castShadow = true;
                     this.mapGroup.add(leaves);
                 } else {
                     // 바위
                     const rockGeometry = new THREE.BoxGeometry(16, 12, 16);
                     const rockMaterial = new THREE.MeshLambertMaterial({ color: 0x7f8c8d });
                     const rock = new THREE.Mesh(rockGeometry, rockMaterial);
-                    rock.position.set(pos.x, pos.y + 6, pos.x + pos.y);
+                    rock.position.set(pos.x, pos.y + 6, 0); // Z=0
+                    rock.renderOrder = Math.floor(pos.x + pos.y); // 깊이 정렬
+                    rock.castShadow = true;
                     this.mapGroup.add(rock);
                 }
             }

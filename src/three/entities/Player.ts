@@ -166,14 +166,14 @@ export class Player {
         this.mesh.position.x += direction.x * this.moveSpeed * deltaTime;
         this.mesh.position.y += direction.y * this.moveSpeed * deltaTime;
 
-        // Z-index 정렬 (아이소메트릭) - 부모만 업데이트
-        this.mesh.position.z = this.mesh.position.x + this.mesh.position.y;
+        // Z-index 정렬 (아이소메트릭) - renderOrder만 사용 (2D 아이소메트릭)
+        const depth = this.mesh.position.x + this.mesh.position.y;
+        this.mesh.renderOrder = Math.floor(depth);
 
-        // 자식 메시들의 Z를 부모와 동기화 (그림자는 제외)
+        // 자식 메시들도 renderOrder 설정
         this.mesh.children.forEach((child) => {
-            if (child instanceof THREE.Mesh && child.name !== 'shadow') {
-                child.position.z = this.mesh.position.z;
-                child.renderOrder = Math.floor(this.mesh.position.z);
+            if (child instanceof THREE.Mesh) {
+                child.renderOrder = Math.floor(depth);
             }
         });
     }
@@ -213,14 +213,14 @@ export class Player {
                 this.mesh.position.y += (dy / distance) * speed;
             }
 
-            // Z-index 업데이트 - 부모만 업데이트
-            this.mesh.position.z = this.mesh.position.x + this.mesh.position.y;
+            // Z-index 업데이트 - renderOrder만 사용 (2D 아이소메트릭)
+            const depth = this.mesh.position.x + this.mesh.position.y;
+            this.mesh.renderOrder = Math.floor(depth);
 
-            // 자식 메시들의 Z를 부모와 동기화 (그림자는 제외)
+            // 자식 메시들도 renderOrder 설정
             this.mesh.children.forEach((child) => {
-                if (child instanceof THREE.Mesh && child.name !== 'shadow') {
-                    child.position.z = this.mesh.position.z;
-                    child.renderOrder = Math.floor(this.mesh.position.z);
+                if (child instanceof THREE.Mesh) {
+                    child.renderOrder = Math.floor(depth);
                 }
             });
         }

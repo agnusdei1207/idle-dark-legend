@@ -35,7 +35,7 @@ export class IsometricUtils {
     public static tileToWorld(tileX: number, tileY: number, tileWidth: number = 64, tileHeight: number = 32): WorldCoord {
         const worldX = (tileX - tileY) * (tileWidth / 2);
         const worldY = (tileX + tileY) * (tileHeight / 2);
-        const worldZ = worldX + worldY; // Z-index용
+        const worldZ = 0; // 2D 아이소메트릭에서는 모든 객체가 Z=0 평면에 위치
         return { x: worldX, y: worldY, z: worldZ };
     }
 
@@ -85,15 +85,16 @@ export class IsometricUtils {
      */
     public static updateObjectDepth(object: THREE.Object3D): void {
         // 아이소메트릭에서는 y + x 값이 클수록 더 앞에 있음
-        // Three.js에서는 Z-position이 렌더링 순서를 결정 (음수일수록 뒤, 양수일수록 앞)
+        // 2D 아이소메트릭에서는 Z=0 평면에 모든 객체가 있고, renderOrder로 깊이 정렬
         const depth = object.position.y + object.position.x;
-        object.position.z = depth;
+        object.position.z = 0; // 모든 객체는 Z=0에 위치
+        object.renderOrder = Math.floor(depth);
 
-        // 그룹의 모든 자식도 같은 Z-position을 가지도록
+        // 그룹의 모든 자식도 renderOrder 설정
         if (object instanceof THREE.Group) {
             object.children.forEach((child) => {
                 if (child instanceof THREE.Mesh) {
-                    child.position.z = depth;
+                    child.position.z = 0; // 자식도 Z=0
                     child.renderOrder = Math.floor(depth);
                 }
             });
