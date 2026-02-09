@@ -63,7 +63,7 @@ export class GameScene implements BaseScene {
         // Camera 생성 (아이소메트릭)
         const canvas = game.getCanvas();
         this.camera = IsometricUtils.createIsometricCamera(canvas.width, canvas.height);
-        this.camera.position.set(0, 0, 200);
+        // 카메라 위치는 유지 (createIsometricCamera에서 이미 설정됨)
 
         // 그룹 생성
         this.mapGroup = new THREE.Group();
@@ -383,13 +383,11 @@ export class GameScene implements BaseScene {
     private setupCamera(): void {
         if (!this.player) return;
 
-        // 카메라를 플레이어 위치로
-        this.camera.position.set(
-            this.cameraTarget.x,
-            this.cameraTarget.y,
-            200
-        );
-        this.camera.lookAt(this.cameraTarget);
+        // 카메라는 플레이어를 따라가지만, Z 위치는 고정
+        // 아이소메트릭 뷰를 위해서는 카메라가 위에서 내려다봐야 함
+        this.cameraTarget.copy(this.player.mesh.position);
+        this.camera.position.set(this.cameraTarget.x, this.cameraTarget.y, 1);
+        this.camera.lookAt(this.cameraTarget.x, this.cameraTarget.y, 0);
     }
 
     /**
@@ -810,10 +808,12 @@ export class GameScene implements BaseScene {
         // 카메라 타겟을 플레이어 위치로 업데이트
         this.cameraTarget.copy(this.player.mesh.position);
 
-        // 부드러운 카메라 이동
+        // 부드러운 카메라 이동 (Z 위치는 1로 고정하여 위에서 내려다보는 뷰 유지)
         const lerpFactor = 0.1;
         this.camera.position.x += (this.cameraTarget.x - this.camera.position.x) * lerpFactor;
         this.camera.position.y += (this.cameraTarget.y - this.camera.position.y) * lerpFactor;
+        this.camera.position.z = 1; // Z 위치 고정 (위에서 내려다봄)
+        this.camera.lookAt(this.camera.position.x, this.camera.position.y, 0);
     }
 
     /**

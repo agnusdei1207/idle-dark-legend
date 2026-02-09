@@ -67,7 +67,7 @@ export class Player {
         const bodyMaterial = new THREE.MeshLambertMaterial({ color: 0x3498db });
         const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
         body.name = 'body';
-        body.position.y = 24;
+        body.position.set(0, 24, 0); // Z를 0으로 설정
         body.castShadow = true;
         this.mesh.add(body);
 
@@ -76,7 +76,7 @@ export class Player {
         const headMaterial = new THREE.MeshLambertMaterial({ color: 0xf39c12 });
         const head = new THREE.Mesh(headGeometry, headMaterial);
         head.name = 'head';
-        head.position.y = 60;
+        head.position.set(0, 60, 0); // Z를 0으로 설정
         head.castShadow = true;
         this.mesh.add(head);
 
@@ -86,12 +86,12 @@ export class Player {
 
         const leftArm = new THREE.Mesh(armGeometry, armMaterial);
         leftArm.name = 'leftArm';
-        leftArm.position.set(-20, 50, 0);
+        leftArm.position.set(-20, 50, 0); // Z를 0으로 설정
         this.mesh.add(leftArm);
 
         const rightArm = new THREE.Mesh(armGeometry, armMaterial);
         rightArm.name = 'rightArm';
-        rightArm.position.set(20, 50, 0);
+        rightArm.position.set(20, 50, 0); // Z를 0으로 설정
         this.mesh.add(rightArm);
 
         // 다리
@@ -100,12 +100,12 @@ export class Player {
 
         const leftLeg = new THREE.Mesh(legGeometry, legMaterial);
         leftLeg.name = 'leftLeg';
-        leftLeg.position.set(-8, 0, 0);
+        leftLeg.position.set(-8, 0, 0); // Z를 0으로 설정
         this.mesh.add(leftLeg);
 
         const rightLeg = new THREE.Mesh(legGeometry, legMaterial);
         rightLeg.name = 'rightLeg';
-        rightLeg.position.set(8, 0, 0);
+        rightLeg.position.set(8, 0, 0); // Z를 0으로 설정
         this.mesh.add(rightLeg);
 
         // 그림자
@@ -116,8 +116,9 @@ export class Player {
             opacity: 0.3
         });
         const shadow = new THREE.Mesh(shadowGeometry, shadowMaterial);
+        shadow.name = 'shadow';
         shadow.rotation.x = -Math.PI / 2;
-        shadow.position.y = -5;
+        shadow.position.set(0, -5, -0.1); // 그림자는 뒤에 위치
         this.mesh.add(shadow);
     }
 
@@ -165,12 +166,14 @@ export class Player {
         this.mesh.position.x += direction.x * this.moveSpeed * deltaTime;
         this.mesh.position.y += direction.y * this.moveSpeed * deltaTime;
 
-        // Z-index 정렬 (아이소메트릭) - 모든 자식 메시도 업데이트
-        const depth = this.mesh.position.x + this.mesh.position.y;
-        this.mesh.position.z = depth;
+        // Z-index 정렬 (아이소메트릭) - 부모만 업데이트
+        this.mesh.position.z = this.mesh.position.x + this.mesh.position.y;
+
+        // 자식 메시들의 Z를 부모와 동기화 (그림자는 제외)
         this.mesh.children.forEach((child) => {
-            if (child instanceof THREE.Mesh) {
-                child.position.z = depth;
+            if (child instanceof THREE.Mesh && child.name !== 'shadow') {
+                child.position.z = this.mesh.position.z;
+                child.renderOrder = Math.floor(this.mesh.position.z);
             }
         });
     }
@@ -210,12 +213,14 @@ export class Player {
                 this.mesh.position.y += (dy / distance) * speed;
             }
 
-            // Z-index 업데이트 - 모든 자식 메시도 업데이트
-            const depth = this.mesh.position.x + this.mesh.position.y;
-            this.mesh.position.z = depth;
+            // Z-index 업데이트 - 부모만 업데이트
+            this.mesh.position.z = this.mesh.position.x + this.mesh.position.y;
+
+            // 자식 메시들의 Z를 부모와 동기화 (그림자는 제외)
             this.mesh.children.forEach((child) => {
-                if (child instanceof THREE.Mesh) {
-                    child.position.z = depth;
+                if (child instanceof THREE.Mesh && child.name !== 'shadow') {
+                    child.position.z = this.mesh.position.z;
+                    child.renderOrder = Math.floor(this.mesh.position.z);
                 }
             });
         }

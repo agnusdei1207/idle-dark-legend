@@ -83,12 +83,15 @@ export class Monster {
         this.mesh.position.set(pos.x, pos.y, 0);
         this.spawnPosition = new THREE.Vector3(pos.x, pos.y, 0);
 
-        // Z-index 정렬 - 모든 자식 메시도 업데이트
+        // Z-index 정렬 - 부모만 업데이트
         const depth = pos.x + pos.y;
         this.mesh.position.z = depth;
+
+        // 자식 메시들의 Z를 부모와 동기화 (그림자는 제외)
         this.mesh.children.forEach((child) => {
-            if (child instanceof THREE.Mesh) {
+            if (child instanceof THREE.Mesh && child.name !== 'shadow') {
                 child.position.z = depth;
+                child.renderOrder = Math.floor(depth);
             }
         });
 
@@ -134,7 +137,7 @@ export class Monster {
         const bodyMaterial = new THREE.MeshLambertMaterial({ color: config.color });
         const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
         body.name = 'body';
-        body.position.y = (config.height * finalScale) / 2;
+        body.position.set(0, (config.height * finalScale) / 2, 0); // Z를 0으로 설정
         body.castShadow = true;
         this.mesh.add(body);
 
@@ -144,7 +147,7 @@ export class Monster {
             const headMaterial = new THREE.MeshLambertMaterial({ color: this.getHeadColor(type) });
             const head = new THREE.Mesh(headGeometry, headMaterial);
             head.name = 'head';
-            head.position.y = config.height * finalScale;
+            head.position.set(0, config.height * finalScale, 0); // Z를 0으로 설정
             head.castShadow = true;
             this.mesh.add(head);
         }
@@ -171,8 +174,9 @@ export class Monster {
             opacity: 0.3
         });
         const shadow = new THREE.Mesh(shadowGeometry, shadowMaterial);
+        shadow.name = 'shadow';
         shadow.rotation.x = -Math.PI / 2;
-        shadow.position.y = -4;
+        shadow.position.set(0, -4, -0.1); // 그림자는 뒤에 위치
         this.mesh.add(shadow);
 
         // HP 바 (간단한 박스)
