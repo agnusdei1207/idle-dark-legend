@@ -648,6 +648,44 @@ export class GameScene implements BaseScene {
     }
 
     /**
+     * 일반 알림 표시
+     */
+    private showNotification(message: string, type: 'success' | 'error' | 'info' = 'info'): void {
+        const container = document.getElementById('game-container');
+        if (!container) return;
+
+        const colors = {
+            success: '#27ae60',
+            error: '#e74c3c',
+            info: '#3498db'
+        };
+
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: absolute;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: ${colors[type]};
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            z-index: 2000;
+            animation: slideDown 0.3s ease-out, fadeOut 0.5s ease-in 2s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        `;
+        notification.textContent = message;
+
+        container.appendChild(notification);
+
+        setTimeout(() => {
+            notification.remove();
+        }, 2500);
+    }
+
+    /**
      * NPC 업데이트
      */
     private updateNPCs(): void {
@@ -1019,6 +1057,72 @@ export class GameScene implements BaseScene {
         this.camera.top = frustumSize / 2;
         this.camera.bottom = frustumSize / -2;
         this.camera.updateProjectionMatrix();
+    }
+
+    /**
+     * 스킬 사용
+     */
+    private useSkill(skillIndex: number): void {
+        if (!this.player) return;
+
+        const stats = this.player.getStats();
+        if (!stats.skills || skillIndex >= stats.skills.length) return;
+
+        const skill = stats.skills[skillIndex];
+
+        // MP 체크
+        if (stats.mp < skill.mpCost) {
+            this.showNotification('마나가 부족합니다!', 'error');
+            return;
+        }
+
+        // 쿨다운 체크
+        const now = Date.now();
+        if (skill.lastUsed && now - skill.lastUsed < skill.cooldown * 1000) {
+            const remaining = Math.ceil((skill.cooldown * 1000 - (now - skill.lastUsed)) / 1000);
+            this.showNotification(`스킬 쿨다운: ${remaining}초`, 'error');
+            return;
+        }
+
+        // MP 소모
+        stats.mp -= skill.mpCost;
+
+        // 쿨다운 설정
+        skill.lastUsed = now;
+
+        // 스킬 효과 적용
+        this.applySkillEffect(skill);
+
+        this.showNotification(`${skill.nameKo} 사용!`, 'success');
+    }
+
+    /**
+     * 스킬 효과 적용
+     */
+    private applySkillEffect(skill: any): void {
+        if (!this.player) return;
+
+        // 타겟 찾기 (가장 가까운 몬스터)
+        let closestMonster: Monster | null = null;
+        let closestDistance = 300; // 스킬 범위
+
+        for (const [_, monster] of this.monsters.entries()) {
+            if (monster.isDead()) continue;
+
+            const distance = this.player!.mesh.position.distanceTo(monster.mesh.position);
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closestMonster = monster;
+            }
+        }
+
+        if (closestMonster && this.player) {
+            const damage = skill.damage || 50;
+            closestMonster.takeDamage(damage, this.player);
+
+            // 데미지 표시
+            this.showDamageNumber(closestMonster.mesh.position, damage, 'monster');
+        }
     }
 
     /**

@@ -287,12 +287,12 @@ export class Monster {
         // 애니메이션 업데이트
         this.animationController.update(deltaTime);
 
-        // Z-index 업데이트 - 모든 자식 메시도 업데이트
+        // Z-index 업데이트 - renderOrder 사용 (2D 아이소메트릭)
         const depth = this.mesh.position.x + this.mesh.position.y;
-        this.mesh.position.z = depth;
+        this.mesh.renderOrder = Math.floor(depth);
         this.mesh.children.forEach((child) => {
             if (child instanceof THREE.Mesh) {
-                child.position.z = depth;
+                child.renderOrder = Math.floor(depth);
             }
         });
 
