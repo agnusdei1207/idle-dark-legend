@@ -131,23 +131,33 @@ export class Monster {
         const levelScale = 1 + (level - 1) * 0.1;
         const finalScale = config.scale * levelScale;
 
-        // 바디
-        const bodyGeometry = new THREE.BoxGeometry(28 * finalScale, config.height * finalScale, 14 * finalScale);
-        const bodyMaterial = new THREE.MeshLambertMaterial({ color: config.color });
+        // 바디 - 더 입체적으로 (깊이 증가)
+        const bodyGeometry = new THREE.BoxGeometry(28 * finalScale, config.height * finalScale, 20 * finalScale);
+        const bodyMaterial = new THREE.MeshLambertMaterial({
+            color: config.color,
+            emissive: config.color,
+            emissiveIntensity: 0.15
+        });
         const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
         body.name = 'body';
-        body.position.set(0, (config.height * finalScale) / 2, 0); // Z를 0으로 설정
+        body.position.set(0, (config.height * finalScale) / 2 + 2, 0); // 약간 위로 올림
         body.castShadow = true;
+        body.receiveShadow = true;
         this.mesh.add(body);
 
-        // 머리 (대부분의 몬스터)
+        // 머리 (대부분의 몬스터) - 더 입체적으로
         if (type !== 'slime' && type !== 'wandu') {
-            const headGeometry = new THREE.BoxGeometry(20 * finalScale, 20 * finalScale, 20 * finalScale);
-            const headMaterial = new THREE.MeshLambertMaterial({ color: this.getHeadColor(type) });
+            const headGeometry = new THREE.BoxGeometry(22 * finalScale, 22 * finalScale, 22 * finalScale);
+            const headMaterial = new THREE.MeshLambertMaterial({
+                color: this.getHeadColor(type),
+                emissive: this.getHeadColor(type),
+                emissiveIntensity: 0.15
+            });
             const head = new THREE.Mesh(headGeometry, headMaterial);
             head.name = 'head';
-            head.position.set(0, config.height * finalScale, 0); // Z를 0으로 설정
+            head.position.set(0, config.height * finalScale + 2, 0);
             head.castShadow = true;
+            head.receiveShadow = true;
             this.mesh.add(head);
         }
 

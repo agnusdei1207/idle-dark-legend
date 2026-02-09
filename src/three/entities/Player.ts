@@ -62,64 +62,99 @@ export class Player {
      * 캐릭터 메시 생성 (박스 형태)
      */
     private createCharacterMesh(): void {
-        // 바디 (박스 형태, 2.5D)
-        const bodyGeometry = new THREE.BoxGeometry(32, 48, 16);
-        const bodyMaterial = new THREE.MeshLambertMaterial({ color: 0x3498db });
+        // 바디 (박스 형태, 2.5D) - 입체감을 위해 Y 위치 상승
+        const bodyGeometry = new THREE.BoxGeometry(32, 48, 20);
+        const bodyMaterial = new THREE.MeshLambertMaterial({
+            color: 0x3498db,
+            emissive: 0x1a5490,
+            emissiveIntensity: 0.2
+        });
         const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
         body.name = 'body';
-        body.position.set(0, 24, 0); // Z를 0으로 설정
+        body.position.set(0, 28, 0); // 약간 위로 올림
         body.castShadow = true;
+        body.receiveShadow = true;
         this.mesh.add(body);
 
-        // 머리
-        const headGeometry = new THREE.BoxGeometry(24, 24, 24);
-        const headMaterial = new THREE.MeshLambertMaterial({ color: 0xf39c12 });
+        // 머리 - 더 크고 입체적으로
+        const headGeometry = new THREE.BoxGeometry(26, 26, 26);
+        const headMaterial = new THREE.MeshLambertMaterial({
+            color: 0xf39c12,
+            emissive: 0xa66e0c,
+            emissiveIntensity: 0.2
+        });
         const head = new THREE.Mesh(headGeometry, headMaterial);
         head.name = 'head';
-        head.position.set(0, 60, 0); // Z를 0으로 설정
+        head.position.set(0, 64, 0);
         head.castShadow = true;
+        head.receiveShadow = true;
         this.mesh.add(head);
 
-        // 팔
-        const armGeometry = new THREE.BoxGeometry(8, 32, 8);
-        const armMaterial = new THREE.MeshLambertMaterial({ color: 0x3498db });
+        // 팔 - 더 입체적으로
+        const armGeometry = new THREE.BoxGeometry(10, 36, 10);
+        const armMaterial = new THREE.MeshLambertMaterial({
+            color: 0x3498db,
+            emissive: 0x1a5490,
+            emissiveIntensity: 0.2
+        });
 
         const leftArm = new THREE.Mesh(armGeometry, armMaterial);
         leftArm.name = 'leftArm';
-        leftArm.position.set(-20, 50, 0); // Z를 0으로 설정
+        leftArm.position.set(-22, 52, 0);
+        leftArm.castShadow = true;
         this.mesh.add(leftArm);
 
         const rightArm = new THREE.Mesh(armGeometry, armMaterial);
         rightArm.name = 'rightArm';
-        rightArm.position.set(20, 50, 0); // Z를 0으로 설정
+        rightArm.position.set(22, 52, 0);
+        rightArm.castShadow = true;
         this.mesh.add(rightArm);
 
-        // 다리
-        const legGeometry = new THREE.BoxGeometry(10, 32, 10);
-        const legMaterial = new THREE.MeshLambertMaterial({ color: 0x2c3e50 });
+        // 다리 - 더 입체적으로
+        const legGeometry = new THREE.BoxGeometry(12, 28, 12);
+        const legMaterial = new THREE.MeshLambertMaterial({
+            color: 0x2c3e50,
+            emissive: 0x1a252f,
+            emissiveIntensity: 0.2
+        });
 
         const leftLeg = new THREE.Mesh(legGeometry, legMaterial);
         leftLeg.name = 'leftLeg';
-        leftLeg.position.set(-8, 0, 0); // Z를 0으로 설정
+        leftLeg.position.set(-10, 8, 0);
+        leftLeg.castShadow = true;
         this.mesh.add(leftLeg);
 
         const rightLeg = new THREE.Mesh(legGeometry, legMaterial);
         rightLeg.name = 'rightLeg';
-        rightLeg.position.set(8, 0, 0); // Z를 0으로 설정
+        rightLeg.position.set(10, 8, 0);
+        rightLeg.castShadow = true;
         this.mesh.add(rightLeg);
 
-        // 그림자
-        const shadowGeometry = new THREE.CircleGeometry(20, 32);
+        // 그림자 - 더 크고 부드럽게
+        const shadowGeometry = new THREE.CircleGeometry(24, 32);
         const shadowMaterial = new THREE.MeshBasicMaterial({
             color: 0x000000,
             transparent: true,
-            opacity: 0.3
+            opacity: 0.4
         });
         const shadow = new THREE.Mesh(shadowGeometry, shadowMaterial);
         shadow.name = 'shadow';
         shadow.rotation.x = -Math.PI / 2;
-        shadow.position.set(0, -5, -0.1); // 그림자는 뒤에 위치
+        shadow.position.set(0, -8, -0.1); // 그림자는 뒤에 위치
         this.mesh.add(shadow);
+
+        // 발판 효과 (캐릭터가 떠있는 느낌)
+        const baseGeometry = new THREE.CylinderGeometry(18, 18, 2, 16);
+        const baseMaterial = new THREE.MeshLambertMaterial({
+            color: 0x34495e,
+            transparent: true,
+            opacity: 0.6
+        });
+        const base = new THREE.Mesh(baseGeometry, baseMaterial);
+        base.name = 'base';
+        base.rotation.x = Math.PI / 2;
+        base.position.set(0, -6, -0.05);
+        this.mesh.add(base);
     }
 
     /**

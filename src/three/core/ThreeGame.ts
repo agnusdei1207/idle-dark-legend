@@ -102,7 +102,7 @@ export class ThreeGame {
             document.body.appendChild(this.canvas);
         }
 
-        // Renderer 생성
+        // Renderer 생성 (그림자 활성화)
         this.renderer = new THREE.WebGLRenderer({
             canvas: this.canvas,
             antialias,
@@ -111,6 +111,10 @@ export class ThreeGame {
         this.renderer.setSize(width, height);
         this.renderer.setPixelRatio(pixelRatio);
         this.renderer.setClearColor(backgroundColor);
+
+        // 그림자 활성화 (2.5D 느낌을 위해)
+        this.renderer.shadowMap.enabled = true;
+        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
         // Clock 생성
         this.clock = new THREE.Clock();

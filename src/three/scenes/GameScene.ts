@@ -46,6 +46,10 @@ export class GameScene implements BaseScene {
     private skillsUI: SkillsUI;
     private questsUI: QuestUI;
     private saveData: any | null = null;
+    private mapWidth: number = 30;
+    private mapHeight: number = 30;
+    private tileWidth: number = 64;
+    private tileHeight: number = 32;
 
     constructor(game: ThreeGame, data?: { mapId?: string; saveData?: any }) {
         this.game = game;
@@ -137,17 +141,39 @@ export class GameScene implements BaseScene {
     }
 
     /**
-     * 조명 설정
+     * 조명 설정 (2.5D 느낌을 위한 강화된 조명)
      */
     private setupLighting(): void {
-        // ambient light
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        // 주변 조명 (ambient light)
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
         this.scene.add(ambientLight);
 
-        // directional light
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.4);
-        directionalLight.position.set(50, 100, 50);
+        // 주 방향광 (directional light) - 그림자 추가
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
+        directionalLight.position.set(100, 200, 100);
+        directionalLight.castShadow = true;
+
+        // 그림자 설정
+        directionalLight.shadow.camera.left = -500;
+        directionalLight.shadow.camera.right = 500;
+        directionalLight.shadow.camera.top = 500;
+        directionalLight.shadow.camera.bottom = -500;
+        directionalLight.shadow.camera.near = 0.1;
+        directionalLight.shadow.camera.far = 1000;
+        directionalLight.shadow.mapSize.width = 2048;
+        directionalLight.shadow.mapSize.height = 2048;
+        directionalLight.shadow.bias = -0.001;
+
         this.scene.add(directionalLight);
+
+        // 보조 조명 (hemisphere light) - 더 부드러운 느낌
+        const hemisphereLight = new THREE.HemisphereLight(0x87CEEB, 0x8B4513, 0.3);
+        this.scene.add(hemisphereLight);
+
+        // 포인트 라이트 (플레이어 주변 빛)
+        const pointLight = new THREE.PointLight(0xffffff, 0.4, 300);
+        pointLight.position.set(0, 100, 50);
+        this.scene.add(pointLight);
     }
 
     /**
@@ -173,40 +199,53 @@ export class GameScene implements BaseScene {
     }
 
     /**
-     * 벽 타일 생성
+     * 벽 타일 생성 (3D 박스)
      */
     private createWallTiles(width: number, height: number): void {
         // 상단 벽
         for (let x = 0; x < width; x++) {
             const pos = IsometricUtils.tileToWorld(x, 0, 64, 32);
-            const wall = SpriteUtils.createColorSprite(0x8b4513, 64, 32);
-            wall.position.set(pos.x, pos.y, 0);
+            const wall = this.create3DWall(pos.x, pos.y);
             this.mapGroup.add(wall);
         }
 
         // 하단 벽
         for (let x = 0; x < width; x++) {
             const pos = IsometricUtils.tileToWorld(x, height - 1, 64, 32);
-            const wall = SpriteUtils.createColorSprite(0x8b4513, 64, 32);
-            wall.position.set(pos.x, pos.y, 0);
+            const wall = this.create3DWall(pos.x, pos.y);
             this.mapGroup.add(wall);
         }
 
         // 좌단 벽
         for (let y = 0; y < height; y++) {
             const pos = IsometricUtils.tileToWorld(0, y, 64, 32);
-            const wall = SpriteUtils.createColorSprite(0x8b4513, 64, 32);
-            wall.position.set(pos.x, pos.y, 0);
+            const wall = this.create3DWall(pos.x, pos.y);
             this.mapGroup.add(wall);
         }
 
         // 우단 벽
         for (let y = 0; y < height; y++) {
             const pos = IsometricUtils.tileToWorld(width - 1, y, 64, 32);
-            const wall = SpriteUtils.createColorSprite(0x8b4513, 64, 32);
-            wall.position.set(pos.x, pos.y, 0);
+            const wall = this.create3DWall(pos.x, pos.y);
             this.mapGroup.add(wall);
         }
+    }
+
+    /**
+     * 3D 벽 생성
+     */
+    private create3DWall(x: number, y: number): THREE.Mesh {
+        const geometry = new THREE.BoxGeometry(64, 32, 40);
+        const material = new THREE.MeshLambertMaterial({
+            color: 0x8b4513,
+            emissive: 0x5d2f0c,
+            emissiveIntensity: 0.2
+        });
+        const wall = new THREE.Mesh(geometry, material);
+        wall.position.set(x, y + 20, 0); // 벽을 위로 올림
+        wall.castShadow = true;
+        wall.receiveShadow = true;
+        return wall;
     }
 
     /**
@@ -224,31 +263,48 @@ export class GameScene implements BaseScene {
                 const isTree = Math.random() > 0.5;
 
                 if (isTree) {
-                    // 나무 (3D 박스로)
-                    const trunkGeometry = new THREE.BoxGeometry(8, 20, 8);
-                    const trunkMaterial = new THREE.MeshLambertMaterial({ color: 0x8B4513 });
+                    // 나무 (더 입체적인 3D)
+                    const trunkGeometry = new THREE.CylinderGeometry(4, 6, 24, 8);
+                    const trunkMaterial = new THREE.MeshLambertMaterial({
+                        color: 0x8B4513,
+                        emissive: 0x5d2f0c,
+                        emissiveIntensity: 0.2
+                    });
                     const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
-                    trunk.position.set(pos.x, pos.y + 10, 0); // Z=0
-                    trunk.renderOrder = Math.floor(pos.x + pos.y); // 깊이 정렬
+                    trunk.rotation.x = Math.PI / 2;
+                    trunk.position.set(pos.x, pos.y + 12, 0);
+                    trunk.renderOrder = Math.floor(pos.x + pos.y);
                     trunk.castShadow = true;
+                    trunk.receiveShadow = true;
                     this.mapGroup.add(trunk);
 
-                    // 나뭇잎
-                    const leavesGeometry = new THREE.BoxGeometry(24, 24, 24);
-                    const leavesMaterial = new THREE.MeshLambertMaterial({ color: 0x27ae60 });
+                    // 나뭇잎 (구형으로)
+                    const leavesGeometry = new THREE.SphereGeometry(14, 8, 8);
+                    const leavesMaterial = new THREE.MeshLambertMaterial({
+                        color: 0x27ae60,
+                        emissive: 0x1a7040,
+                        emissiveIntensity: 0.2
+                    });
                     const leaves = new THREE.Mesh(leavesGeometry, leavesMaterial);
-                    leaves.position.set(pos.x, pos.y + 32, 0); // Z=0
-                    leaves.renderOrder = Math.floor(pos.x + pos.y); // 깊이 정렬
+                    leaves.position.set(pos.x, pos.y + 32, 0);
+                    leaves.renderOrder = Math.floor(pos.x + pos.y);
                     leaves.castShadow = true;
+                    leaves.receiveShadow = true;
                     this.mapGroup.add(leaves);
                 } else {
-                    // 바위
-                    const rockGeometry = new THREE.BoxGeometry(16, 12, 16);
-                    const rockMaterial = new THREE.MeshLambertMaterial({ color: 0x7f8c8d });
+                    // 바위 (더 입체적인 모양)
+                    const rockGeometry = new THREE.DodecahedronGeometry(10, 0);
+                    const rockMaterial = new THREE.MeshLambertMaterial({
+                        color: 0x7f8c8d,
+                        emissive: 0x4f5c5d,
+                        emissiveIntensity: 0.15
+                    });
                     const rock = new THREE.Mesh(rockGeometry, rockMaterial);
-                    rock.position.set(pos.x, pos.y + 6, 0); // Z=0
-                    rock.renderOrder = Math.floor(pos.x + pos.y); // 깊이 정렬
+                    rock.position.set(pos.x, pos.y + 8, 0);
+                    rock.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
+                    rock.renderOrder = Math.floor(pos.x + pos.y);
                     rock.castShadow = true;
+                    rock.receiveShadow = true;
                     this.mapGroup.add(rock);
                 }
             }
@@ -484,6 +540,7 @@ export class GameScene implements BaseScene {
         if (!this.player) return;
 
         const input = this.game.input;
+        const oldPosition = this.player.mesh.position.clone();
 
         // WASD 이동
         const wasdDir = input.getWASDDirection();
@@ -499,6 +556,12 @@ export class GameScene implements BaseScene {
             // 화면 방향을 아이소메트릭 방향으로 변환
             const isoDir = IsometricUtils.screenDirectionToIsometric(arrowDir);
             this.player.move(deltaTime, isoDir);
+        }
+
+        // 맵 경계 체크
+        if (!this.isWithinMapBounds(this.player.mesh.position)) {
+            // 경계를 벗어나면 이전 위치로 되돌림
+            this.player.mesh.position.copy(oldPosition);
         }
     }
 
@@ -605,6 +668,32 @@ export class GameScene implements BaseScene {
         const dx = pos1.x - pos2.x;
         const dy = pos1.y - pos2.y;
         return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    /**
+     * 맵 경계 체크 및 위치 보정
+     */
+    private clampToMapBounds(position: THREE.Vector3): THREE.Vector3 {
+        // 아이소메트릭 좌표를 타일 좌표로 변환
+        const tileCoord = IsometricUtils.worldToTile(position.x, position.y, this.tileWidth, this.tileHeight);
+
+        // 타일 좌표를 맵 경계 내로 제한 (벽 타일 제외, 1칸씩 안쪽)
+        const clampedTileX = Math.max(1, Math.min(this.mapWidth - 2, tileCoord.x));
+        const clampedTileY = Math.max(1, Math.min(this.mapHeight - 2, tileCoord.y));
+
+        // 다시 월드 좌표로 변환
+        const worldCoord = IsometricUtils.tileToWorld(clampedTileX, clampedTileY, this.tileWidth, this.tileHeight);
+
+        return new THREE.Vector3(worldCoord.x, worldCoord.y, 0);
+    }
+
+    /**
+     * 위치가 맵 경계 내인지 확인
+     */
+    private isWithinMapBounds(position: THREE.Vector3): boolean {
+        const tileCoord = IsometricUtils.worldToTile(position.x, position.y, this.tileWidth, this.tileHeight);
+        return tileCoord.x >= 1 && tileCoord.x < this.mapWidth - 1 &&
+               tileCoord.y >= 1 && tileCoord.y < this.mapHeight - 1;
     }
 
     /**

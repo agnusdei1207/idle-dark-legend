@@ -102,20 +102,24 @@ export class IsometricUtils {
     }
 
     /**
-     * 아이소메트릭 타일 메시 생성
+     * 아이소메트릭 타일 메시 생성 (3D 박스)
      */
     public static createTileMesh(
         width: number = 64,
         height: number = 32,
         color: number = 0xffffff
     ): THREE.Mesh {
-        const geometry = new THREE.PlaneGeometry(width, height);
-        const material = new THREE.MeshBasicMaterial({
+        // 3D 박스로 타일 생성 (2.5D 느낌)
+        const geometry = new THREE.BoxGeometry(width, height, 4);
+        const material = new THREE.MeshLambertMaterial({
             color,
-            side: THREE.DoubleSide
+            emissive: color,
+            emissiveIntensity: 0.1
         });
 
         const mesh = new THREE.Mesh(geometry, material);
+        mesh.castShadow = false;
+        mesh.receiveShadow = true;
 
         return mesh;
     }
@@ -139,8 +143,12 @@ export class IsometricUtils {
 
                 // 그리드 라인 효과를 위해 색상 번갈아가며
                 if ((x + y) % 2 === 0) {
-                    (tile.material as THREE.MeshBasicMaterial).color.setHex(0x555555);
+                    (tile.material as THREE.MeshLambertMaterial).color.setHex(0x555555);
+                    (tile.material as THREE.MeshLambertMaterial).emissive.setHex(0x555555);
                 }
+
+                // 타일을 약간 아래로 내림 (바닥 느낌)
+                tile.position.y -= 2;
 
                 group.add(tile);
             }
@@ -151,24 +159,24 @@ export class IsometricUtils {
 
     /**
      * 화면 방향을 아이소메트릭 방향으로 변환
-     * 화면에서의 입력 방향(위, 아래, 좌, 우)을 아이소메트릭 타일 방향으로 변환
+     * 어둠의전설 스타일: 방향키가 아이소메트릭 다이아몬드 축을 따라 이동
      */
     public static screenDirectionToIsometric(
         screenDir: { x: number; y: number }
     ): { x: number; y: number } {
-        // 화면 방향을 아이소메트릭 방향으로 변환
-        // 위(+y) → 북동쪽 (타일 x+1, y+0)
-        // 아래(-y) → 남서쪽 (타일 x-1, y-0)
-        // 오른쪽(+x) → 남동쪽 (타일 x+0, y+1)
-        // 왼쪽(-x) → 북서쪽 (타일 x-0, y-1)
+        // 아이소메트릭 좌표계 변환
+        // 화면 상(y+) → 북동(x+, y-)
+        // 화면 하(y-) → 남서(x-, y+)
+        // 화면 우(x+) → 남동(x+, y+)
+        // 화면 좌(x-) → 북서(x-, y-)
 
-        // 45도 회전 행렬 적용
-        const cos45 = Math.cos(Math.PI / 4);
-        const sin45 = Math.sin(Math.PI / 4);
+        // 아이소메트릭 2:1 비율 적용
+        const isoX = screenDir.x - screenDir.y;
+        const isoY = (screenDir.x + screenDir.y) * 0.5;
 
         return {
-            x: screenDir.x * cos45 - screenDir.y * sin45,
-            y: screenDir.x * sin45 + screenDir.y * cos45
+            x: isoX,
+            y: isoY
         };
     }
 
